@@ -1,0 +1,82 @@
+@extends('frontend.layouts.app')
+
+@section('title', $category->name . ' - Rubista')
+
+@section('content')
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('frontend.home') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('frontend.home') }}#categories">Categories</a></li>
+            <li class="breadcrumb-item active">{{ $category->name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Category Header -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex align-items-center">
+                <div class="category-icon me-3">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <div>
+                    <h1 class="mb-0">{{ $category->name }}</h1>
+                    <p class="text-muted mb-0">{{ $products->total() }} products found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    @if($products->count() > 0)
+        <div class="row">
+            @foreach($products as $product)
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <div class="card product-card h-100">
+                    <div class="position-relative">
+                        <img src="{{ $product->image ?? 'https://via.placeholder.com/250x250/7c3aed/ffffff?text=Product' }}" 
+                             class="card-img-top" alt="{{ $product->name }}" style="height: 250px; object-fit: cover;">
+                        @if($product->sale_price && $product->sale_price < $product->price)
+                            <span class="badge-sale position-absolute top-0 start-0 m-2">SALE</span>
+                        @endif
+                        @if($product->featured)
+                            <span class="badge bg-warning position-absolute top-0 end-0 m-2">FEATURED</span>
+                        @endif
+                    </div>
+                    <div class="card-body p-3">
+                        <h6 class="card-title">{{ Str::limit($product->name, 60) }}</h6>
+                        <p class="card-text text-muted small">{{ Str::limit($product->description, 80) }}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                @if($product->sale_price && $product->sale_price < $product->price)
+                                    <span class="price-original small">₹{{ number_format($product->price, 2) }}</span>
+                                    <span class="price-sale">₹{{ number_format($product->sale_price, 2) }}</span>
+                                @else
+                                    <span class="fw-bold">₹{{ number_format($product->price, 2) }}</span>
+                                @endif
+                            </div>
+                            <small class="text-muted">⭐ 4.5</small>
+                        </div>
+                        <a href="{{ route('frontend.product.detail', $product->id) }}" 
+                           class="btn btn-primary btn-sm w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ $products->links() }}
+        </div>
+    @else
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h3>No products found</h3>
+            <p class="text-muted">No products available in this category at the moment.</p>
+            <a href="{{ route('frontend.home') }}" class="btn btn-primary">Back to Home</a>
+        </div>
+    @endif
+</div>
+@endsection 
