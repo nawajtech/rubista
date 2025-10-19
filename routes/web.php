@@ -18,23 +18,6 @@ require __DIR__.'/frontend.php';
 
 /*
 |--------------------------------------------------------------------------
-| Generic Login Route (for Laravel's default authentication behavior)
-|--------------------------------------------------------------------------
-*/
-Route::get('login', function () {
-    // Check if the user was trying to access admin routes
-    $intendedUrl = session('url.intended', '/');
-    
-    if (str_contains($intendedUrl, '/admin')) {
-        return redirect()->route('admin.login');
-    }
-    
-    // Default to frontend login
-    return redirect()->route('frontend.login');
-})->name('login');
-
-/*
-|--------------------------------------------------------------------------
 | Admin Routes
 |--------------------------------------------------------------------------
 */

@@ -26,6 +26,26 @@ class PageController extends Controller
     }
     
     /**
+     * Show the FAQ page
+     */
+    public function faq()
+    {
+        return view('frontend.pages.faq');
+    }
+    
+    /**
+     * Show the categories page with products
+     */
+    public function categories()
+    {
+        $categories = \App\Models\Category::with(['products' => function($query) {
+            $query->take(8); // Limit to 8 products per category
+        }])->get();
+        
+        return view('frontend.pages.categories', compact('categories'));
+    }
+    
+    /**
      * Handle contact form submission
      */
     public function contactSubmit(Request $request)

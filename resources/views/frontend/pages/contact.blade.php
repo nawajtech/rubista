@@ -1,3 +1,4 @@
+
 @extends('frontend.layouts.app')
 
 @section('title', 'Contact Us - Rubista')
@@ -278,67 +279,5 @@
     </div>
 </section>
 
-<!-- FAQ Section -->
-<section class="form-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold mb-3">Frequently Asked Questions</h2>
-                    <p class="text-muted">Quick answers to common questions</p>
-                </div>
-                <div class="accordion" id="faqAccordion">
-                    <div class="accordion-item mb-3">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                                What is your return policy?
-                            </button>
-                        </h2>
-                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                We offer a 30-day return policy for all products. Items must be in original condition with packaging. Contact our support team to initiate a return.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item mb-3">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                                How long does delivery take?
-                            </button>
-                        </h2>
-                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Standard delivery takes 3-5 business days. Express delivery is available for 1-2 days. Same-day delivery is available in select cities.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item mb-3">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                                Do you offer warranty on products?
-                            </button>
-                        </h2>
-                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Yes, all products come with manufacturer warranty. Extended warranty options are available for select items. Check product details for specific warranty information.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                                What payment methods do you accept?
-                            </button>
-                        </h2>
-                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                We accept all major credit/debit cards, UPI, net banking, and cash on delivery. All payments are secured with encryption.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 @endsection 

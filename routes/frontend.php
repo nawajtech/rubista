@@ -29,6 +29,8 @@ Route::get('/search', [HomeController::class, 'search'])->name('frontend.search'
 Route::get('/about-us', [PageController::class, 'about'])->name('frontend.about');
 Route::get('/contact-us', [PageController::class, 'contact'])->name('frontend.contact');
 Route::post('/contact-us', [PageController::class, 'contactSubmit'])->name('frontend.contact.submit');
+Route::get('/faq', [PageController::class, 'faq'])->name('frontend.faq');
+Route::get('/categories', [PageController::class, 'categories'])->name('frontend.categories');
 
 // Frontend Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -61,9 +63,9 @@ Route::middleware(['frontend.user'])->group(function () {
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('frontend.cart.clear');
     
     // Wishlist Routes
-Route::get('/wishlist', [WishlistController::class, 'index'])->name('frontend.wishlist');
-Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('frontend.wishlist.add');
-Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'remove'])->name('frontend.wishlist.remove');
-Route::delete('/wishlist/clear', [WishlistController::class, 'clear'])->name('frontend.wishlist.clear');
-Route::post('/wishlist/move-to-cart/{id}', [WishlistController::class, 'moveToCart'])->name('frontend.wishlist.move-to-cart');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('frontend.wishlist');
+    Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('frontend.wishlist.add');
+    Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'remove'])->name('frontend.wishlist.remove');
+    Route::delete('/wishlist/clear', [WishlistController::class, 'clear'])->name('frontend.wishlist.clear');
+    Route::post('/wishlist/move-to-cart/{id}', [WishlistController::class, 'moveToCart'])->name('frontend.wishlist.move-to-cart');
 }); 

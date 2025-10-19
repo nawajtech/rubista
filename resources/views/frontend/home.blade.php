@@ -15,61 +15,377 @@
         --orange: #f97316;
         --light-gray: #f8fafc;
         --dark-gray: #64748b;
+        --gray-600: #6b7280;
     }
 
+    /* Compact Hero Section */
     .hero-section {
         background: linear-gradient(135deg, var(--primary-purple), var(--light-purple));
         color: white;
-        padding: 60px 0 40px 0;
+        padding: 40px 0;
         margin-bottom: 0;
+        position: relative;
+        overflow: hidden;
+        min-height: 50vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 50px,
+            rgba(255, 255, 255, 0.02) 50px,
+            rgba(255, 255, 255, 0.02) 100px
+        );
+        animation: heroPattern 20s linear infinite;
+        pointer-events: none;
+    }
+
+    @keyframes heroPattern {
+        0% { transform: translate(-50px, -50px); }
+        100% { transform: translate(50px, 50px); }
+    }
+
+    .hero-container {
+        position: relative;
+        z-index: 2;
+        padding: 20px 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 3;
+        animation: slideInLeft 1s ease-out;
+        padding-left: 40px;
+        margin-left: 20px;
+        border-left: 4px solid rgba(251, 191, 36, 0.3);
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        border-radius: 0 15px 15px 0;
+        backdrop-filter: blur(5px);
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-right: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .hero-content:hover {
+        border-left-color: rgba(251, 191, 36, 0.6);
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+        transform: translateX(5px);
     }
 
     .hero-content h1 {
-        font-size: 3rem;
+        font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 1rem;
+        line-height: 1.3;
+        position: relative;
     }
 
-    .hero-content p {
-        font-size: 1.2rem;
+    .hero-content h1 .highlight {
+        background: linear-gradient(45deg, #fbbf24, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-content h1::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        border-radius: 2px;
+        animation: slideInLine 1.5s ease-out 0.5s both;
+    }
+
+    .hero-content .subtitle {
+        font-size: 1.1rem;
         margin-bottom: 1.5rem;
+        opacity: 0.95;
+        line-height: 1.5;
+        font-weight: 400;
+        animation: slideInLeft 1s ease-out 0.3s both;
     }
 
+    .hero-content .highlight {
+        color: #fbbf24;
+        font-weight: 600;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+        animation: slideInLeft 1s ease-out 0.6s both;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #1a1a1a;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .btn-hero-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .btn-hero-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-hero-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3);
+        color: #1a1a1a;
+    }
+
+    .btn-hero-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 10px 22px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .btn-hero-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 2rem;
+        animation: slideInLeft 1s ease-out 0.9s both;
+    }
+
+    .hero-stat {
+        text-align: left;
+    }
+
+    .hero-stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fbbf24;
+        display: block;
+        line-height: 1;
+    }
+
+    .hero-stat-label {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.2rem;
+    }
+
+    .hero-image-container {
+        position: relative;
+        animation: slideInRight 1s ease-out 0.5s both;
+        text-align: center;
+    }
+
+    .hero-image {
+        width: 100%;
+        max-width: 450px;
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-image:hover {
+        transform: scale(1.02);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-image-bg {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        right: -15px;
+        bottom: -15px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        border-radius: 20px;
+        z-index: 1;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .hero-floating-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .floating-element {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .floating-element:nth-child(1) {
+        width: 40px;
+        height: 40px;
+        top: 20%;
+        left: 10%;
+        animation-delay: -2s;
+    }
+
+    .floating-element:nth-child(2) {
+        width: 30px;
+        height: 30px;
+        top: 60%;
+        right: 15%;
+        animation-delay: -4s;
+    }
+
+    .floating-element:nth-child(3) {
+        width: 50px;
+        height: 50px;
+        bottom: 20%;
+        left: 20%;
+        animation-delay: -6s;
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInLine {
+        from {
+            width: 0;
+        }
+        to {
+            width: 80px;
+        }
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-15px) rotate(3deg);
+        }
+    }
+
+    /* Services Section */
     .services-section {
-        padding: 50px 0;
+        padding: 35px 0;
         background: white;
-        margin-top: -20px;
+        margin-top: -15px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
     .service-card {
         display: flex;
         align-items: center;
-        gap: 15px;
-        padding: 20px;
-        border-radius: 10px;
+        gap: 12px;
+        padding: 15px;
+        border-radius: 8px;
         transition: all 0.3s ease;
         background: rgba(124, 58, 237, 0.02);
         border: 1px solid rgba(124, 58, 237, 0.1);
     }
 
     .service-card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         background: rgba(124, 58, 237, 0.05);
         border-color: rgba(124, 58, 237, 0.2);
         box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
     }
 
     .service-icon {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         background: var(--primary-purple);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 20px;
+        font-size: 18px;
         flex-shrink: 0;
     }
 
@@ -78,27 +394,28 @@
     }
 
     .service-content h5 {
-        margin: 0 0 4px 0;
-        font-size: 16px;
+        margin: 0 0 3px 0;
+        font-size: 15px;
         font-weight: 600;
         color: var(--primary-purple);
     }
 
     .service-content p {
         margin: 0;
-        font-size: 13px;
+        font-size: 12px;
         color: var(--gray-600);
         line-height: 1.4;
     }
 
+    /* Section Title */
     .section-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 700;
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
         color: #333;
         position: relative;
-        padding-bottom: 15px;
+        padding-bottom: 12px;
     }
 
     .section-title::after {
@@ -107,46 +424,30 @@
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 80px;
+        width: 60px;
         height: 3px;
         background: linear-gradient(90deg, var(--primary-purple), var(--light-purple));
         border-radius: 2px;
     }
 
-    /* Enhanced Categories Section */
+    /* Categories Section - Simplified */
     .categories-section {
-        padding: 50px 0;
+        padding: 40px 0;
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
         overflow: hidden;
         position: relative;
-        margin-top: 0;
-    }
-
-    .categories-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: 
-            radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.03) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.03) 0%, transparent 50%);
-        z-index: 1;
     }
 
     .categories-container {
         position: relative;
         overflow: hidden;
-        padding: 20px 0;
-        z-index: 2;
+        padding: 15px 0;
     }
 
     .categories-wrapper {
         display: flex;
-        animation: autoSwipe 25s infinite linear;
-        gap: 25px;
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        gap: 20px;
+        animation: autoSlide 30s infinite linear;
         will-change: transform;
     }
 
@@ -154,108 +455,46 @@
         animation-play-state: paused;
     }
 
-    .categories-wrapper.paused {
-        animation-play-state: paused;
-    }
-
-    @keyframes autoSwipe {
-        0% {
-            transform: translateX(0);
-        }
-        100% {
-            transform: translateX(-50%);
-        }
+    @keyframes autoSlide {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
     }
 
     .category-card {
-        background: linear-gradient(145deg, #ffffff 0%, #fafbff 100%);
-        border-radius: 24px;
-        padding: 25px 20px;
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
         text-align: center;
         border: 1px solid rgba(124, 58, 237, 0.08);
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        min-width: 180px;
+        transition: all 0.3s ease;
+        min-width: 160px;
         flex-shrink: 0;
-        box-shadow: 
-            0 4px 20px rgba(124, 58, 237, 0.06),
-            0 1px 3px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
         position: relative;
-        overflow: hidden;
         cursor: pointer;
-        backdrop-filter: blur(10px);
-    }
-
-    .category-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, var(--primary-purple), var(--light-purple));
-        opacity: 0;
-        transition: all 0.4s ease;
-        z-index: 1;
-        border-radius: 24px;
-    }
-
-    .category-card::after {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transform: rotate(45deg);
-        transition: all 0.6s ease;
-        opacity: 0;
-        z-index: 3;
     }
 
     .category-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(124, 58, 237, 0.12);
         border-color: var(--primary-purple);
-        transform: translateY(-12px) scale(1.03);
-        box-shadow: 
-            0 20px 40px rgba(124, 58, 237, 0.15),
-            0 8px 16px rgba(124, 58, 237, 0.1),
-            0 0 0 1px rgba(124, 58, 237, 0.1);
-    }
-
-    .category-card:hover::before {
-        opacity: 0.03;
-    }
-
-    .category-card:hover::after {
-        opacity: 1;
-        transform: translateX(100%) translateY(-100%) rotate(45deg);
     }
 
     .category-image-container {
-        width: 90px;
-        height: 90px;
-        margin: 0 auto 20px;
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 12px;
         border-radius: 50%;
         overflow: hidden;
-        position: relative;
-        border: 4px solid transparent;
-        background: 
-            linear-gradient(white, white) padding-box, 
-            linear-gradient(135deg, var(--primary-purple), var(--light-purple)) border-box;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 2;
-        box-shadow: 
-            0 8px 25px rgba(124, 58, 237, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        border: 3px solid rgba(124, 58, 237, 0.1);
+        transition: all 0.3s ease;
     }
 
     .category-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 50%;
-        filter: saturate(1.1) contrast(1.05);
     }
 
     .category-image-fallback {
@@ -267,902 +506,37 @@
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 32px;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    .category-card:hover .category-image-container {
-        transform: scale(1.15) rotateY(10deg);
-        box-shadow: 
-            0 15px 40px rgba(124, 58, 237, 0.25),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        border-width: 6px;
-    }
-
-    .category-card:hover .category-image {
-        transform: scale(1.1);
-        filter: saturate(1.3) contrast(1.1) brightness(1.05);
-    }
-
-    .category-card:hover .category-image-fallback {
-        transform: scale(1.1) rotate(15deg);
-        box-shadow: 
-            inset 0 1px 0 rgba(255, 255, 255, 0.3),
-            0 0 20px rgba(124, 58, 237, 0.3);
+        font-size: 22px;
     }
 
     .category-name {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin-bottom: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 6px;
         color: #1a202c;
-        position: relative;
-        z-index: 2;
-        transition: all 0.3s ease;
-        letter-spacing: -0.02em;
     }
 
     .category-count {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #64748b;
-        font-weight: 600;
-        position: relative;
-        z-index: 2;
-        transition: all 0.3s ease;
-        padding: 4px 12px;
+        font-weight: 500;
+        padding: 3px 10px;
         background: rgba(124, 58, 237, 0.08);
-        border-radius: 20px;
+        border-radius: 15px;
         display: inline-block;
     }
 
     .category-card:hover .category-name {
         color: var(--primary-purple);
-        transform: translateY(-2px);
     }
 
     .category-card:hover .category-count {
-        color: white;
         background: var(--primary-purple);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        color: white;
     }
 
-    /* Dynamic Loading Animation */
-    .category-card {
-        animation: fadeInUp 0.6s ease forwards;
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    .category-card:nth-child(1) { animation-delay: 0.1s; }
-    .category-card:nth-child(2) { animation-delay: 0.2s; }
-    .category-card:nth-child(3) { animation-delay: 0.3s; }
-    .category-card:nth-child(4) { animation-delay: 0.4s; }
-    .category-card:nth-child(5) { animation-delay: 0.5s; }
-    .category-card:nth-child(6) { animation-delay: 0.6s; }
-    .category-card:nth-child(7) { animation-delay: 0.7s; }
-
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Enhanced Navigation Arrows */
-    .categories-nav-arrows {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 5;
-        display: flex;
-        gap: 10px;
-    }
-
-    .categories-nav-arrows.left {
-        left: 30px;
-    }
-
-    .categories-nav-arrows.right {
-        right: 30px;
-    }
-
+    /* Navigation */
     .nav-arrow {
-        width: 56px;
-        height: 56px;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
-        border: 2px solid rgba(124, 58, 237, 0.15);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        backdrop-filter: blur(20px);
-        box-shadow: 
-            0 8px 25px rgba(124, 58, 237, 0.12),
-            0 4px 8px rgba(0, 0, 0, 0.02);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .nav-arrow::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, var(--primary-purple), var(--light-purple));
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        border-radius: 50%;
-    }
-
-    .nav-arrow:hover {
-        transform: scale(1.1);
-        border-color: var(--primary-purple);
-        box-shadow: 
-            0 12px 35px rgba(124, 58, 237, 0.25),
-            0 6px 12px rgba(124, 58, 237, 0.15);
-    }
-
-    .nav-arrow:hover::before {
-        opacity: 1;
-    }
-
-    .nav-arrow:active {
-        transform: scale(1.05);
-    }
-
-    .nav-arrow i {
-        font-size: 22px;
-        color: var(--primary-purple);
-        transition: all 0.3s ease;
-        position: relative;
-        z-index: 2;
-    }
-
-    .nav-arrow:hover i {
-        color: white;
-        transform: scale(1.1);
-    }
-
-    /* Enhanced Navigation Dots */
-    .categories-nav {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 25px;
-        z-index: 2;
-        position: relative;
-    }
-
-    .nav-dot {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: rgba(124, 58, 237, 0.2);
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid transparent;
-        position: relative;
-    }
-
-    .nav-dot::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: var(--primary-purple);
-        transition: all 0.3s ease;
-        transform: translate(-50%, -50%);
-    }
-
-    .nav-dot.active {
-        background: var(--primary-purple);
-        transform: scale(1.3);
-        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
-    }
-
-    .nav-dot.active::before {
-        width: 100%;
-        height: 100%;
-    }
-
-    .nav-dot:hover:not(.active) {
-        background: var(--light-purple);
-        transform: scale(1.2);
-        box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
-    }
-
-    /* Responsive Enhancements */
-    @media (max-width: 768px) {
-        .categories-section {
-            padding: 60px 0;
-        }
-        
-        .category-card {
-            min-width: 150px;
-            padding: 20px 15px;
-        }
-        
-        .category-image-container {
-            width: 70px;
-            height: 70px;
-        }
-        
-        .category-image-fallback {
-            font-size: 26px;
-        }
-        
-        .nav-arrow {
-            width: 44px;
-            height: 44px;
-        }
-        
-        .nav-arrow i {
-            font-size: 18px;
-        }
-        
-        .categories-nav-arrows.left {
-            left: 15px;
-        }
-        
-        .categories-nav-arrows.right {
-            right: 15px;
-        }
-    }
-
-    .product-card {
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        height: 100%;
-        border: 1px solid #f1f5f9;
-    }
-
-    .product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-    }
-
-    .product-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-
-    .product-info {
-        padding: 20px;
-    }
-
-    .product-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: #333;
-        height: 50px;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-    }
-
-    .product-price {
-        margin-bottom: 15px;
-    }
-
-    .current-price {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--primary-purple);
-    }
-
-    .original-price {
-        text-decoration: line-through;
-        color: #94a3b8;
-        font-size: 1rem;
-        margin-left: 10px;
-    }
-
-    .sale-badge {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: var(--orange);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        z-index: 2;
-    }
-
-    .discount-badge {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: #dc2626;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        z-index: 2;
-    }
-
-    .btn-add-cart {
-        background: var(--primary-purple);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 25px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .btn-add-cart:hover {
-        background: var(--dark-purple);
-        transform: translateY(-2px);
-        color: white;
-    }
-
-    .btn-add-wishlist {
-        background: #f1f5f9;
-        color: var(--primary-purple);
-        border: 2px solid var(--primary-purple);
-        padding: 10px 15px;
-        border-radius: 25px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-add-wishlist:hover {
-        background: var(--primary-purple);
-        color: white;
-    }
-
-    .rating-stars {
-        color: #fbbf24;
-        margin-bottom: 10px;
-    }
-
-    .special-offer-section {
-        background: linear-gradient(135deg, var(--orange), #fb923c);
-        color: white;
-        padding: 60px 0;
-        margin: 30px 0;
-    }
-
-    .offer-content h2 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-    }
-
-    .offer-content p {
-        font-size: 1.2rem;
-        margin-bottom: 30px;
-    }
-
-    .smart-watches-section {
-        background: var(--light-gray);
-        padding: 80px 0;
-    }
-
-    .power-banks-section {
-        background: #1e293b;
-        color: white;
-        padding: 80px 0;
-    }
-
-    .power-banks-section h2 {
-        font-size: 4rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-    }
-
-    .resistance-banner {
-        background: linear-gradient(135deg, var(--primary-purple), var(--dark-purple));
-        color: white;
-        padding: 50px;
-        border-radius: 20px;
-        text-align: center;
-    }
-
-    .resistance-banner h3 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-    }
-
-    .flash-sale-section {
-        background: linear-gradient(135deg, var(--primary-purple), var(--light-purple));
-        color: white;
-        padding: 80px 0;
-        margin: 50px 0;
-    }
-
-    .flash-sale-banner h2 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-    }
-
-    .countdown {
-        display: flex;
-        gap: 30px;
-        justify-content: center;
-        margin: 30px 0;
-    }
-
-    .countdown-item {
-        text-align: center;
-        background: rgba(255,255,255,0.1);
-        padding: 20px;
-        border-radius: 10px;
-        min-width: 80px;
-    }
-
-    .countdown-number {
-        display: block;
-        font-size: 2rem;
-        font-weight: 700;
-    }
-
-    .countdown-label {
-        font-size: 0.9rem;
-        margin-top: 5px;
-    }
-
-    .discount-badges {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        margin: 40px 0;
-    }
-
-    .discount-badge-btn {
-        background: var(--primary-purple);
-        color: white;
-        padding: 15px 30px;
-        border-radius: 50px;
-        font-size: 1.5rem;
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .discount-badge-btn:hover {
-        background: var(--dark-purple);
-        transform: translateY(-3px);
-        color: white;
-    }
-
-    /* Professional Banner Section */
-    .banner-section {
-        background: white;
-        margin: 0;
-        padding: 50px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    .banner-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-        position: relative;
-    }
-
-    .feature-banner {
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        border-radius: 20px;
-        padding: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        color: white;
-        min-height: 200px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .feature-banner::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-        z-index: 1;
-    }
-
-    .banner-content {
-        z-index: 2;
-        position: relative;
-    }
-
-    .banner-tag {
-        font-size: 28px;
-        font-weight: 800;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .banner-subtitle {
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        opacity: 0.9;
-    }
-
-    .banner-text {
-        font-size: 14px;
-        opacity: 0.8;
-        font-weight: 500;
-    }
-
-    .banner-image {
-        z-index: 2;
-        position: relative;
-        max-width: 200px;
-    }
-
-    .banner-image img {
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    /* Smart Watch Banners */
-    .smart-watch-banner {
-        background: linear-gradient(135deg, #1e293b, #334155);
-        border-radius: 15px;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        color: white;
-        min-height: 140px;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .smart-watch-banner:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    .smart-watch-banner::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
-        border-radius: 50%;
-        transform: translate(20px, -20px);
-    }
-
-    .watch-content {
-        z-index: 2;
-        position: relative;
-    }
-
-    .watch-brand {
-        font-size: 18px;
-        font-weight: 700;
-        color: #60a5fa;
-        margin-bottom: 4px;
-    }
-
-    .watch-model {
-        font-size: 13px;
-        opacity: 0.8;
-        margin-bottom: 10px;
-    }
-
-    .watch-price {
-        display: flex;
-        align-items: baseline;
-        gap: 5px;
-    }
-
-    .price-from {
-        font-size: 12px;
-        opacity: 0.7;
-    }
-
-    .price-amount {
-        font-size: 24px;
-        font-weight: 800;
-        color: #fbbf24;
-    }
-
-    .price-amount small {
-        font-size: 16px;
-    }
-
-    .watch-image {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        z-index: 1;
-        max-width: 60px;
-        opacity: 0.7;
-    }
-
-    /* Discount Section */
-    .discount-section {
-        background: white;
-        padding: 50px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    .discount-title {
-        font-size: 2rem;
-        font-weight: 800;
-        text-align: center;
-        color: #1e293b;
-        margin: 0;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    /* Modern Sale Banners */
-    .modern-sale-banners {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-    }
-
-    .modern-sale-banner {
-        border-radius: 20px;
-        padding: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        color: white;
-        min-height: 150px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .modern-sale-banner::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 70%);
-        z-index: 1;
-    }
-
-    .banner-content-modern {
-        z-index: 2;
-        position: relative;
-    }
-
-    .banner-title {
-        font-size: 24px;
-        font-weight: 800;
-        margin-bottom: 8px;
-    }
-
-    .banner-subtitle {
-        font-size: 16px;
-        margin-bottom: 15px;
-        opacity: 0.9;
-    }
-
-    .btn-banner {
-        background: rgba(255,255,255,0.2);
-        color: white;
-        border: 2px solid rgba(255,255,255,0.3);
-        padding: 8px 20px;
-        border-radius: 25px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .btn-banner:hover {
-        background: white;
-        color: #333;
-        border-color: white;
-        transform: translateY(-2px);
-    }
-
-    .banner-image-modern {
-        z-index: 2;
-        position: relative;
-        max-width: 120px;
-    }
-
-    .social-icons {
-        margin-top: 30px;
-    }
-
-    .social-icons i {
-        font-size: 1.5rem;
-        margin: 0 10px;
-        color: white;
-    }
-
-    /* Enhanced Trending Products Section */
-    .trending-products-section {
-        background: white;
-        padding: 50px 0;
-        margin: 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    .trending-products-container {
-        position: relative;
-        overflow: hidden;
-        padding: 0 60px;
-    }
-
-    .trending-products-row {
-        display: flex;
-        gap: 20px;
-        overflow-x: auto;
-        scroll-behavior: smooth;
-        padding: 10px 0;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .trending-products-row::-webkit-scrollbar {
-        display: none;
-    }
-
-    .trending-product-card {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        border: 1px solid #f1f5f9;
-        min-width: 220px;
-        flex-shrink: 0;
-        text-align: center;
-        position: relative;
-        transition: all 0.3s ease;
-    }
-
-    .trending-product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 30px rgba(124, 58, 237, 0.15);
-        border-color: var(--primary-purple);
-    }
-
-    .product-wishlist {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        width: 35px;
-        height: 35px;
-        background: #f8fafc;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .product-wishlist:hover {
-        background: #fecaca;
-        transform: scale(1.1);
-    }
-
-    .wishlist-icon {
-        color: #6b7280;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .product-wishlist:hover .wishlist-icon {
-        color: #dc2626;
-    }
-
-    .product-wishlist.active {
-        background: #fecaca;
-    }
-
-    .product-wishlist.active .wishlist-icon {
-        color: #dc2626;
-    }
-
-    .product-brand {
-        font-size: 14px;
-        color: #6b7280;
-        margin-bottom: 5px;
-        font-weight: 500;
-    }
-
-    .product-name {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 15px;
-        line-height: 1.3;
-    }
-
-    .product-image-container {
-        margin: 15px 0 20px 0;
-        position: relative;
-    }
-
-    .trending-product-image {
-        width: 100%;
-        height: 120px;
-        object-fit: contain;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .trending-product-card:hover .trending-product-image {
-        transform: scale(1.05);
-    }
-
-    .product-pricing {
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    .current-price {
-        font-size: 18px;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .original-price {
-        font-size: 14px;
-        color: #ef4444;
-        text-decoration: line-through;
-        font-weight: 500;
-    }
-
-    .buy-now-btn {
-        background: #7c3aed;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        width: 100%;
-    }
-
-    .buy-now-btn:hover {
-        background: #6d28d9;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
-    }
-
-    /* Trending Navigation Arrows */
-    .trending-nav-arrow {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -1180,87 +554,824 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-    .trending-nav-arrow:hover {
-        background: #7c3aed;
-        border-color: #7c3aed;
-        transform: translateY(-50%) scale(1.1);
-        box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+    .nav-arrow:hover {
+        background: var(--primary-purple);
+        border-color: var(--primary-purple);
+        transform: translateY(-50%) scale(1.05);
     }
 
-    .trending-nav-arrow i {
+    .nav-arrow i {
         font-size: 18px;
         color: #6b7280;
-        transition: all 0.3s ease;
+        transition: color 0.3s ease;
     }
 
-    .trending-nav-arrow:hover i {
+    .nav-arrow:hover i {
         color: white;
     }
 
-    .trending-nav-left {
-        left: 10px;
+    .nav-arrow.left {
+        left: 20px;
     }
 
-    .trending-nav-right {
-        right: 10px;
+    .nav-arrow.right {
+        right: 20px;
     }
 
+    /* Product Cards */
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid #f1f5f9;
+    }
+
+    .product-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(124, 58, 237, 0.12);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .product-info {
+        padding: 16px;
+    }
+
+    .product-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        height: 45px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .product-price {
+        margin-bottom: 12px;
+    }
+
+    .current-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-purple);
+    }
+
+    .original-price {
+        text-decoration: line-through;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-left: 8px;
+    }
+
+    .btn-add-cart {
+        background: var(--primary-purple);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .btn-add-cart:hover {
+        background: var(--dark-purple);
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .btn-add-wishlist {
+        background: #f1f5f9;
+        color: var(--primary-purple);
+        border: 2px solid var(--primary-purple);
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-add-wishlist:hover {
+        background: var(--primary-purple);
+        color: white;
+    }
+
+    .rating-stars {
+        color: #fbbf24;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    /* Best Selling Products Section - Compact Design */
+    .best-selling-section {
+        padding: 60px 0;
+        background: #f8fafc;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .section-header .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 10px;
+    }
+
+    .section-header .section-subtitle {
+        font-size: 1.1rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .product-item {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .product-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-item:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .badge {
+        position: absolute;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 10;
+    }
+
+    .badge.best-seller {
+        top: 12px;
+        left: 12px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: white;
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+
+    .badge.discount {
+        top: 12px;
+        right: 12px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .product-overlay {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        opacity: 0;
+        transform: translateX(20px);
+        transition: all 0.3s ease;
+    }
+
+    .product-item:hover .product-overlay {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .overlay-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: white;
+        border: none;
+        color: var(--primary-purple);
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .overlay-btn:hover {
+        background: var(--primary-purple);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .overlay-btn.wishlist-btn.active {
+        background: #fecaca;
+        color: #dc2626;
+    }
+
+    .product-details {
+        padding: 20px;
+    }
+
+    .product-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 8px;
+        line-height: 1.4;
+        height: 2.8em;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .stars {
+        color: #fbbf24;
+        font-size: 0.9rem;
+    }
+
+    .review-count {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .product-price {
+        margin-bottom: 15px;
+    }
+
+    .current-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary-purple);
+    }
+
+    .original-price {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        text-decoration: line-through;
+        margin-left: 8px;
+    }
+
+    .add-to-cart-btn {
+        width: 100%;
+        background: var(--primary-purple);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .add-to-cart-btn:hover {
+        background: var(--dark-purple);
+        transform: translateY(-2px);
+    }
+
+    .view-more {
+        text-align: center;
+    }
+
+    .view-more-btn {
+        display: inline-block;
+        background: transparent;
+        color: var(--primary-purple);
+        border: 2px solid var(--primary-purple);
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .view-more-btn:hover {
+        background: var(--primary-purple);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Beautiful Banner Section */
+    .beautiful-banner-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+        position: relative;
+        padding: 80px 0;
+        overflow: hidden;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+    }
+
+    .banner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+            linear-gradient(45deg, rgba(0, 0, 0, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .banner-content {
+        position: relative;
+        z-index: 3;
+        color: white;
+        padding: 40px 0;
+    }
+
+    .banner-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        animation: pulse 2s infinite;
+    }
+
+    .banner-badge i {
+        color: #ff6b6b;
+        animation: fire 1.5s infinite;
+    }
+
+    .banner-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .gradient-text {
+        background: linear-gradient(45deg, #ffd700, #ffed4e, #fff200);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: none;
+    }
+
+    .banner-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        opacity: 0.95;
+        line-height: 1.6;
+        font-weight: 400;
+    }
+
+    .banner-features {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 10px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .feature-item i {
+        color: #4ade80;
+        font-size: 1rem;
+    }
+
+    .banner-actions {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+
+    .btn-banner-primary {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-banner-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .btn-banner-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-banner-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(255, 107, 107, 0.6);
+        color: white;
+    }
+
+    .btn-banner-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        padding: 13px 28px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-banner-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.8);
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    .countdown-timer {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(15px);
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .timer-item {
+        text-align: center;
+        min-width: 60px;
+    }
+
+    .timer-number {
+        display: block;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #ffd700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .timer-label {
+        display: block;
+        font-size: 0.8rem;
+        opacity: 0.8;
+        margin-top: 5px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .timer-separator {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffd700;
+        margin-top: -10px;
+    }
+
+    .banner-image-container {
+        position: relative;
+        text-align: center;
+        padding: 40px 0;
+    }
+
+    .floating-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .shape-1 {
+        width: 80px;
+        height: 80px;
+        top: 10%;
+        left: 10%;
+        animation-delay: -2s;
+    }
+
+    .shape-2 {
+        width: 60px;
+        height: 60px;
+        top: 60%;
+        right: 15%;
+        animation-delay: -4s;
+    }
+
+    .shape-3 {
+        width: 100px;
+        height: 100px;
+        bottom: 20%;
+        left: 20%;
+        animation-delay: -6s;
+    }
+
+    .shape-4 {
+        width: 40px;
+        height: 40px;
+        top: 30%;
+        right: 30%;
+        animation-delay: -8s;
+    }
+
+    .banner-image {
+        position: relative;
+        z-index: 2;
+        display: inline-block;
+    }
+
+    .banner-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .banner-image:hover img {
+        transform: scale(1.05);
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+    }
+
+    .price-tag {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        z-index: 3;
+        animation: bounce 2s infinite;
+    }
+
+    .price-amount {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #ffd700;
+    }
+
+    .price-original {
+        display: block;
+        font-size: 0.9rem;
+        text-decoration: line-through;
+        opacity: 0.7;
+        margin-top: 5px;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    @keyframes fire {
+        0%, 100% { transform: rotate(-5deg); }
+        50% { transform: rotate(5deg); }
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    /* Banner Sections */
+    .banner-section {
+        background: white;
+        padding: 40px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .feature-banner {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border-radius: 16px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: white;
+        min-height: 160px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .banner-content h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .banner-content p {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+
+    .banner-image img {
+        max-width: 180px;
+        border-radius: 8px;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
         .hero-content h1 {
             font-size: 2rem;
         }
         
         .hero-section {
-            padding: 40px 0 30px 0;
-            margin-bottom: 15px;
-        }
-        
-        .services-section {
-            padding: 20px 0;
-            margin-top: -10px;
-        }
-        
-        .categories-section {
+            min-height: 45vh;
             padding: 30px 0;
-            margin-top: 5px;
         }
         
-        .categories-container {
+        .hero-container {
             padding: 15px 0;
         }
         
-        .categories-nav {
-            margin-top: 20px;
+        .hero-content {
+            padding-left: 25px;
+            margin-left: 10px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            padding-right: 15px;
+            border-left: 3px solid rgba(251, 191, 36, 0.4);
         }
         
-        .section-title {
-            margin-bottom: 20px;
+        .hero-content .subtitle {
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
         }
         
-        #trending {
-            padding: 25px 0;
+        .hero-stats {
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
         
-        .banner-section {
-            margin: 15px 0;
+        .hero-actions {
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
         }
         
-        .banner-container {
-            padding: 0 15px;
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            min-width: 120px;
+        }
+        
+        .hero-image {
+            max-width: 350px;
+        }
+        
+        .services-section {
+            padding: 30px 0;
+        }
+        
+        .categories-section {
+            padding: 40px 0;
+        }
+        
+        .category-card {
+            min-width: 150px;
+            padding: 15px;
+        }
+        
+        .category-image-container {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .category-image-fallback {
+            font-size: 20px;
+        }
+        
+        .nav-arrow {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .nav-arrow i {
+            font-size: 16px;
+        }
+        
+        .nav-arrow.left {
+            left: 10px;
+        }
+        
+        .nav-arrow.right {
+            right: 10px;
         }
         
         .section-title {
             font-size: 1.5rem;
             margin-bottom: 25px;
-        }
-        
-        .section-title::after {
-            width: 60px;
-            height: 2px;
-        }
-        
-        .discount-section {
-            padding: 20px 0;
         }
         
         .service-card {
@@ -1269,8 +1380,8 @@
         }
         
         .service-icon {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             font-size: 18px;
         }
         
@@ -1282,564 +1393,332 @@
             font-size: 12px;
         }
         
-        .countdown {
-            gap: 15px;
-        }
-        
-        .countdown-item {
-            min-width: 60px;
-            padding: 15px;
-        }
-        
-        .countdown-number {
-            font-size: 1.5rem;
-        }
-        
-        .sale-banners {
-            grid-template-columns: 1fr;
-        }
-        
-        .discount-badges {
-            flex-wrap: wrap;
-        }
-
-        .category-card {
-            min-width: 140px;
-        }
-        
-        .category-image-container {
-            width: 60px;
-            height: 60px;
-        }
-        
-        .category-image-fallback {
-            font-size: 24px;
-        }
-        
-        /* Banner Mobile Responsive */
         .feature-banner {
             flex-direction: column;
             text-align: center;
-            min-height: 180px;
-            padding: 25px;
+            padding: 20px;
         }
         
-        .banner-tag {
-            font-size: 24px;
+        .banner-content h3 {
+            font-size: 1.5rem;
         }
         
-        .banner-image {
+        .banner-image img {
             max-width: 150px;
             margin-top: 15px;
         }
         
-        .smart-watch-banner {
-            min-height: 120px;
-            padding: 15px;
+        /* Best Selling Products Responsive */
+        .best-selling-section {
+            padding: 40px 0;
         }
         
-        .watch-brand {
-            font-size: 16px;
-        }
-        
-        .price-amount {
-            font-size: 20px;
-        }
-        
-        .watch-image {
-            max-width: 50px;
-        }
-        
-        .discount-title {
-            font-size: 1.5rem;
-        }
-        
-        .modern-sale-banners {
-            grid-template-columns: 1fr;
-        }
-        
-        .modern-sale-banner {
-            flex-direction: column;
-            text-align: center;
-            min-height: 130px;
-            padding: 20px;
-        }
-        
-        .banner-title {
-            font-size: 20px;
-        }
-        
-        .banner-image-modern {
-            margin-top: 10px;
-            max-width: 100px;
-        }
-        
-        /* Trending Products Mobile Responsive */
-        .trending-products-section {
-            padding: 30px 0;
-        }
-        
-        .trending-products-container {
-            padding: 0 50px;
-        }
-        
-        .trending-product-card {
-            min-width: 180px;
-            padding: 15px;
-        }
-        
-        .trending-product-image {
-            height: 100px;
-        }
-        
-        .product-name {
-            font-size: 14px;
-        }
-        
-        .current-price {
-            font-size: 16px;
-        }
-        
-        .original-price {
-            font-size: 12px;
-        }
-        
-        .buy-now-btn {
-            padding: 8px 15px;
-            font-size: 11px;
-        }
-        
-        .trending-nav-arrow {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .trending-nav-arrow i {
-            font-size: 16px;
-        }
-        
-        .trending-nav-left {
-            left: 5px;
-        }
-        
-        .trending-nav-right {
-            right: 5px;
-        }
-        
-        /* Mobile Arrow Styles */
-        .categories-nav-arrows.left {
-            left: 10px;
-        }
-        
-        .categories-nav-arrows.right {
-            right: 10px;
-        }
-        
-        .nav-arrow {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .nav-arrow i {
-            font-size: 16px;
-        }
-    }
-
-    /* Additional Sections Styles */
-    
-    /* Discounts Products Section */
-    .discounts-products-section, .smart-watches-section, .top-rated-products-section, .shop-by-discounts-section {
-        background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    .discount-product-card, .smart-watch-product-card, .top-rated-product-card {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        border: 1px solid #f1f5f9;
-        text-align: center;
-        position: relative;
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-
-    .discount-product-card:hover, .smart-watch-product-card:hover, .top-rated-product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 30px rgba(124, 58, 237, 0.15);
-        border-color: var(--primary-purple);
-    }
-
-    .discount-product-card .product-image, .smart-watch-product-card .product-image, .top-rated-product-card .product-image {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-
-    .discount-product-card .product-brand, .smart-watch-product-card .product-brand, .top-rated-product-card .product-brand {
-        font-size: 14px;
-        color: #6b7280;
-        margin-bottom: 5px;
-        font-weight: 500;
-    }
-
-    .discount-product-card .product-name, .smart-watch-product-card .product-name, .top-rated-product-card .product-name {
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: #1f2937;
-    }
-
-    .discount-product-card .product-rating, .smart-watch-product-card .product-rating, .top-rated-product-card .product-rating {
-        margin-bottom: 10px;
-    }
-
-    .discount-product-card .product-rating i, .smart-watch-product-card .product-rating i, .top-rated-product-card .product-rating i {
-        color: #fbbf24;
-        font-size: 14px;
-    }
-
-    .discount-product-card .current-price, .smart-watch-product-card .current-price, .top-rated-product-card .current-price {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--primary-purple);
-    }
-
-    .discount-product-card .original-price, .smart-watch-product-card .original-price, .top-rated-product-card .original-price {
-        font-size: 14px;
-        color: #9ca3af;
-        text-decoration: line-through;
-        margin-left: 8px;
-    }
-
-    .discount-product-card .buy-now-btn, .smart-watch-product-card .buy-now-btn, .top-rated-product-card .buy-now-btn {
-        background: var(--primary-purple);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-        width: 100%;
-    }
-
-    .discount-product-card .buy-now-btn:hover, .smart-watch-product-card .buy-now-btn:hover, .top-rated-product-card .buy-now-btn:hover {
-        background: var(--dark-purple);
-        transform: translateY(-2px);
-    }
-
-    /* Resistance Banner Section */
-    .resistance-banner-section {
-        background: linear-gradient(135deg, #8b5a2b, #a0522d);
-        color: white;
-        padding: 50px 0;
-    }
-
-    .resistance-banner {
-        text-align: center;
-        position: relative;
-    }
-
-    .resistance-banner .banner-title {
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-    }
-
-    .resistance-banner .banner-subtitle {
-        font-size: 1.5rem;
-        margin-bottom: 20px;
-        opacity: 0.9;
-    }
-
-    .resistance-product {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* Power Banks Section */
-    .power-banks-section {
-        background: linear-gradient(135deg, #1e293b, #334155);
-        color: white;
-        padding: 50px 0;
-    }
-
-    .power-bank-banner {
-        text-align: center;
-    }
-
-    .power-bank-banner .banner-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 10px;
-        color: #60a5fa;
-    }
-
-    .power-bank-banner .banner-subtitle {
-        font-size: 1.2rem;
-        margin-bottom: 20px;
-        opacity: 0.9;
-    }
-
-    .power-bank-product-card {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 15px;
-        text-align: center;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-    }
-
-    .power-bank-product-card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.15);
-    }
-
-    .power-bank-product-card .product-image {
-        width: 100%;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-
-    .power-bank-product-card .product-brand {
-        color: #60a5fa;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .power-bank-product-card .product-name {
-        color: white;
-        font-size: 14px;
-        margin-bottom: 8px;
-    }
-
-    .power-bank-product-card .current-price {
-        color: #fbbf24;
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    .power-bank-product-card .original-price {
-        color: #9ca3af;
-        font-size: 12px;
-        text-decoration: line-through;
-    }
-
-    .power-bank-product-card .buy-now-btn {
-        background: var(--primary-purple);
-        padding: 8px 15px;
-        font-size: 10px;
-    }
-
-    /* Flash Sale Section */
-    .flash-sale-section {
-        background: linear-gradient(135deg, var(--primary-purple), var(--light-purple));
-        color: white;
-        padding: 50px 0;
-    }
-
-    .flash-sale-banner {
-        text-align: center;
-        position: relative;
-    }
-
-    .flash-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        background: linear-gradient(45deg, #fff, #fbbf24);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .flash-subtitle {
-        font-size: 1.2rem;
-        margin-bottom: 20px;
-        opacity: 0.9;
-    }
-
-    .flash-website {
-        font-size: 1rem;
-        margin: 20px 0;
-        font-weight: 600;
-    }
-
-    .flash-sale-product {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 15px;
-        text-align: center;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .flash-sale-product .product-name {
-        color: white;
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-
-    .flash-sale-product .product-price {
-        color: #fbbf24;
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    /* Shop by Discounts Section */
-    .discount-icons {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    .discount-icon {
-        font-size: 2rem;
-        margin: 0 15px;
-        animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
-        }
-        40% {
-            transform: translateY(-10px);
-        }
-        60% {
-            transform: translateY(-5px);
-        }
-    }
-
-    /* Sale Banners Section */
-    .sale-banners-section {
-        background: white;
-        padding: 50px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    .sale-banner {
-        border-radius: 20px;
-        padding: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-height: 200px;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .sale-banner-1 {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: white;
-    }
-
-    .sale-banner-2 {
-        background: linear-gradient(135deg, #3b82f6, #1e40af);
-        color: white;
-    }
-
-    .sale-banner:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    .sale-banner .banner-title {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-    }
-
-    .sale-banner .banner-subtitle {
-        font-size: 1.1rem;
-        margin-bottom: 20px;
-        opacity: 0.9;
-    }
-
-    .sale-banner .btn {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        padding: 10px 25px;
-        border-radius: 25px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .sale-banner .btn:hover {
-        background: white;
-        color: #333;
-        border-color: white;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-        .resistance-banner .banner-title {
+        .section-header .section-title {
             font-size: 2rem;
         }
         
-        .power-bank-banner .banner-title {
-            font-size: 1.8rem;
+        .section-header .section-subtitle {
+            font-size: 1rem;
         }
         
-        .flash-title {
-            font-size: 1.8rem;
+        .products-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
         
-        .sale-banner {
-            flex-direction: column;
+        .product-image-wrapper {
+            height: 180px;
+        }
+        
+        .product-details {
+            padding: 15px;
+        }
+        
+        .product-name {
+            font-size: 1rem;
+            height: 2.4em;
+        }
+        
+        .add-to-cart-btn {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+        }
+        
+        .overlay-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 0.7rem;
+        }
+        
+        .product-overlay {
+            opacity: 1;
+            transform: translateX(0);
+            flex-direction: row;
+            gap: 6px;
+        }
+        
+        /* Beautiful Banner Responsive */
+        .beautiful-banner-section {
+            padding: 60px 0;
+            min-height: 500px;
+        }
+        
+        .banner-title {
+            font-size: 2.5rem;
+        }
+        
+        .banner-subtitle {
+            font-size: 1rem;
+        }
+        
+        .banner-features {
+            gap: 15px;
+        }
+        
+        .feature-item {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-banner-primary,
+        .btn-banner-secondary {
+            padding: 12px 24px;
+            font-size: 1rem;
+        }
+        
+        .countdown-timer {
+            gap: 10px;
+            padding: 15px;
+        }
+        
+        .timer-item {
+            min-width: 50px;
+        }
+        
+        .timer-number {
+            font-size: 1.4rem;
+        }
+        
+        .timer-label {
+            font-size: 0.7rem;
+        }
+        
+        .timer-separator {
+            font-size: 1.2rem;
+        }
+        
+        .price-tag {
+            padding: 12px 16px;
+        }
+        
+        .price-amount {
+            font-size: 1.2rem;
+        }
+        
+        .price-original {
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-content h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .hero-content .subtitle {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-section {
+            min-height: 40vh;
+            padding: 25px 0;
+        }
+        
+        .hero-content {
+            padding-left: 15px;
+            margin-left: 5px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            padding-right: 12px;
+            border-left: 2px solid rgba(251, 191, 36, 0.5);
+        }
+        
+        .hero-stats {
+            gap: 1rem;
+            justify-content: center;
             text-align: center;
-            padding: 20px;
         }
         
-        .sale-banner .banner-image {
-            margin-top: 15px;
-            max-width: 150px;
-        }
-        
-        .discount-icon {
+        .hero-stat-number {
             font-size: 1.5rem;
-            margin: 0 10px;
+        }
+        
+        .hero-stat-label {
+            font-size: 0.8rem;
+        }
+        
+        .hero-actions {
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            min-width: 110px;
+        }
+        
+        .hero-image {
+            max-width: 280px;
+        }
+        
+        .category-card {
+            min-width: 120px;
+            padding: 10px;
+        }
+        
+        .category-image-container {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .category-image-fallback {
+            font-size: 18px;
+        }
+        
+        .product-image {
+            height: 150px;
+        }
+        
+        .product-info {
+            padding: 15px;
+        }
+        
+        .product-title {
+            font-size: 1rem;
+            height: 40px;
+        }
+        
+        .current-price {
+            font-size: 1.1rem;
+        }
+        
+        .floating-element {
+            display: none;
         }
     }
 </style>
 @endsection
 
 @section('content')
-<!-- Hero Section -->
+<!-- Enhanced Hero Section -->
 @if($heroContent)
 <section class="hero-section">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <div class="hero-content">
-                        <h1>{{ $heroContent->title }}</h1>
-                        <p>{{ $heroContent->subtitle }}</p>
-                        @if($heroContent->button_text && $heroContent->button_url)
-                            <a href="{{ $heroContent->button_url }}" class="btn btn-light btn-lg px-4">{{ $heroContent->button_text }}</a>
-                        @endif
+    <div class="hero-floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+    
+    <div class="container-fluid hero-container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1>Welcome to <span class="highlight">RUBISTA</span></h1>
+                    <p class="subtitle">
+                        Your Electronics Store - <span class="highlight">Quality Products</span>, Unbeatable Prices
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <a href="#featured" class="btn-hero-primary">
+                            <i class="fas fa-shopping-bag"></i>
+                            Shop Now
+                        </a>
+                        <a href="#categories" class="btn-hero-secondary">
+                            <i class="fas fa-th-large"></i>
+                            Browse Categories
+                        </a>
+                    </div>
+                    
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <span class="hero-stat-number">10K+</span>
+                            <span class="hero-stat-label">Products</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-number">50K+</span>
+                            <span class="hero-stat-label">Happy Customers</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-number">4.9</span>
+                            <span class="hero-stat-label">Rating</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image-container">
+                    <div class="hero-image-bg"></div>
                     <img src="{{ $heroContent->image_url ?? 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop' }}" 
-                         class="img-fluid rounded" alt="{{ $heroContent->title }}">
+                         class="hero-image" alt="Rubista Electronics">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@else
+<!-- Default Hero Section -->
+<section class="hero-section">
+    <div class="hero-floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+    
+    <div class="container-fluid hero-container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1>Welcome to <span class="highlight">RUBISTA</span></h1>
+                    <p class="subtitle">
+                        Your Premier E-commerce Destination for <span class="highlight">Electronics & More</span>
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <a href="#featured" class="btn-hero-primary">
+                            <i class="fas fa-shopping-bag"></i>
+                            Shop Now
+                        </a>
+                        <a href="#categories" class="btn-hero-secondary">
+                            <i class="fas fa-th-large"></i>
+                            Browse Categories
+                        </a>
+                    </div>
+                    
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <span class="hero-stat-number">10K+</span>
+                            <span class="hero-stat-label">Products</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-number">50K+</span>
+                            <span class="hero-stat-label">Happy Customers</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-number">4.9</span>
+                            <span class="hero-stat-label">Rating</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image-container">
+                    <div class="hero-image-bg"></div>
+                    <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop" 
+                         class="hero-image" alt="Rubista Electronics">
                 </div>
             </div>
         </div>
@@ -1851,46 +1730,37 @@
 @if($serviceContent && $serviceContent->count() > 0)
 <section class="services-section">
     <div class="container-fluid">
-        <div class="banner-container">
-            <div class="row">
-                @foreach($serviceContent as $service)
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="{{ $service->extra_data['icon'] ?? 'fas fa-star' }}"></i>
-                        </div>
-                        <div class="service-content">
-                            <h5>{{ $service->title }}</h5>
-                            <p>{{ $service->subtitle }}</p>
-                        </div>
+        <div class="row">
+            @foreach($serviceContent as $service)
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="{{ $service->extra_data['icon'] ?? 'fas fa-star' }}"></i>
+                    </div>
+                    <div class="service-content">
+                        <h5>{{ $service->title }}</h5>
+                        <p>{{ $service->subtitle }}</p>
                     </div>
                 </div>
-                @endforeach
             </div>
+            @endforeach
         </div>
     </div>
 </section>
 @endif
 
-<!-- Enhanced Categories Section -->
-<section class="categories-section position-relative">
+<!-- Categories Section -->
+<section class="categories-section">
     <div class="container-fluid">
-        <div class="banner-container">
-            <h2 class="section-title">- CATEGORIES -</h2>
-            <div class="categories-container">
-                <!-- Left Navigation Arrow -->
-                <div class="categories-nav-arrows left">
-                    <div class="nav-arrow" id="prevArrow">
-                        <i class="fas fa-chevron-left"></i>
-                    </div>
-                </div>
-                
-                <!-- Right Navigation Arrow -->
-                <div class="categories-nav-arrows right">
-                    <div class="nav-arrow" id="nextArrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
+        <h2 class="section-title">CATEGORIES</h2>
+        <div class="categories-container">
+            <!-- Navigation Arrows -->
+            <div class="nav-arrow left" id="prevArrow">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="nav-arrow right" id="nextArrow">
+                <i class="fas fa-chevron-right"></i>
+            </div>
             
             <div class="categories-wrapper" id="categoriesWrapper">
                 @foreach($categories as $category)
@@ -1919,6 +1789,7 @@
                     </div>
                 </a>
                 @endforeach
+                
                 <!-- Duplicate for seamless loop -->
                 @foreach($categories as $category)
                 <a href="{{ route('frontend.category.products', $category->id) }}" class="text-decoration-none">
@@ -1948,379 +1819,232 @@
                 @endforeach
             </div>
         </div>
-        <div class="categories-nav">
-            <div class="nav-dot active"></div>
-            <div class="nav-dot"></div>
-            <div class="nav-dot"></div>
-        </div>
-        </div>
     </div>
 </section>
 
-<!-- Trending Products Section -->
-<section id="trending" class="trending-products-section">
+<!-- Featured Products Section -->
+<section class="py-4 bg-light">
     <div class="container-fluid">
-        <div class="banner-container">
-            <h2 class="section-title">TRENDING PRODUCTS</h2>
-            <div class="trending-products-container">
-                <div class="trending-products-row">
-                    @foreach($trendingProducts->take(5) as $product)
-                    <div class="trending-product-card">
-                        <div class="product-wishlist">
-                            <i class="far fa-heart wishlist-icon"></i>
-                        </div>
-                        <div class="product-brand">Airdopes</div>
-                        <div class="product-name">boAt Airdopes 100</div>
-                        <div class="product-image-container">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=150&fit=crop" 
-                                 class="trending-product-image" alt="{{ $product->name }}">
-                        </div>
-                        <div class="product-pricing">
-                            <span class="current-price">₹1,099</span>
-                            <span class="original-price">₹3,490</span>
-                        </div>
-                        <button class="buy-now-btn">BUY NOW</button>
+        <h2 class="section-title">FEATURED PRODUCTS</h2>
+        <div class="row">
+            @foreach($trendingProducts->take(4) as $product)
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="product-card">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300&h=200&fit=crop" 
+                             class="product-image" alt="{{ $product->name }}">
                     </div>
-                    @endforeach
-                </div>
-                
-                <!-- Navigation Arrows -->
-                <div class="trending-nav-arrow trending-nav-left">
-                    <i class="fas fa-chevron-left"></i>
-                </div>
-                <div class="trending-nav-arrow trending-nav-right">
-                    <i class="fas fa-chevron-right"></i>
+                    <div class="product-info">
+                        <h6 class="product-title">{{ $product->name }}</h6>
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="product-price">
+                            <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-add-cart flex-fill" data-product-id="{{ $product->id }}">
+                                <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                            </button>
+                            <button class="btn-add-wishlist" data-product-id="{{ $product->id }}">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            @endforeach
         </div>
     </div>
 </section>
 
-<!-- Special Offer Section -->
+<!-- Special Offers Section -->
 @if($offerContent && $offerContent->count() > 0)
     @foreach($offerContent as $offer)
-    <section class="special-offer-section">
+    <section class="banner-section">
         <div class="container-fluid">
-            <div class="banner-container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6">
-                        <div class="offer-content">
-                            <h2>{{ $offer->title }}</h2>
-                            <p>{{ $offer->subtitle }}</p>
-                            @if($offer->button_text && $offer->button_url)
-                                <a href="{{ $offer->button_url }}" class="btn btn-light btn-lg px-4">{{ $offer->button_text }}</a>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        @if($offer->image_url)
-                            <img src="{{ $offer->image_url }}" class="img-fluid rounded" alt="{{ $offer->title }}">
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    @endforeach
-@endif
-
-<!-- Flash Sale Section -->
-@if($featureContent && $featureContent->count() > 0)
-    @foreach($featureContent as $feature)
-    <section class="flash-sale-section">
-        <div class="container-fluid">
-            <div class="banner-container">
-                <div class="row align-items-center">
-                    <div class="col-lg-2 col-md-3 col-6 mb-4">
-                        @if($feature->image_url)
-                        <div class="product-card">
-                            <img src="{{ $feature->image_url }}" 
-                                 class="product-image" alt="{{ $feature->title }}">
-                            <div class="product-info text-center">
-                                <h6 class="product-title">{{ $feature->title }}</h6>
-                                <small class="text-muted">{{ $feature->button_text ?? 'BUY NOW' }}</small>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-                    <div class="col-lg-8 mb-4">
-                        <div class="text-center">
-                            <div class="flash-sale-banner">
-                                <h2>{{ $feature->title }}</h2>
-                                <p class="lead">{{ $feature->subtitle }}</p>
-                                @if(isset($feature->extra_data['countdown_hours']))
-                                <div class="countdown">
-                                    <div class="countdown-item">
-                                        <span class="countdown-number">{{ $feature->extra_data['countdown_hours'] }}</span>
-                                        <span class="countdown-label">HOURS</span>
-                                    </div>
-                                    <div class="countdown-item">
-                                        <span class="countdown-number">{{ $feature->extra_data['countdown_minutes'] }}</span>
-                                        <span class="countdown-label">MINS</span>
-                                    </div>
-                                    <div class="countdown-item">
-                                        <span class="countdown-number">{{ $feature->extra_data['countdown_seconds'] }}</span>
-                                        <span class="countdown-label">SECS</span>
-                                    </div>
-                                </div>
-                                @endif
-                                <p class="mt-4">www.rubista.com</p>
-                                <div class="social-icons">
-                                    <i class="fab fa-facebook"></i>
-                                    <i class="fab fa-twitter"></i>
-                                    <i class="fab fa-instagram"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-3 col-6 mb-4">
-                        @if($feature->image_url)
-                        <div class="product-card">
-                            <img src="{{ $feature->image_url }}" 
-                                 class="product-image" alt="{{ $feature->title }}">
-                            <div class="product-info text-center">
-                                <h6 class="product-title">{{ $feature->title }}</h6>
-                                <small class="text-muted">{{ $feature->button_text ?? 'BUY NOW' }}</small>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    @endforeach
-@endif
-
-<!-- Professional Banner Section -->
-<section class="banner-section py-4">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <div class="row g-4">
-                <!-- Main Feature Banner -->
+            <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <div class="feature-banner shine-banner">
-                        <div class="banner-content">
-                            <div class="banner-tag">SHINE ON</div>
-                            <div class="banner-subtitle">WHEREVER YOU GO</div>
-                            <div class="banner-text">Compact size | Stylish Chrome finish</div>
-                        </div>
+                    <div class="banner-content">
+                        <h3>{{ $offer->title }}</h3>
+                        <p>{{ $offer->subtitle }}</p>
+                        @if($offer->button_text && $offer->button_url)
+                            <a href="{{ $offer->button_url }}" class="btn btn-primary btn-lg">{{ $offer->button_text }}</a>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @if($offer->image_url)
                         <div class="banner-image">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=300&fit=crop" alt="Earbuds" class="img-fluid">
+                            <img src="{{ $offer->image_url }}" class="img-fluid" alt="{{ $offer->title }}">
                         </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
+    @endforeach
+@endif
+
+<!-- Best Selling Products Section -->
+<section class="best-selling-section">
+    <div class="container-fluid">
+        <div class="section-header">
+            <h2 class="section-title">Best Sellers</h2>
+            <p class="section-subtitle">Top products loved by our customers</p>
+        </div>
+        
+        <div class="products-grid">
+            @foreach($trendingProducts->take(8) as $index => $product)
+            <div class="product-item">
+                <div class="product-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300&h=250&fit=crop" 
+                         class="product-image" alt="{{ $product->name }}">
+                    
+                    @if($index < 3)
+                    <div class="badge best-seller">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    @endif
+                    
+                    @if($product->price > 5000)
+                    <div class="badge discount">
+                        {{ round((($product->price - 4000) / $product->price) * 100) }}% OFF
+                    </div>
+                    @endif
+                    
+                    <div class="product-overlay">
+                        <button class="overlay-btn wishlist-btn" data-product-id="{{ $product->id }}">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button class="overlay-btn quick-view-btn" data-product-id="{{ $product->id }}">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Smart Watch Banners -->
-                <div class="col-lg-6">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="smart-watch-banner watch-banner-1">
-                                <div class="watch-content">
-                                    <div class="watch-brand">smart63</div>
-                                    <div class="watch-model">New with 4G</div>
-                                    <div class="watch-price">
-                                        <span class="price-from">from</span>
-                                        <span class="price-amount">₹129<small>.98</small></span>
-                                    </div>
-                                </div>
-                                <div class="watch-image">
-                                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop" alt="Smart Watch" class="img-fluid">
-                                </div>
-                            </div>
+                <div class="product-details">
+                    <h3 class="product-name">{{ $product->name }}</h3>
+                    
+                    <div class="product-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
                         </div>
-                        <div class="col-6">
-                            <div class="smart-watch-banner watch-banner-2">
-                                <div class="watch-content">
-                                    <div class="watch-brand">smart63</div>
-                                    <div class="watch-model">New with 4G</div>
-                                    <div class="watch-price">
-                                        <span class="price-from">from</span>
-                                        <span class="price-amount">₹129<small>.99</small></span>
-                                    </div>
-                                </div>
-                                <div class="watch-image">
-                                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop" alt="Smart Watch" class="img-fluid">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="smart-watch-banner watch-banner-3">
-                                <div class="watch-content">
-                                    <div class="watch-brand">smart63</div>
-                                    <div class="watch-model">New with 4G</div>
-                                    <div class="watch-price">
-                                        <span class="price-from">from</span>
-                                        <span class="price-amount">₹129<small>.98</small></span>
-                                    </div>
-                                </div>
-                                <div class="watch-image">
-                                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop" alt="Smart Watch" class="img-fluid">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="smart-watch-banner watch-banner-4">
-                                <div class="watch-content">
-                                    <div class="watch-brand">smart63</div>
-                                    <div class="watch-model">New with 4G</div>
-                                    <div class="watch-price">
-                                        <span class="price-from">from</span>
-                                        <span class="price-amount">₹129<small>.99</small></span>
-                                    </div>
-                                </div>
-                                <div class="watch-image">
-                                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop" alt="Smart Watch" class="img-fluid">
-                                </div>
-                            </div>
-                        </div>
+                        <span class="review-count">({{ rand(50, 200) }})</span>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Discount Section -->
-<section class="discount-section py-4">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <div class="discount-header">
-                <h2 class="discount-title">% DISCOUNTS FOR YOU</h2>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Dynamic Sale Banners -->
-@if($bannerContent && $bannerContent->count() > 0)
-<section class="py-4">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <div class="modern-sale-banners">
-                @foreach($bannerContent as $banner)
-                <div class="modern-sale-banner" style="background: linear-gradient(135deg, {{ $banner->extra_data['background_color'] ?? '#f97316' }}, {{ $banner->extra_data['background_color'] ?? '#fb923c' }});">
-                    <div class="banner-content-modern">
-                        <h3 class="banner-title">{{ $banner->title }}</h3>
-                        <p class="banner-subtitle">{{ $banner->subtitle }}</p>
-                        @if($banner->button_text && $banner->button_url)
-                            <a href="{{ $banner->button_url }}" class="btn btn-banner">{{ $banner->button_text }}</a>
+                    
+                    <div class="product-price">
+                        @if($product->price > 5000)
+                            <span class="current-price">₹{{ number_format($product->price - 1000, 0) }}</span>
+                            <span class="original-price">₹{{ number_format($product->price, 0) }}</span>
+                        @else
+                            <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
                         @endif
                     </div>
-                    @if($banner->image_url)
-                    <div class="banner-image-modern">
-                        <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" class="img-fluid">
-                    </div>
-                    @endif
+                    
+                    <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                        <i class="fas fa-shopping-cart"></i>
+                        Add to Cart
+                    </button>
                 </div>
-                @endforeach
             </div>
+            @endforeach
+        </div>
+        
+        <div class="view-more">
+            <a href="#" class="view-more-btn">View All Best Sellers</a>
         </div>
     </div>
 </section>
-@endif
 
-<!-- % Discounts For You Section -->
-<section class="discounts-products-section py-5">
+<!-- Beautiful Banner Section -->
+<section class="beautiful-banner-section">
+    <div class="banner-overlay"></div>
     <div class="container-fluid">
-        <div class="banner-container">
-            <h2 class="section-title">% DISCOUNTS FOR YOU</h2>
-            <div class="row">
-                @foreach($trendingProducts->take(5) as $product)
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <div class="discount-product-card">
-                        <div class="product-wishlist">
-                            <i class="far fa-heart wishlist-icon"></i>
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="banner-content">
+                    <div class="banner-badge">
+                        <i class="fas fa-fire"></i>
+                        <span>Limited Time Offer</span>
+                    </div>
+                    <h1 class="banner-title">
+                        <span class="gradient-text">Summer Sale</span>
+                        <br>Up to 70% Off
+                    </h1>
+                    <p class="banner-subtitle">
+                        Discover amazing deals on premium electronics. Don't miss out on these incredible savings!
+                    </p>
+                    <div class="banner-features">
+                        <div class="feature-item">
+                            <i class="fas fa-shipping-fast"></i>
+                            <span>Free Shipping</span>
                         </div>
-                        <div class="product-image-container">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=150&fit=crop" 
-                                 class="product-image" alt="{{ $product->name }}">
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Secure Payment</span>
                         </div>
-                        <div class="product-info">
-                            <div class="product-brand">boAt</div>
-                            <div class="product-name">boAt Airdopes 100</div>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="product-pricing">
-                                <span class="current-price">₹1,099</span>
-                                <span class="original-price">₹3,490</span>
-                            </div>
-                            <button class="btn btn-primary buy-now-btn">BUY NOW</button>
+                        <div class="feature-item">
+                            <i class="fas fa-undo"></i>
+                            <span>Easy Returns</span>
+                        </div>
+                    </div>
+                    <div class="banner-actions">
+                        <a href="#" class="btn-banner-primary">
+                            <i class="fas fa-shopping-bag"></i>
+                            Shop Now
+                        </a>
+                        <a href="#" class="btn-banner-secondary">
+                            <i class="fas fa-play"></i>
+                            Watch Video
+                        </a>
+                    </div>
+                    <div class="countdown-timer">
+                        <div class="timer-item">
+                            <span class="timer-number">02</span>
+                            <span class="timer-label">Days</span>
+                        </div>
+                        <div class="timer-separator">:</div>
+                        <div class="timer-item">
+                            <span class="timer-number">18</span>
+                            <span class="timer-label">Hours</span>
+                        </div>
+                        <div class="timer-separator">:</div>
+                        <div class="timer-item">
+                            <span class="timer-number">45</span>
+                            <span class="timer-label">Minutes</span>
+                        </div>
+                        <div class="timer-separator">:</div>
+                        <div class="timer-item">
+                            <span class="timer-number">32</span>
+                            <span class="timer-label">Seconds</span>
                         </div>
                     </div>
                 </div>
-                @endforeach
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Smart Watches Section -->
-<section class="smart-watches-section py-5">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <h2 class="section-title">SMART WATCHES</h2>
-            <div class="row">
-                @foreach($trendingProducts->take(2) as $product)
-                <div class="col-lg-6 col-md-6 mb-4">
-                    <div class="smart-watch-product-card">
-                        <div class="product-wishlist">
-                            <i class="far fa-heart wishlist-icon"></i>
-                        </div>
-                        <div class="product-image-container">
-                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=200&fit=crop" 
-                                 class="product-image" alt="Smart Watch">
-                        </div>
-                        <div class="product-info">
-                            <div class="product-brand">boAt</div>
-                            <div class="product-name">Smart Watch Pro</div>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="product-pricing">
-                                <span class="current-price">₹2,999</span>
-                                <span class="original-price">₹5,999</span>
-                            </div>
-                            <button class="btn btn-primary buy-now-btn">BUY NOW</button>
-                        </div>
+            <div class="col-lg-6">
+                <div class="banner-image-container">
+                    <div class="floating-shapes">
+                        <div class="shape shape-1"></div>
+                        <div class="shape shape-2"></div>
+                        <div class="shape shape-3"></div>
+                        <div class="shape shape-4"></div>
                     </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Resistance Banner Section -->
-<section class="resistance-banner-section py-5">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <div class="resistance-banner">
-                        <h2 class="banner-title">Resistance</h2>
-                        <p class="banner-subtitle">The Way You</p>
-                        <div class="banner-image">
-                            <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&h=300&fit=crop" 
-                                 class="img-fluid" alt="Resistance">
-                        </div>
+                    <div class="banner-image">
+                        <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?w=600&h=500&fit=crop" 
+                             alt="Summer Sale Electronics">
                     </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="resistance-product">
-                        <div class="product-image">
-                            <img src="https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=300&h=200&fit=crop" 
-                                 class="img-fluid" alt="Product">
-                        </div>
+                    <div class="price-tag">
+                        <span class="price-amount">₹29,999</span>
+                        <span class="price-original">₹99,999</span>
                     </div>
                 </div>
             </div>
@@ -2328,611 +2052,664 @@
     </div>
 </section>
 
-<!-- Power Banks Section -->
-<section class="power-banks-section py-5">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <div class="power-bank-banner">
-                        <h2 class="banner-title">20000mAh</h2>
-                        <p class="banner-subtitle">POWER BANKS</p>
-                        <div class="banner-image">
-                            <img src="https://images.unsplash.com/photo-1609592439804-9e7fcd4c4c7d?w=400&h=300&fit=crop" 
-                                 class="img-fluid" alt="Power Bank">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="row">
-                        @foreach($trendingProducts->take(2) as $product)
-                        <div class="col-6 mb-3">
-                            <div class="power-bank-product-card">
-                                <div class="product-wishlist">
-                                    <i class="far fa-heart wishlist-icon"></i>
-                                </div>
-                                <div class="product-image-container">
-                                    <img src="https://images.unsplash.com/photo-1609592439804-9e7fcd4c4c7d?w=200&h=150&fit=crop" 
-                                         class="product-image" alt="Power Bank">
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-brand">boAt</div>
-                                    <div class="product-name">Power Bank 20000mAh</div>
-                                    <div class="product-pricing">
-                                        <span class="current-price">₹1,999</span>
-                                        <span class="original-price">₹3,999</span>
-                                    </div>
-                                    <button class="btn btn-primary buy-now-btn">BUY NOW</button>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Top Rated Products Section -->
-<section class="top-rated-products-section py-5">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <h2 class="section-title">TOP RATED PRODUCTS</h2>
-            <div class="row">
-                @foreach($trendingProducts->take(5) as $product)
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <div class="top-rated-product-card">
-                        <div class="product-wishlist">
-                            <i class="far fa-heart wishlist-icon"></i>
-                        </div>
-                        <div class="product-image-container">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=150&fit=crop" 
-                                 class="product-image" alt="{{ $product->name }}">
-                        </div>
-                        <div class="product-info">
-                            <div class="product-brand">Airdopes</div>
-                            <div class="product-name">boAt Airdopes 100</div>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="product-pricing">
-                                <span class="current-price">₹1,099</span>
-                                <span class="original-price">₹3,490</span>
-                            </div>
-                            <button class="btn btn-primary buy-now-btn">BUY NOW</button>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Flash Sale Section -->
-<section class="flash-sale-section py-5">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <div class="row align-items-center">
-                <div class="col-lg-2 col-md-3 col-6">
-                    <div class="flash-sale-product">
-                        <div class="product-image">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=150&fit=crop" 
-                                 class="img-fluid" alt="Flash Sale Product">
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">boAt Airdopes 100</div>
-                            <div class="product-price">₹1,099</div>
-                            <small class="text-muted">BUY NOW</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-8 col-md-6">
-                    <div class="flash-sale-banner">
-                        <h2 class="flash-title">Flash Sale</h2>
-                        <p class="flash-subtitle">Premium Headphones at Crazy Prices!</p>
-                        <div class="flash-logo">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=100&h=100&fit=crop" 
-                                 class="img-fluid" alt="Flash Sale">
-                        </div>
-                        <div class="flash-website">www.rubista.com</div>
-                        <div class="social-icons">
-                            <i class="fab fa-facebook"></i>
-                            <i class="fab fa-twitter"></i>
-                            <i class="fab fa-instagram"></i>
-                            <i class="fab fa-youtube"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <div class="flash-sale-product">
-                        <div class="product-image">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=150&fit=crop" 
-                                 class="img-fluid" alt="Flash Sale Product">
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">boAt Airdopes 100</div>
-                            <div class="product-price">₹1,099</div>
-                            <small class="text-muted">BUY NOW</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Shop by Discounts Section -->
-<section class="shop-by-discounts-section py-5">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <h2 class="section-title">Shop by Discounts</h2>
-            <div class="discount-icons">
-                <span class="discount-icon">🛍️</span>
-                <span class="discount-icon">💳</span>
-                <span class="discount-icon">🎁</span>
-                <span class="discount-icon">💰</span>
-            </div>
-            <div class="row">
-                @foreach($trendingProducts->take(4) as $product)
-                <div class="col-lg-3 col-md-6 col-6 mb-4">
-                    <div class="discount-product-card">
-                        <div class="product-wishlist">
-                            <i class="far fa-heart wishlist-icon"></i>
-                        </div>
-                        <div class="product-image-container">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=150&fit=crop" 
-                                 class="product-image" alt="{{ $product->name }}">
-                        </div>
-                        <div class="product-info">
-                            <div class="product-brand">boAt</div>
-                            <div class="product-name">boAt Airdopes 100</div>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="product-pricing">
-                                <span class="current-price">₹1,099</span>
-                                <span class="original-price">₹3,490</span>
-                            </div>
-                            <button class="btn btn-primary buy-now-btn">BUY NOW</button>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Sale Banners Section -->
-<section class="sale-banners-section py-5">
-    <div class="container-fluid">
-        <div class="banner-container">
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="sale-banner sale-banner-1">
-                        <div class="banner-content">
-                            <h3 class="banner-title">MEGA SALE</h3>
-                            <p class="banner-subtitle">Up to 70% Off</p>
-                            <button class="btn btn-light">Shop Now</button>
-                        </div>
-                        <div class="banner-image">
-                            <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=200&fit=crop" 
-                                 class="img-fluid" alt="Sale Banner">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="sale-banner sale-banner-2">
-                        <div class="banner-content">
-                            <h3 class="banner-title">HEADPHONE</h3>
-                            <p class="banner-subtitle">Premium Quality</p>
-                            <button class="btn btn-light">Shop Now</button>
-                        </div>
-                        <div class="banner-image">
-                            <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300&h=200&fit=crop" 
-                                 class="img-fluid" alt="Headphone Banner">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Recommended Items -->
+<!-- Latest Products Section -->
 <section class="py-4">
     <div class="container-fluid">
-        <div class="banner-container">
-            <h2 class="section-title">RECOMMENDED ITEMS FOR YOU</h2>
-            <div class="row">
-                @foreach($trendingProducts as $product)
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <div class="product-card">
-                        <div class="position-relative">
-                            <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300&h=200&fit=crop" 
-                                 class="product-image" alt="{{ $product->name }}">
+        <h2 class="section-title">LATEST PRODUCTS</h2>
+        <div class="row">
+            @foreach($trendingProducts->skip(4)->take(8) as $product)
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="product-card">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300&h=200&fit=crop" 
+                             class="product-image" alt="{{ $product->name }}">
+                    </div>
+                    <div class="product-info">
+                        <h6 class="product-title">{{ $product->name }}</h6>
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
                         </div>
-                        <div class="product-info">
-                            <h6 class="product-title">{{ $product->name }}</h6>
-                            <div class="rating-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="product-price">
-                                <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <button class="btn-add-cart flex-fill" data-product-id="{{ $product->id }}">
-                                    <i class="fas fa-shopping-cart me-1"></i>Add to Cart
-                                </button>
-                                <button class="btn-add-wishlist" data-product-id="{{ $product->id }}">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
+                        <div class="product-price">
+                            <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-add-cart flex-fill" data-product-id="{{ $product->id }}">
+                                <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                            </button>
+                            <button class="btn-add-wishlist" data-product-id="{{ $product->id }}">
+                                <i class="fas fa-heart"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
-                @endforeach
             </div>
+            @endforeach
         </div>
     </div>
 </section>
-@endsection
-
-@section('additional-content')
 @endsection
 
 @section('extra-js')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Categories navigation elements
-    const dots = document.querySelectorAll('.nav-dot');
-    const wrapper = document.querySelector('.categories-wrapper');
+    // Add scroll-to-top button
+    const scrollToTopBtn = document.createElement('button');
+    scrollToTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+    scrollToTopBtn.className = 'scroll-to-top-btn';
+    scrollToTopBtn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-purple);
+        color: white;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+    `;
+    document.body.appendChild(scrollToTopBtn);
+    
+    // Show/hide scroll-to-top button based on scroll position
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 300) {
+            scrollToTopBtn.style.opacity = '1';
+            scrollToTopBtn.style.visibility = 'visible';
+            scrollToTopBtn.style.transform = 'translateY(0)';
+        } else {
+            scrollToTopBtn.style.opacity = '0';
+            scrollToTopBtn.style.visibility = 'hidden';
+            scrollToTopBtn.style.transform = 'translateY(10px)';
+        }
+    });
+    
+    // Scroll to top when button is clicked
+    scrollToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Add hover effect to scroll-to-top button
+    scrollToTopBtn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-3px) scale(1.1)';
+        this.style.boxShadow = '0 8px 20px rgba(124, 58, 237, 0.3)';
+    });
+    
+    scrollToTopBtn.addEventListener('mouseleave', function() {
+        this.style.transform = window.scrollY > 300 ? 'translateY(0) scale(1)' : 'translateY(10px) scale(1)';
+        this.style.boxShadow = '0 4px 12px rgba(124, 58, 237, 0.2)';
+    });
+    
+    // Categories navigation
+    const wrapper = document.getElementById('categoriesWrapper');
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
-    const categoryCards = document.querySelectorAll('.category-card');
     
-    let currentSlide = 0;
-    let isAnimating = false;
-    let autoSlideInterval;
-    let touchStartX = 0;
-    let touchEndX = 0;
+    if (wrapper && prevArrow && nextArrow) {
+        let isScrolling = false;
+        
+        // Pause animation on hover
+        wrapper.addEventListener('mouseenter', function() {
+            wrapper.style.animationPlayState = 'paused';
+        });
+        
+        wrapper.addEventListener('mouseleave', function() {
+            wrapper.style.animationPlayState = 'running';
+        });
+        
+        // Arrow navigation
+        prevArrow.addEventListener('click', function() {
+            if (!isScrolling) {
+                isScrolling = true;
+                wrapper.style.animationPlayState = 'paused';
+                wrapper.style.transform = 'translateX(150px)';
+                setTimeout(() => {
+                    wrapper.style.transform = '';
+                    wrapper.style.animationPlayState = 'running';
+                    isScrolling = false;
+                }, 400);
+            }
+        });
+        
+        nextArrow.addEventListener('click', function() {
+            if (!isScrolling) {
+                isScrolling = true;
+                wrapper.style.animationPlayState = 'paused';
+                wrapper.style.transform = 'translateX(-150px)';
+                setTimeout(() => {
+                    wrapper.style.transform = '';
+                    wrapper.style.animationPlayState = 'running';
+                    isScrolling = false;
+                }, 400);
+            }
+        });
+    }
     
-    // Calculate slide width (responsive)
-    const getSlideWidth = () => {
-        const card = document.querySelector('.category-card');
-        return card ? card.offsetWidth + 25 : 200; // card width + gap
+    // Smooth scrolling for hero buttons
+    const heroButtons = document.querySelectorAll('.btn-hero-primary, .btn-hero-secondary');
+    heroButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const targetElement = document.querySelector(href);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                } else if (href === '#featured') {
+                    // Scroll to featured products section
+                    const featuredSection = document.querySelector('.py-4.bg-light') || 
+                                          document.querySelector('.product-card').closest('section');
+                    if (featuredSection) {
+                        featuredSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                } else if (href === '#categories') {
+                    // Scroll to categories section
+                    const categoriesSection = document.querySelector('.categories-section');
+                    if (categoriesSection) {
+                        categoriesSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            }
+        });
+    });
+    
+    // Intersection Observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -20px 0px'
     };
     
-    // Pause and resume animation functions
-    function pauseAnimation() {
-        wrapper.style.animationPlayState = 'paused';
-        wrapper.classList.add('paused');
-    }
-    
-    function resumeAnimation() {
-        wrapper.style.animationPlayState = 'running';
-        wrapper.classList.remove('paused');
-    }
-    
-    // Add ripple effect to navigation elements
-    function createRipple(element, event) {
-        const circle = document.createElement('span');
-        const diameter = Math.max(element.clientWidth, element.clientHeight);
-        const radius = diameter / 2;
-        
-        circle.style.width = circle.style.height = `${diameter}px`;
-        circle.style.left = `${event.clientX - element.offsetLeft - radius}px`;
-        circle.style.top = `${event.clientY - element.offsetTop - radius}px`;
-        circle.classList.add('ripple');
-        
-        const ripple = element.getElementsByClassName('ripple')[0];
-        if (ripple) {
-            ripple.remove();
-        }
-        
-        element.appendChild(circle);
-        
-        setTimeout(() => {
-            circle.remove();
-        }, 600);
-    }
-    
-    // Enhanced navigation function with smooth transitions
-    function navigateToSlide(direction, immediate = false) {
-        if (isAnimating && !immediate) return;
-        
-        isAnimating = true;
-        pauseAnimation();
-        
-        // Calculate new position
-        if (direction === 'next') {
-            currentSlide = (currentSlide + 1) % 3;
-        } else {
-            currentSlide = (currentSlide - 1 + 3) % 3;
-        }
-        
-        // Smooth transform animation
-        const slideWidth = getSlideWidth();
-        const translateX = -currentSlide * slideWidth * 2;
-        
-        wrapper.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-        wrapper.style.transform = `translateX(${translateX}px)`;
-        
-        // Update active dot with animation
-        updateActiveDot(currentSlide);
-        
-        // Resume animation after delay
-        setTimeout(() => {
-            wrapper.style.transition = '';
-            wrapper.style.transform = '';
-            resumeAnimation();
-            isAnimating = false;
-        }, immediate ? 0 : 4000);
-    }
-    
-    // Update active dot with smooth animation
-    function updateActiveDot(index) {
-        dots.forEach((d, i) => {
-            d.classList.remove('active');
-            if (i === index) {
-                setTimeout(() => d.classList.add('active'), 100);
+    const observer = 
+     IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
             }
         });
-    }
+    }, observerOptions);
     
-    // Enhanced arrow navigation with haptic feedback
-    function setupArrowNavigation() {
-        [prevArrow, nextArrow].forEach(arrow => {
-            arrow.addEventListener('click', function(e) {
-                createRipple(this, e);
-                
-                // Haptic feedback (if supported)
-                if (navigator.vibrate) {
-                    navigator.vibrate(50);
-                }
-                
-                const direction = this.id === 'nextArrow' ? 'next' : 'prev';
-                navigateToSlide(direction);
-            });
-            
-            // Enhanced hover effects
-            arrow.addEventListener('mouseenter', function() {
-                pauseAnimation();
-                this.style.transform = 'translateY(-50%) scale(1.1)';
-            });
-            
-            arrow.addEventListener('mouseleave', function() {
-                resumeAnimation();
-                this.style.transform = 'translateY(-50%) scale(1)';
-            });
-        });
-    }
+    // Observe product cards and other elements
+    const animatedElements = document.querySelectorAll('.product-card, .category-card, .service-card');
+    animatedElements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        observer.observe(el);
+    });
     
-    // Enhanced dots navigation
-    function setupDotsNavigation() {
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', function(e) {
-                if (isAnimating) return;
+    // Add to cart functionality with better feedback
+    const addToCartButtons = document.querySelectorAll('.btn-add-cart');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            
+            // Add loading state
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Adding...';
+            this.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check me-1"></i>Added!';
+                this.style.background = '#10b981';
+                this.disabled = false;
                 
-                createRipple(this, e);
-                
-                isAnimating = true;
-                pauseAnimation();
-                
-                currentSlide = index;
-                
-                const slideWidth = getSlideWidth();
-                const translateX = -currentSlide * slideWidth * 2;
-                
-                wrapper.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-                wrapper.style.transform = `translateX(${translateX}px)`;
-                
-                updateActiveDot(currentSlide);
+                // Show success message
+                const toast = document.createElement('div');
+                toast.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #10b981;
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 8px;
+                        z-index: 9999;
+                        font-weight: 600;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                        animation: slideInRight 0.3s ease;
+                    ">
+                        <i class="fas fa-check me-2"></i>Product added to cart!
+                    </div>
+                `;
+                document.body.appendChild(toast);
                 
                 setTimeout(() => {
-                    wrapper.style.transition = '';
-                    wrapper.style.transform = '';
-                    resumeAnimation();
-                    isAnimating = false;
-                }, 4000);
-            });
-            
-            // Dot hover effects
-            dot.addEventListener('mouseenter', function() {
-                if (!this.classList.contains('active')) {
-                    this.style.transform = 'scale(1.2)';
-                }
-            });
-            
-            dot.addEventListener('mouseleave', function() {
-                if (!this.classList.contains('active')) {
-                    this.style.transform = 'scale(1)';
-                }
-            });
+                    toast.remove();
+                }, 3000);
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = '';
+                }, 2000);
+            }, 800);
         });
-    }
+    });
     
-    // Touch/Swipe navigation
-    function setupTouchNavigation() {
-        wrapper.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-            pauseAnimation();
-        });
-        
-        wrapper.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-            resumeAnimation();
-        });
-        
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            const swipeDistance = touchEndX - touchStartX;
+    // Add to wishlist functionality
+    const addToWishlistButtons = document.querySelectorAll('.btn-add-wishlist');
+    addToWishlistButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const icon = this.querySelector('i');
             
-            if (Math.abs(swipeDistance) > swipeThreshold) {
-                if (swipeDistance > 0) {
-                    navigateToSlide('prev'); // Swipe right
-                } else {
-                    navigateToSlide('next'); // Swipe left
-                }
-            }
-        }
-    }
-    
-    // Enhanced keyboard navigation
-    function setupKeyboardNavigation() {
-        document.addEventListener('keydown', function(e) {
-            // Only activate when categories section is in view
-            const categoriesSection = document.querySelector('.categories-section');
-            const rect = categoriesSection.getBoundingClientRect();
-            const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
-            
-            if (isInView) {
-                switch(e.key) {
-                    case 'ArrowLeft':
-                        e.preventDefault();
-                        navigateToSlide('prev');
-                        break;
-                    case 'ArrowRight':
-                        e.preventDefault();
-                        navigateToSlide('next');
-                        break;
-                    case ' ': // Spacebar to pause/resume
-                        e.preventDefault();
-                        if (wrapper.style.animationPlayState === 'paused') {
-                            resumeAnimation();
-                        } else {
-                            pauseAnimation();
-                        }
-                        break;
-                }
-            }
-        });
-    }
-    
-    // Auto-slide with dynamic timing
-    function setupAutoSlide() {
-        autoSlideInterval = setInterval(() => {
-            if (!isAnimating && document.visibilityState === 'visible') {
-                navigateToSlide('next', true);
-            }
-        }, 8000);
-        
-        // Pause auto-slide when tab is not visible
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'hidden') {
-                pauseAnimation();
+            if (icon.classList.contains('fas')) {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                this.style.background = '#f1f5f9';
+                this.style.color = 'var(--primary-purple)';
             } else {
-                resumeAnimation();
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                this.style.background = '#fecaca';
+                this.style.color = '#dc2626';
             }
         });
-    }
+    });
     
-    // Intersection Observer for performance
-    function setupIntersectionObserver() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    resumeAnimation();
-                } else {
-                    pauseAnimation();
-                }
-            });
-        }, {
-            threshold: 0.5
-        });
-        
-        observer.observe(document.querySelector('.categories-section'));
-    }
-    
-    // Enhanced category card interactions
-    function setupCategoryCardEffects() {
-        categoryCards.forEach((card, index) => {
-            card.addEventListener('mouseenter', function() {
-                // Pause auto-slide on hover
-                pauseAnimation();
-                
-                // Add subtle animation to neighboring cards
-                const prevCard = categoryCards[index - 1];
-                const nextCard = categoryCards[index + 1];
-                
-                if (prevCard) {
-                    prevCard.style.transform = 'translateY(-4px) scale(0.98)';
-                }
-                if (nextCard) {
-                    nextCard.style.transform = 'translateY(-4px) scale(0.98)';
-                }
-            });
+    // Best Selling Products functionality - Compact Design
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
             
-            card.addEventListener('mouseleave', function() {
-                resumeAnimation();
+            // Add loading state
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            this.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check"></i> Added!';
+                this.style.background = '#10b981';
                 
-                // Reset neighboring cards
-                const prevCard = categoryCards[index - 1];
-                const nextCard = categoryCards[index + 1];
+                // Show success message
+                const toast = document.createElement('div');
+                toast.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #10b981;
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 8px;
+                        z-index: 9999;
+                        font-weight: 600;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                        animation: slideInRight 0.3s ease;
+                    ">
+                        <i class="fas fa-check me-2"></i>Product added to cart!
+                    </div>
+                `;
+                document.body.appendChild(toast);
                 
-                if (prevCard) {
-                    prevCard.style.transform = '';
-                }
-                if (nextCard) {
-                    nextCard.style.transform = '';
-                }
-            });
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = '';
+                    this.disabled = false;
+                }, 2000);
+            }, 800);
+        });
+    });
+    
+    // Wishlist functionality
+    const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const icon = this.querySelector('i');
+            
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                this.classList.add('active');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                this.classList.remove('active');
+            }
+        });
+    });
+    
+    // Quick view functionality
+    const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+    quickViewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            showQuickViewModal(productId);
+        });
+    });
+    
+    // Quick view modal function
+    function showQuickViewModal(productId) {
+        const modal = document.createElement('div');
+        modal.innerHTML = `
+            <div class="quick-view-modal" style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.3s ease;
+            ">
+                <div class="modal-content" style="
+                    background: white;
+                    border-radius: 12px;
+                    padding: 20px;
+                    max-width: 400px;
+                    width: 90%;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <div class="modal-header" style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 15px;
+                    ">
+                        <h5 style="margin: 0; color: var(--primary-purple);">Quick View</h5>
+                        <button class="close-modal" style="
+                            background: none;
+                            border: none;
+                            font-size: 20px;
+                            cursor: pointer;
+                            color: #64748b;
+                        ">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Product ID: ${productId}</p>
+                        <p>Quick view functionality will be implemented here.</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Close modal functionality
+        const closeBtn = modal.querySelector('.close-modal');
+        const modalOverlay = modal.querySelector('.quick-view-modal');
+        
+        closeBtn.addEventListener('click', () => modal.remove());
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) modal.remove();
         });
     }
     
-    // Initialize all functionality
-    setupArrowNavigation();
-    setupDotsNavigation();
-    setupTouchNavigation();
-    setupKeyboardNavigation();
-    setupAutoSlide();
-    setupIntersectionObserver();
-    setupCategoryCardEffects();
+    // Hero stats counter animation
+    const statNumbers = document.querySelectorAll('.hero-stat-number');
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const text = target.textContent;
+                const number = parseInt(text.replace(/\D/g, ''));
+                const suffix = text.replace(/\d/g, '');
+                
+                if (number > 0) {
+                    let current = 0;
+                    const increment = number / 40;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= number) {
+                            current = number;
+                            clearInterval(timer);
+                        }
+                        
+                        if (text.includes('.')) {
+                            target.textContent = current.toFixed(1) + suffix;
+                        } else if (number >= 1000) {
+                            target.textContent = Math.floor(current / 1000) + 'K' + suffix;
+                        } else {
+                            target.textContent = Math.floor(current) + suffix;
+                        }
+                    }, 40);
+                }
+                
+                statsObserver.unobserve(target);
+            }
+        });
+    }, { threshold: 0.5 });
     
-    // Add ripple effect styles
-    const style = document.createElement('style');
-    style.textContent = `
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(124, 58, 237, 0.3);
-            transform: scale(0);
-            animation: ripple-animation 0.6s linear;
-            pointer-events: none;
-        }
+    statNumbers.forEach(stat => statsObserver.observe(stat));
+    
+    // Lazy loading for images
+    const images = document.querySelectorAll('img[data-src]');
+    const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+                imageObserver.unobserve(img);
+            }
+        });
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+    
+    // Countdown Timer Functionality
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const endDate = new Date(now + (2 * 24 * 60 * 60 * 1000) + (18 * 60 * 60 * 1000) + (45 * 60 * 1000) + (32 * 1000)).getTime();
         
-        @keyframes ripple-animation {
-            to {
-                transform: scale(4);
-                opacity: 0;
+        const timerNumbers = document.querySelectorAll('.timer-number');
+        if (timerNumbers.length > 0) {
+            const timeLeft = endDate - now;
+            
+            if (timeLeft > 0) {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                timerNumbers[0].textContent = days.toString().padStart(2, '0');
+                timerNumbers[1].textContent = hours.toString().padStart(2, '0');
+                timerNumbers[2].textContent = minutes.toString().padStart(2, '0');
+                timerNumbers[3].textContent = seconds.toString().padStart(2, '0');
+            } else {
+                // Reset timer when it reaches zero
+                timerNumbers[0].textContent = '00';
+                timerNumbers[1].textContent = '00';
+                timerNumbers[2].textContent = '00';
+                timerNumbers[3].textContent = '00';
             }
         }
-    `;
-    document.head.appendChild(style);
+    }
     
-    // Responsive handling
-    window.addEventListener('resize', function() {
-        // Reset transforms on resize
-        wrapper.style.transform = '';
-        currentSlide = 0;
-        updateActiveDot(0);
+    // Update countdown every second
+    setInterval(updateCountdown, 1000);
+    updateCountdown(); // Initial call
+    
+    // Banner button interactions
+    const bannerButtons = document.querySelectorAll('.btn-banner-primary, .btn-banner-secondary');
+    bannerButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Add ripple effect
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+            
+            // Show success message
+            const toast = document.createElement('div');
+            toast.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 12px;
+                    z-index: 9999;
+                    font-weight: 600;
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+                    animation: slideInRight 0.3s ease;
+                    backdrop-filter: blur(10px);
+                ">
+                    <i class="fas fa-check me-2"></i>Action completed successfully!
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        });
+    });
+    
+    // Floating shapes animation enhancement
+    const shapes = document.querySelectorAll('.shape');
+    shapes.forEach((shape, index) => {
+        shape.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.2) rotate(180deg)';
+            this.style.background = 'rgba(255, 255, 255, 0.2)';
+        });
+        
+        shape.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+            this.style.background = 'rgba(255, 255, 255, 0.1)';
+        });
+    });
+    
+    // Performance improvements
+    let ticking = false;
+    function updateScrollEffects() {
+        const scrolled = window.pageYOffset;
+        const parallax = scrolled * 0.1;
+        
+        // Update floating elements
+        const floatingElements = document.querySelectorAll('.floating-element');
+        floatingElements.forEach((element, index) => {
+            const speed = (index + 1) * 0.05;
+            element.style.transform = `translateY(${parallax * speed}px)`;
+        });
+        
+        // Update banner shapes with parallax
+        const bannerShapes = document.querySelectorAll('.shape');
+        bannerShapes.forEach((shape, index) => {
+            const speed = (index + 1) * 0.02;
+            shape.style.transform = `translateY(${parallax * speed}px)`;
+        });
+        
+        ticking = false;
+    }
+    
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            requestAnimationFrame(updateScrollEffects);
+            ticking = true;
+        }
     });
 });
+
+// Add CSS for animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .lazy {
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .lazy.loaded {
+        opacity: 1;
+    }
+    
+    .scroll-to-top-btn:hover {
+        background: var(--dark-purple) !important;
+    }
+`;
+document.head.appendChild(style);
 </script>
 @endsection
 
