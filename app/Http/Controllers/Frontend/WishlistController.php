@@ -158,4 +158,51 @@ class WishlistController extends Controller
 
         return redirect()->back()->with('success', 'Wishlist cleared successfully!');
     }
+
+    /**
+     * Toggle product in wishlist (add if not present, remove if present)
+     */
+    public function toggle(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id'
+        ]);
+
+        $product = Product::findOrFail($request->product_id);
+        $wishlist = Session::get('wishlist', []);
+        $productId = $request->product_id;
+        
+        $wasInWishlist = isset($wishlist[$productId]);
+        
+        if ($wasInWishlist) {
+            // Remove from wishlist
+            unset($wishlist[$productId]);
+            $message = 'Product removed from wishlist!';
+            $action = 'removed';
+        } else {
+            // Add to wishlist
+            $wishlist[$productId] = [
+                'name' => $product->name,
+                'price' => $product->sale_price ?? $product->price,
+                'image' => $product->image,
+                'added_at' => now()
+            ];
+            $message = 'Product added to wishlist successfully!';
+            $action = 'added';
+        }
+
+        Session::put('wishlist', $wishlist);
+        
+        if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'action' => $action,
+                'in_wishlist' => !$wasInWishlist,
+                'wishlist_count' => count($wishlist)
+            ]);
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
 } 

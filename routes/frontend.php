@@ -51,6 +51,7 @@ Route::delete('/cart/clear', [CartController::class, 'clear'])->name('frontend.c
 
 // Wishlist Routes (available to all users)
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('frontend.wishlist');
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('frontend.wishlist.toggle');
 Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('frontend.wishlist.add');
 Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'remove'])->name('frontend.wishlist.remove');
 Route::delete('/wishlist/clear', [WishlistController::class, 'clear'])->name('frontend.wishlist.clear');

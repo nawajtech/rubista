@@ -88,7 +88,15 @@
                     @foreach($order->orderItems as $item)
                     <div class="d-flex align-items-center border-bottom py-3 {{ $loop->last ? 'border-bottom-0 pb-0' : '' }}">
                         @if($item->product_image)
-                            <img src="{{ $item->product_image }}" class="img-thumbnail me-3" style="width: 80px; height: 80px;">
+                            @if(Str::startsWith($item->product_image, 'http'))
+                                <img src="{{ $item->product_image }}" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                            @else
+                                <img src="{{ asset('storage/' . $item->product_image) }}" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;" onerror="this.onerror=null;this.src='https://via.placeholder.com/80x80/7c3aed/ffffff?text=Product';">
+                            @endif
+                        @else
+                            <div class="img-thumbnail me-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                <i class="fas fa-image"></i>
+                            </div>
                         @endif
                         <div class="flex-grow-1">
                             <h6 class="mb-1">{{ $item->product_name }}</h6>

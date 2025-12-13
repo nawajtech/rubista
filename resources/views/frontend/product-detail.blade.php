@@ -804,63 +804,54 @@ window.addToCart = function(productId) {
 window.addToWishlist = function(productId) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const wishlistBtn = document.querySelector('.btn-add-to-wishlist');
-    const icon = wishlistBtn.querySelector('i');
-    const isInWishlist = icon && icon.classList.contains('fas');
     
-    if (isInWishlist) {
-        // Remove from wishlist
-        fetch(`/wishlist/remove/${productId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
+    // Use toggle endpoint - server will check if product is in wishlist
+    fetch('/wishlist/toggle', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            product_id: parseInt(productId)
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                wishlistBtn.style.background = 'white';
-                wishlistBtn.style.borderColor = '#667eea';
-                wishlistBtn.style.color = '#667eea';
-                wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
-                updateWishlistCount(data.wishlist_count);
-                showToast('Product removed from wishlist', 'success');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error removing from wishlist', 'error');
-        });
-    } else {
-        // Add to wishlist
-        fetch('/wishlist/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify({
-                product_id: parseInt(productId)
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.message || 'Request failed');
+            }).catch(() => {
+                throw new Error('Request failed with status: ' + response.status);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Update button based on server response
+            if (data.in_wishlist) {
                 wishlistBtn.style.background = '#dc3545';
                 wishlistBtn.style.borderColor = '#dc3545';
                 wishlistBtn.style.color = 'white';
                 wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
-                updateWishlistCount(data.wishlist_count);
-                showToast('Product added to wishlist!', 'success');
             } else {
-                showToast(data.message || 'Error adding to wishlist', 'error');
+                wishlistBtn.style.background = 'white';
+                wishlistBtn.style.borderColor = '#667eea';
+                wishlistBtn.style.color = '#667eea';
+                wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error adding product to wishlist', 'error');
-        });
-    }
+            updateWishlistCount(data.wishlist_count);
+            showToast(data.message, 'success');
+        } else {
+            showToast(data.message || 'Error updating wishlist', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast(error.message || 'Error updating wishlist', 'error');
+    });
 }
 
 window.buyNow = function(productId) {

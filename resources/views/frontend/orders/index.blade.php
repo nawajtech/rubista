@@ -41,7 +41,15 @@
                                             <div class="col-md-4 mb-2">
                                                 <div class="d-flex align-items-center">
                                                     @if($item->product_image)
-                                                        <img src="{{ $item->product_image }}" class="img-thumbnail me-2" style="width: 50px; height: 50px;">
+                                                        @if(Str::startsWith($item->product_image, 'http'))
+                                                            <img src="{{ $item->product_image }}" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                                        @else
+                                                            <img src="{{ asset('storage/' . $item->product_image) }}" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null;this.src='https://via.placeholder.com/50x50/7c3aed/ffffff?text=Product';">
+                                                        @endif
+                                                    @else
+                                                        <div class="img-thumbnail me-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem;">
+                                                            <i class="fas fa-image"></i>
+                                                        </div>
                                                     @endif
                                                     <div>
                                                         <div class="fw-bold small">{{ Str::limit($item->product_name, 20) }}</div>

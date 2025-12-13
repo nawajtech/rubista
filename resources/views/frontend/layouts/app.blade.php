@@ -1122,10 +1122,12 @@
                     
                     <!-- Contact & User Actions -->
                     <div class="header-actions">
+                        @if(isset($settings['site_phone']) && $settings['site_phone'])
                         <div class="contact-info">
                             <div class="contact-label">Need Help?</div>
-                            <a href="tel:+919051888500" class="contact-number">+91 90518 88500</a>
+                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $settings['site_phone']) }}" class="contact-number">{{ $settings['site_phone'] }}</a>
                         </div>
+                        @endif
                         
                         <div class="user-actions">
                             @auth

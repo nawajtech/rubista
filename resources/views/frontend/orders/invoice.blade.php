@@ -272,7 +272,22 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>
-                        <strong>{{ $item->product_name }}</strong>
+                        <div class="d-flex align-items-center">
+                            @if($item->product_image)
+                                @if(Str::startsWith($item->product_image, 'http'))
+                                    <img src="{{ $item->product_image }}" class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                                @else
+                                    <img src="{{ asset('storage/' . $item->product_image) }}" class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" onerror="this.onerror=null;this.src='https://via.placeholder.com/50x50/7c3aed/ffffff?text=Product';">
+                                @endif
+                            @else
+                                <div class="me-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; border-radius: 4px; font-size: 0.8rem;">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            @endif
+                            <div>
+                                <strong>{{ $item->product_name }}</strong>
+                            </div>
+                        </div>
                     </td>
                     <td>{{ $item->product_sku }}</td>
                     <td>{{ $item->quantity }}</td>

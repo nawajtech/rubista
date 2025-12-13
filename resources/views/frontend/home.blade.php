@@ -1081,10 +1081,11 @@
 
     .badge.discount {
         top: 8px;
-        right: 8px;
+        right: 50px;
         background: linear-gradient(135deg, #ef4444, #dc2626);
         color: white;
         box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        z-index: 5;
     }
 
     .product-overlay {
@@ -1094,12 +1095,19 @@
         display: flex;
         flex-direction: column;
         gap: 5px;
-        opacity: 0;
-        transform: translateX(12px);
+        opacity: 1;
+        transform: translateX(0);
         transition: all 0.3s ease;
+        z-index: 15;
     }
 
     .product-item:hover .product-overlay {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    /* Ensure overlay buttons are always visible in best seller section */
+    .best-selling-section .product-overlay {
         opacity: 1;
         transform: translateX(0);
     }
@@ -3691,63 +3699,53 @@ document.addEventListener('DOMContentLoaded', function() {
             const icon = this.querySelector('i');
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             
-            // Check if already in wishlist (filled heart = in wishlist)
-            const isInWishlist = icon.classList.contains('fas');
-            
-            if (isInWishlist) {
-                // Remove from wishlist
-                fetch(`/wishlist/remove/${productId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    }
+            // Use toggle endpoint - server will check if product is in wishlist
+            fetch('/wishlist/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: parseInt(productId)
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                        this.style.background = '#f1f5f9';
-                        this.style.color = 'var(--primary-purple)';
-                        updateWishlistCount(data.wishlist_count);
-                        showToast('Product removed from wishlist', 'success');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error removing from wishlist', 'error');
-                });
-            } else {
-                // Add to wishlist
-                fetch('/wishlist/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({
-                        product_id: parseInt(productId)
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Request failed');
+                    }).catch(() => {
+                        throw new Error('Request failed with status: ' + response.status);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update icon based on server response
+                    if (data.in_wishlist) {
                         icon.classList.remove('far');
                         icon.classList.add('fas');
                         this.style.background = '#fecaca';
                         this.style.color = '#dc2626';
-                        updateWishlistCount(data.wishlist_count);
-                        showToast('Product added to wishlist!', 'success');
                     } else {
-                        showToast(data.message || 'Error adding to wishlist', 'error');
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        this.style.background = '#f1f5f9';
+                        this.style.color = 'var(--primary-purple)';
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error adding to wishlist', 'error');
-                });
-            }
+                    updateWishlistCount(data.wishlist_count);
+                    showToast(data.message, 'success');
+                } else {
+                    showToast(data.message || 'Error updating wishlist', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast(error.message || 'Error updating wishlist', 'error');
+            });
         });
     });
     
@@ -3824,60 +3822,51 @@ document.addEventListener('DOMContentLoaded', function() {
             const icon = this.querySelector('i');
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             
-            const isInWishlist = icon.classList.contains('fas');
-            
-            if (isInWishlist) {
-                // Remove from wishlist
-                fetch(`/wishlist/remove/${productId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    }
+            // Use toggle endpoint - server will check if product is in wishlist
+            fetch('/wishlist/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: parseInt(productId)
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                        this.classList.remove('active');
-                        updateWishlistCount(data.wishlist_count);
-                        showToast('Removed from wishlist', 'success');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error removing from wishlist', 'error');
-                });
-            } else {
-                // Add to wishlist
-                fetch('/wishlist/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({
-                        product_id: parseInt(productId)
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Request failed');
+                    }).catch(() => {
+                        throw new Error('Request failed with status: ' + response.status);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update icon based on server response
+                    if (data.in_wishlist) {
                         icon.classList.remove('far');
                         icon.classList.add('fas');
                         this.classList.add('active');
-                        updateWishlistCount(data.wishlist_count);
-                        showToast('Added to wishlist!', 'success');
                     } else {
-                        showToast(data.message || 'Error adding to wishlist', 'error');
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        this.classList.remove('active');
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error adding to wishlist', 'error');
-                });
-            }
+                    updateWishlistCount(data.wishlist_count);
+                    showToast(data.message, 'success');
+                } else {
+                    showToast(data.message || 'Error updating wishlist', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast(error.message || 'Error updating wishlist', 'error');
+            });
         });
     });
     
@@ -4249,4 +4238,5 @@ document.head.appendChild(style);
 </script>
 @endsection
 
+ 
  
