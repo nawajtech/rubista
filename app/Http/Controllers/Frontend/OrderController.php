@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -27,6 +28,11 @@ class OrderController extends Controller
      */
     public function create()
     {
+        // Require authentication for checkout
+        if (!Auth::check()) {
+            return redirect()->route('frontend.login')->with('error', 'Please login to proceed with checkout.');
+        }
+        
         $cart = Session::get('cart', []);
         
         if (empty($cart)) {
@@ -53,11 +59,40 @@ class OrderController extends Controller
             }
         }
         
-        $shipping = 0; // Free shipping
-        $tax = 0; // No tax for now
+        // Get settings for shipping and tax
+        $settings = Cache::remember('site_settings', 3600, function () {
+            $settingsFile = storage_path('app/settings.json');
+            
+            if (file_exists($settingsFile)) {
+                return json_decode(file_get_contents($settingsFile), true);
+            }
+
+            return [
+                'shipping_fee' => 0,
+                'free_shipping_threshold' => 0,
+                'tax_rate' => 0,
+            ];
+        });
+        
+        // Calculate shipping fee
+        $shipping = 0;
+        $freeShippingThreshold = $settings['free_shipping_threshold'] ?? 0;
+        $shippingFee = $settings['shipping_fee'] ?? 0;
+        
+        // Apply free shipping if threshold is met
+        if ($freeShippingThreshold > 0 && $subtotal >= $freeShippingThreshold) {
+            $shipping = 0;
+        } elseif ($shippingFee > 0) {
+            $shipping = $shippingFee;
+        }
+        
+        // Calculate tax
+        $taxRate = $settings['tax_rate'] ?? 0;
+        $tax = $taxRate > 0 ? ($subtotal * $taxRate / 100) : 0;
+        
         $total = $subtotal + $shipping + $tax;
         
-        return view('frontend.orders.checkout', compact('cartItems', 'subtotal', 'shipping', 'tax', 'total'));
+        return view('frontend.orders.checkout', compact('cartItems', 'subtotal', 'shipping', 'tax', 'total', 'settings'));
     }
 
     /**
@@ -120,8 +155,37 @@ class OrderController extends Controller
                 }
             }
             
+            // Get settings for shipping and tax
+            $settings = Cache::remember('site_settings', 3600, function () {
+                $settingsFile = storage_path('app/settings.json');
+                
+                if (file_exists($settingsFile)) {
+                    return json_decode(file_get_contents($settingsFile), true);
+                }
+
+                return [
+                    'shipping_fee' => 0,
+                    'free_shipping_threshold' => 0,
+                    'tax_rate' => 0,
+                ];
+            });
+            
+            // Calculate shipping fee
             $shipping = 0;
-            $tax = 0;
+            $freeShippingThreshold = $settings['free_shipping_threshold'] ?? 0;
+            $shippingFee = $settings['shipping_fee'] ?? 0;
+            
+            // Apply free shipping if threshold is met
+            if ($freeShippingThreshold > 0 && $subtotal >= $freeShippingThreshold) {
+                $shipping = 0;
+            } elseif ($shippingFee > 0) {
+                $shipping = $shippingFee;
+            }
+            
+            // Calculate tax
+            $taxRate = $settings['tax_rate'] ?? 0;
+            $tax = $taxRate > 0 ? ($subtotal * $taxRate / 100) : 0;
+            
             $total = $subtotal + $shipping + $tax;
             
             // Create order
@@ -202,5 +266,54 @@ class OrderController extends Controller
         $order->update(['status' => 'cancelled']);
 
         return redirect()->back()->with('success', 'Order cancelled successfully.');
+    }
+
+    /**
+     * Generate and display invoice/bill for an order
+     */
+    public function invoice(Order $order)
+    {
+        // Make sure user can only view their own orders
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $order->load('orderItems', 'user');
+        
+        // Get site settings for company info
+        $settings = Cache::remember('site_settings', 3600, function () {
+            $settingsFile = storage_path('app/settings.json');
+            if (file_exists($settingsFile)) {
+                return json_decode(file_get_contents($settingsFile), true);
+            }
+            return [];
+        });
+
+        return view('frontend.orders.invoice', compact('order', 'settings'));
+    }
+
+    /**
+     * Download invoice as PDF
+     */
+    public function downloadInvoice(Order $order)
+    {
+        // Make sure user can only download their own orders
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $order->load('orderItems', 'user');
+        
+        // Get site settings for company info
+        $settings = Cache::remember('site_settings', 3600, function () {
+            $settingsFile = storage_path('app/settings.json');
+            if (file_exists($settingsFile)) {
+                return json_decode(file_get_contents($settingsFile), true);
+            }
+            return [];
+        });
+
+        // For now, return the invoice view (you can use a PDF library like dompdf or snappy later)
+        return view('frontend.orders.invoice', compact('order', 'settings'));
     }
 }

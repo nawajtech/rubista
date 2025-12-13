@@ -59,9 +59,12 @@
                                     </div>
                                     <div class="col-md-4 text-end">
                                         <h5 class="text-primary">₹{{ number_format($order->total_amount, 2) }}</h5>
-                                        <div class="d-flex gap-2 justify-content-end">
+                                        <div class="d-flex gap-2 justify-content-end flex-wrap">
                                             <a href="{{ route('frontend.orders.show', $order) }}" class="btn btn-outline-primary btn-sm">
                                                 <i class="fas fa-eye"></i> View Details
+                                            </a>
+                                            <a href="{{ route('frontend.orders.invoice.download', $order) }}" class="btn btn-success btn-sm" target="_blank">
+                                                <i class="fas fa-download"></i> Download Bill
                                             </a>
                                             @if($order->canBeCancelled())
                                                 <form method="POST" action="{{ route('frontend.orders.cancel', $order) }}" class="d-inline">

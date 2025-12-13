@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\Cache;
 use Session;
 
 class CartController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // Allow cart operations for both authenticated and guest users
+        // Remove auth middleware to allow guest cart functionality
     }
 
     /**
@@ -37,7 +39,40 @@ class CartController extends Controller
             }
         }
         
-        return view('frontend.cart', compact('cartItems', 'total'));
+        // Get settings for shipping and tax
+        $settings = Cache::remember('site_settings', 3600, function () {
+            $settingsFile = storage_path('app/settings.json');
+            
+            if (file_exists($settingsFile)) {
+                return json_decode(file_get_contents($settingsFile), true);
+            }
+
+            return [
+                'shipping_fee' => 0,
+                'free_shipping_threshold' => 0,
+                'tax_rate' => 0,
+            ];
+        });
+        
+        // Calculate shipping fee
+        $shipping = 0;
+        $freeShippingThreshold = $settings['free_shipping_threshold'] ?? 0;
+        $shippingFee = $settings['shipping_fee'] ?? 0;
+        
+        // Apply free shipping if threshold is met
+        if ($freeShippingThreshold > 0 && $total >= $freeShippingThreshold) {
+            $shipping = 0;
+        } elseif ($shippingFee > 0) {
+            $shipping = $shippingFee;
+        }
+        
+        // Calculate tax
+        $taxRate = $settings['tax_rate'] ?? 0;
+        $tax = $taxRate > 0 ? ($total * $taxRate / 100) : 0;
+        
+        $grandTotal = $total + $shipping + $tax;
+        
+        return view('frontend.cart', compact('cartItems', 'total', 'shipping', 'tax', 'grandTotal', 'settings'));
     }
     
     /**
@@ -45,12 +80,34 @@ class CartController extends Controller
      */
     public function add(Request $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1'
-        ]);
+        try {
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'quantity' => 'required|integer|min:1'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        }
         
-        $product = Product::findOrFail($request->product_id);
+        try {
+            $product = Product::findOrFail($request->product_id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found'
+                ], 404);
+            }
+            throw $e;
+        }
+        
         $cart = Session::get('cart', []);
         
         if (isset($cart[$request->product_id])) {
@@ -66,7 +123,7 @@ class CartController extends Controller
         
         Session::put('cart', $cart);
         
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Product added to cart successfully!',
@@ -105,11 +162,48 @@ class CartController extends Controller
                     }
                 }
                 
+                // Get settings for shipping and tax
+                $settings = Cache::remember('site_settings', 3600, function () {
+                    $settingsFile = storage_path('app/settings.json');
+                    
+                    if (file_exists($settingsFile)) {
+                        return json_decode(file_get_contents($settingsFile), true);
+                    }
+
+                    return [
+                        'shipping_fee' => 0,
+                        'free_shipping_threshold' => 0,
+                        'tax_rate' => 0,
+                    ];
+                });
+                
+                // Calculate shipping fee
+                $shipping = 0;
+                $freeShippingThreshold = $settings['free_shipping_threshold'] ?? 0;
+                $shippingFee = $settings['shipping_fee'] ?? 0;
+                
+                // Apply free shipping if threshold is met
+                if ($freeShippingThreshold > 0 && $total >= $freeShippingThreshold) {
+                    $shipping = 0;
+                } elseif ($shippingFee > 0) {
+                    $shipping = $shippingFee;
+                }
+                
+                // Calculate tax
+                $taxRate = $settings['tax_rate'] ?? 0;
+                $tax = $taxRate > 0 ? ($total * $taxRate / 100) : 0;
+                
+                $grandTotal = $total + $shipping + $tax;
+                
                 return response()->json([
                     'success' => true,
                     'message' => 'Cart updated successfully!',
                     'item_total' => $itemTotal,
                     'cart_total' => $total,
+                    'shipping' => $shipping,
+                    'tax' => $tax,
+                    'grand_total' => $grandTotal,
+                    'free_shipping_threshold' => $freeShippingThreshold,
                     'cart_count' => count($cart)
                 ]);
             }
@@ -139,10 +233,47 @@ class CartController extends Controller
                     }
                 }
                 
+                // Get settings for shipping and tax
+                $settings = Cache::remember('site_settings', 3600, function () {
+                    $settingsFile = storage_path('app/settings.json');
+                    
+                    if (file_exists($settingsFile)) {
+                        return json_decode(file_get_contents($settingsFile), true);
+                    }
+
+                    return [
+                        'shipping_fee' => 0,
+                        'free_shipping_threshold' => 0,
+                        'tax_rate' => 0,
+                    ];
+                });
+                
+                // Calculate shipping fee
+                $shipping = 0;
+                $freeShippingThreshold = $settings['free_shipping_threshold'] ?? 0;
+                $shippingFee = $settings['shipping_fee'] ?? 0;
+                
+                // Apply free shipping if threshold is met
+                if ($freeShippingThreshold > 0 && $total >= $freeShippingThreshold) {
+                    $shipping = 0;
+                } elseif ($shippingFee > 0) {
+                    $shipping = $shippingFee;
+                }
+                
+                // Calculate tax
+                $taxRate = $settings['tax_rate'] ?? 0;
+                $tax = $taxRate > 0 ? ($total * $taxRate / 100) : 0;
+                
+                $grandTotal = $total + $shipping + $tax;
+                
                 return response()->json([
                     'success' => true,
                     'message' => 'Product removed from cart!',
                     'cart_total' => $total,
+                    'shipping' => $shipping,
+                    'tax' => $tax,
+                    'grand_total' => $grandTotal,
+                    'free_shipping_threshold' => $freeShippingThreshold,
                     'cart_count' => count($cart)
                 ]);
             }

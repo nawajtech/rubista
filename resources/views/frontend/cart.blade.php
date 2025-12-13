@@ -25,11 +25,22 @@
                             <tr data-item-id="{{ $item['id'] }}">
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=80&h=80&fit=crop" 
-                                             class="img-thumbnail me-3" style="width: 80px; height: 80px;">
+                                        @if($item['product']->image)
+                                            @if(Str::startsWith($item['product']->image, 'http'))
+                                                <img src="{{ $item['product']->image }}" 
+                                                     class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                            @else
+                                                <img src="{{ asset('storage/' . $item['product']->image) }}" 
+                                                     class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                            @endif
+                                        @else
+                                            <div class="img-thumbnail me-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        @endif
                                         <div>
                                             <h6>{{ $item['product']->name }}</h6>
-                                            <small class="text-muted">{{ Str::limit($item['product']->description, 100) }}</small>
+                                            <small class="text-muted">{{ Str::limit($item['product']->description ?? '', 100) }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -76,16 +87,30 @@
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Shipping:</span>
-                        <span>Free</span>
+                        <span id="cart-shipping">
+                            @if($shipping > 0)
+                                ₹{{ number_format($shipping, 2) }}
+                            @else
+                                Free
+                            @endif
+                        </span>
                     </div>
+                    @if($tax > 0)
                     <div class="d-flex justify-content-between mb-2">
                         <span>Tax:</span>
-                        <span>₹0.00</span>
+                        <span id="cart-tax">₹{{ number_format($tax, 2) }}</span>
                     </div>
+                    @endif
+                    @if(isset($settings['free_shipping_threshold']) && $settings['free_shipping_threshold'] > 0 && $total < $settings['free_shipping_threshold'])
+                    <div class="alert alert-info py-2 px-3 mb-2" style="font-size: 0.85rem;">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Add ₹{{ number_format($settings['free_shipping_threshold'] - $total, 2) }} more for free shipping!
+                    </div>
+                    @endif
                     <hr>
                     <div class="d-flex justify-content-between mb-3">
                         <strong>Total:</strong>
-                        <strong id="cart-total">₹{{ number_format($total, 2) }}</strong>
+                        <strong id="cart-total">₹{{ number_format($grandTotal, 2) }}</strong>
                     </div>
                     <a href="{{ route('frontend.checkout') }}" class="btn btn-primary btn-lg w-100 mb-2">Proceed to Checkout</a>
                     <button class="btn btn-outline-danger w-100 clear-cart">Clear Cart</button>
@@ -168,7 +193,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update cart totals
                 document.getElementById('cart-subtotal').textContent = `₹${data.cart_total.toFixed(2)}`;
-                document.getElementById('cart-total').textContent = `₹${data.cart_total.toFixed(2)}`;
+                
+                // Update shipping
+                const shippingElement = document.getElementById('cart-shipping');
+                if (shippingElement) {
+                    shippingElement.textContent = data.shipping > 0 ? `₹${data.shipping.toFixed(2)}` : 'Free';
+                }
+                
+                // Update tax if exists
+                const taxElement = document.getElementById('cart-tax');
+                if (taxElement && data.tax > 0) {
+                    taxElement.textContent = `₹${data.tax.toFixed(2)}`;
+                }
+                
+                // Update grand total
+                document.getElementById('cart-total').textContent = `₹${data.grand_total.toFixed(2)}`;
+                
+                // Update free shipping message
+                updateFreeShippingMessage(data.cart_total, data.free_shipping_threshold);
                 
                 // Update navbar cart count
                 updateCartCount(data.cart_count);
@@ -203,7 +245,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update cart totals
                 document.getElementById('cart-subtotal').textContent = `₹${data.cart_total.toFixed(2)}`;
-                document.getElementById('cart-total').textContent = `₹${data.cart_total.toFixed(2)}`;
+                
+                // Update shipping
+                const shippingElement = document.getElementById('cart-shipping');
+                if (shippingElement) {
+                    shippingElement.textContent = data.shipping > 0 ? `₹${data.shipping.toFixed(2)}` : 'Free';
+                }
+                
+                // Update tax if exists
+                const taxElement = document.getElementById('cart-tax');
+                if (taxElement && data.tax > 0) {
+                    taxElement.textContent = `₹${data.tax.toFixed(2)}`;
+                }
+                
+                // Update grand total
+                document.getElementById('cart-total').textContent = `₹${data.grand_total.toFixed(2)}`;
+                
+                // Update free shipping message
+                updateFreeShippingMessage(data.cart_total, data.free_shipping_threshold);
                 
                 // Update navbar cart count
                 updateCartCount(data.cart_count);
@@ -253,6 +312,72 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('Error clearing cart', 'error');
         });
     }
+    
+    function updateFreeShippingMessage(cartTotal, freeShippingThreshold) {
+        const freeShippingAlert = document.querySelector('.alert-info');
+        if (freeShippingThreshold > 0 && cartTotal < freeShippingThreshold) {
+            const amountNeeded = freeShippingThreshold - cartTotal;
+            if (freeShippingAlert) {
+                freeShippingAlert.innerHTML = `<i class="fas fa-info-circle me-1"></i> Add ₹${amountNeeded.toFixed(2)} more for free shipping!`;
+                freeShippingAlert.style.display = 'block';
+            }
+        } else if (freeShippingAlert) {
+            freeShippingAlert.style.display = 'none';
+        }
+    }
+    
+    // Helper function to show toast notifications
+    function showNotification(message, type = 'success') {
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#667eea';
+        toast.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${bgColor};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 9999;
+                font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                animation: slideInRight 0.3s ease;
+            ">
+                <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'} me-2"></i>${message}
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+    
+    // Helper function to update cart count in navbar
+    function updateCartCount(count) {
+        const cartBadges = document.querySelectorAll('.cart-count, .cart-badge, [data-cart-count], .action-badge.cart-count');
+        cartBadges.forEach(badge => {
+            badge.textContent = count;
+            if (count > 0) {
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        });
+    }
 });
 </script>
+<style>
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
 @endsection 

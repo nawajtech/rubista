@@ -5,11 +5,11 @@
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2"><i class="bi bi-file-text"></i> CMS Pages</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
+    <!-- <div class="btn-toolbar mb-2 mb-md-0">
         <a href="{{ route('admin.cms.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Add New Page
         </a>
-    </div>
+    </div> -->
 </div>
 
 <div class="card">
@@ -43,13 +43,13 @@
                                 <a href="{{ route('admin.cms.edit', 1) }}" class="btn btn-outline-primary">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form method="POST" action="{{ route('admin.cms.destroy', 1) }}" class="d-inline">
+                                <!-- <form method="POST" action="{{ route('admin.cms.destroy', 1) }}" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                                         <i class="bi bi-trash"></i>
                                     </button>
-                                </form>
+                                </form> -->
                             </div>
                         </td>
                     </tr>
@@ -66,13 +66,13 @@
                                 <a href="{{ route('admin.cms.edit', 2) }}" class="btn btn-outline-primary">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form method="POST" action="{{ route('admin.cms.destroy', 2) }}" class="d-inline">
+                                <!-- <form method="POST" action="{{ route('admin.cms.destroy', 2) }}" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                                         <i class="bi bi-trash"></i>
                                     </button>
-                                </form>
+                                </form> -->
                             </div>
                         </td>
                     </tr>
@@ -89,13 +89,13 @@
                                 <a href="{{ route('admin.cms.edit', 3) }}" class="btn btn-outline-primary">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form method="POST" action="{{ route('admin.cms.destroy', 3) }}" class="d-inline">
+                                <!-- <form method="POST" action="{{ route('admin.cms.destroy', 3) }}" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                                         <i class="bi bi-trash"></i>
                                     </button>
-                                </form>
+                                </form> -->
                             </div>
                         </td>
                     </tr>

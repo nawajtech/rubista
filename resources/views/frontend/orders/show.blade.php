@@ -9,6 +9,9 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="fas fa-receipt me-2"></i>Order #{{ $order->order_number }}</h2>
                 <div>
+                    <a href="{{ route('frontend.orders.invoice.download', $order) }}" class="btn btn-success me-2" target="_blank">
+                        <i class="fas fa-download me-1"></i> Download Bill
+                    </a>
                     <a href="{{ route('frontend.orders') }}" class="btn btn-secondary me-2">
                         <i class="fas fa-arrow-left me-1"></i> Back to Orders
                     </a>

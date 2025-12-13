@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\HomepageContent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
@@ -26,6 +27,29 @@ class HomeController extends Controller
         $bannerContent = HomepageContent::getBySection('banner');
         $featureContent = HomepageContent::getBySection('feature');
         $galleryContent = HomepageContent::getBySection('gallery');
+        $flashDealContent = HomepageContent::getBySection('flash_deal')->first();
+        $featuredProductsContent = HomepageContent::getBySection('featured_products')->first();
+        $bestSellersContent = HomepageContent::getBySection('best_sellers')->first();
+        $brandsContent = HomepageContent::getBySection('brands')->first();
+        $testimonialsContent = HomepageContent::getBySection('testimonial');
+        $latestProductsContent = HomepageContent::getBySection('latest_products')->first();
+        
+        // Get settings for contact and shipping info
+        $settings = Cache::remember('site_settings', 3600, function () {
+            $settingsFile = storage_path('app/settings.json');
+            
+            if (file_exists($settingsFile)) {
+                return json_decode(file_get_contents($settingsFile), true);
+            }
+
+            // Default settings
+            return [
+                'site_email' => 'info@rubista.com',
+                'site_phone' => '+1 234 567 8900',
+                'site_address' => '123 Commerce Street, Business District',
+                'free_shipping_threshold' => 500,
+            ];
+        });
         
         return view('frontend.home', compact(
             'categories', 
@@ -36,7 +60,14 @@ class HomeController extends Controller
             'offerContent',
             'bannerContent',
             'featureContent',
-            'galleryContent'
+            'galleryContent',
+            'flashDealContent',
+            'featuredProductsContent',
+            'bestSellersContent',
+            'brandsContent',
+            'testimonialsContent',
+            'latestProductsContent',
+            'settings'
         ));
     }
     

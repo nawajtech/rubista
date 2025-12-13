@@ -188,6 +188,25 @@
 @endsection
 
 @section('content')
+<!-- Success/Error Messages -->
+@if(session('success'))
+    <div class="container mt-3">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="container mt-3">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+@endif
+
 <!-- Profile Header -->
 <section class="profile-header">
     <div class="container">
@@ -196,8 +215,8 @@
                 <div class="profile-avatar">
                     <i class="fas fa-user"></i>
                 </div>
-                <h1 class="fw-bold mb-2">{{ Auth::user()->name }}</h1>
-                <p class="lead mb-0">{{ Auth::user()->email }}</p>
+                <h1 class="fw-bold mb-2">{{ $user->name }}</h1>
+                <p class="lead mb-0">{{ $user->email }}</p>
             </div>
         </div>
     </div>
@@ -211,95 +230,156 @@
             <div class="col-lg-8">
                 <div class="profile-card">
                     <h5><i class="fas fa-user me-2"></i>Personal Information</h5>
-                    <div class="info-item">
-                        <span class="info-label">Full Name</span>
-                        <span class="info-value">{{ Auth::user()->name }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Email Address</span>
-                        <span class="info-value">{{ Auth::user()->email }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Member Since</span>
-                        <span class="info-value">{{ Auth::user()->created_at->format('M d, Y') }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Account Status</span>
-                        <span class="info-value">
-                            <span class="badge bg-success">Active</span>
-                        </span>
-                    </div>
-                    <div class="text-end mt-3">
-                        <button class="btn-edit">
-                            <i class="fas fa-edit me-2"></i>Edit Profile
-                        </button>
-                    </div>
+                    <form id="profileForm" action="{{ route('frontend.profile.update') }}" method="POST">
+                        @csrf
+                        <div class="info-item">
+                            <span class="info-label">Full Name</span>
+                            <span class="info-value">
+                                <span id="display-name">{{ $user->name }}</span>
+                                <input type="text" name="name" id="edit-name" value="{{ $user->name }}" 
+                                       class="form-control d-none" style="max-width: 300px; display: inline-block;">
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email Address</span>
+                            <span class="info-value">
+                                <span id="display-email">{{ $user->email }}</span>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>Email cannot be changed
+                                </small>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Member Since</span>
+                            <span class="info-value">{{ $user->created_at->format('M d, Y') }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Account Status</span>
+                            <span class="info-value">
+                                <span class="badge bg-success">Active</span>
+                            </span>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn-edit" id="editProfileBtn" onclick="toggleEditProfile()">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </button>
+                            <button type="submit" class="btn-edit d-none" id="saveProfileBtn">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary d-none" id="cancelProfileBtn" onclick="cancelEditProfile()">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
+                        </div>
+                    </form>
                 </div>
                 
                 <!-- Address Information -->
                 <div class="profile-card">
                     <h5><i class="fas fa-map-marker-alt me-2"></i>Address Information</h5>
-                    <div class="info-item">
-                        <span class="info-label">Street Address</span>
-                        <span class="info-value">123 Main Street</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">City</span>
-                        <span class="info-value">Mumbai</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">State</span>
-                        <span class="info-value">Maharashtra</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">PIN Code</span>
-                        <span class="info-value">400001</span>
-                    </div>
-                    <div class="text-end mt-3">
-                        <button class="btn-edit">
-                            <i class="fas fa-edit me-2"></i>Edit Address
-                        </button>
-                    </div>
+                    <form id="addressForm" action="{{ route('frontend.profile.update-address') }}" method="POST">
+                        @csrf
+                        @php
+                            $userAddress = session('user_address', []);
+                            if ($latestOrder) {
+                                $userAddress = [
+                                    'address' => $latestOrder->shipping_address ?? '',
+                                    'city' => $latestOrder->shipping_city ?? '',
+                                    'state' => $latestOrder->shipping_state ?? '',
+                                    'postal_code' => $latestOrder->shipping_postal_code ?? '',
+                                    'phone' => $latestOrder->shipping_phone ?? '',
+                                ];
+                            }
+                        @endphp
+                        <div class="info-item">
+                            <span class="info-label">Street Address</span>
+                            <span class="info-value">
+                                <span id="display-address">{{ $userAddress['address'] ?? 'Not set' }}</span>
+                                <textarea name="address" id="edit-address" rows="2" 
+                                          class="form-control d-none" style="max-width: 300px;">{{ $userAddress['address'] ?? '' }}</textarea>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">City</span>
+                            <span class="info-value">
+                                <span id="display-city">{{ $userAddress['city'] ?? 'Not set' }}</span>
+                                <input type="text" name="city" id="edit-city" value="{{ $userAddress['city'] ?? '' }}" 
+                                       class="form-control d-none" style="max-width: 300px; display: inline-block;">
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">State</span>
+                            <span class="info-value">
+                                <span id="display-state">{{ $userAddress['state'] ?? 'Not set' }}</span>
+                                <input type="text" name="state" id="edit-state" value="{{ $userAddress['state'] ?? '' }}" 
+                                       class="form-control d-none" style="max-width: 300px; display: inline-block;">
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">PIN Code</span>
+                            <span class="info-value">
+                                <span id="display-postal">{{ $userAddress['postal_code'] ?? 'Not set' }}</span>
+                                <input type="text" name="postal_code" id="edit-postal" value="{{ $userAddress['postal_code'] ?? '' }}" 
+                                       class="form-control d-none" style="max-width: 300px; display: inline-block;">
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value">
+                                <span id="display-phone">{{ $userAddress['phone'] ?? 'Not set' }}</span>
+                                <input type="text" name="phone" id="edit-phone" value="{{ $userAddress['phone'] ?? '' }}" 
+                                       class="form-control d-none" style="max-width: 300px; display: inline-block;">
+                            </span>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn-edit" id="editAddressBtn" onclick="toggleEditAddress()">
+                                <i class="fas fa-edit me-2"></i>Edit Address
+                            </button>
+                            <button type="submit" class="btn-edit d-none" id="saveAddressBtn">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary d-none" id="cancelAddressBtn" onclick="cancelEditAddress()">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
+                        </div>
+                    </form>
                 </div>
                 
                 <!-- Recent Orders -->
                 <div class="recent-orders">
                     <h5><i class="fas fa-shopping-bag me-2"></i>Recent Orders</h5>
-                    <div class="order-item">
-                        <div>
-                            <div class="fw-bold">Order #12345</div>
-                            <small class="text-muted">Placed on Jan 15, 2025</small>
+                    @if($orders->count() > 0)
+                        @foreach($orders as $order)
+                        <div class="order-item">
+                            <div>
+                                <div class="fw-bold">
+                                    <a href="{{ route('frontend.orders.show', $order->id) }}" class="text-decoration-none">
+                                        Order #{{ $order->order_number }}
+                                    </a>
+                                </div>
+                                <small class="text-muted">Placed on {{ $order->created_at->format('M d, Y') }}</small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold">₹{{ number_format($order->total_amount, 2) }}</div>
+                                <div class="order-status status-{{ strtolower($order->status) }}">
+                                    {{ ucfirst($order->status) }}
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-end">
-                            <div class="fw-bold">₹2,999</div>
-                            <div class="order-status status-delivered">Delivered</div>
+                        @endforeach
+                    @else
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No orders yet</p>
+                            <a href="{{ route('frontend.home') }}" class="btn btn-primary">Start Shopping</a>
                         </div>
-                    </div>
-                    <div class="order-item">
-                        <div>
-                            <div class="fw-bold">Order #12344</div>
-                            <small class="text-muted">Placed on Jan 12, 2025</small>
-                        </div>
-                        <div class="text-end">
-                            <div class="fw-bold">₹1,499</div>
-                            <div class="order-status status-shipped">Shipped</div>
-                        </div>
-                    </div>
-                    <div class="order-item">
-                        <div>
-                            <div class="fw-bold">Order #12343</div>
-                            <small class="text-muted">Placed on Jan 10, 2025</small>
-                        </div>
-                        <div class="text-end">
-                            <div class="fw-bold">₹999</div>
-                            <div class="order-status status-processing">Processing</div>
-                        </div>
-                    </div>
+                    @endif
+                    @if($orders->count() > 0)
                     <div class="text-center mt-3">
                         <a href="{{ route('frontend.orders') }}" class="btn btn-outline-primary">
                             View All Orders
                         </a>
                     </div>
+                    @endif
                 </div>
             </div>
             
@@ -309,13 +389,13 @@
                 <div class="row">
                     <div class="col-6">
                         <div class="stats-card">
-                            <span class="stats-number">15</span>
+                            <span class="stats-number">{{ $totalOrders }}</span>
                             <div class="stats-label">Total Orders</div>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="stats-card">
-                            <span class="stats-number">5</span>
+                            <span class="stats-number">{{ $wishlistCount }}</span>
                             <div class="stats-label">Wishlist Items</div>
                         </div>
                     </div>
@@ -359,24 +439,274 @@
                 <!-- Account Security -->
                 <div class="profile-card mt-4">
                     <h5><i class="fas fa-shield-alt me-2"></i>Account Security</h5>
-                    <div class="info-item">
-                        <span class="info-label">Password</span>
-                        <span class="info-value">••••••••</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Two-Factor Auth</span>
-                        <span class="info-value">
-                            <span class="badge bg-warning">Disabled</span>
-                        </span>
-                    </div>
-                    <div class="text-end mt-3">
-                        <button class="btn-edit">
-                            <i class="fas fa-key me-2"></i>Change Password
-                        </button>
-                    </div>
+                    <form id="passwordForm" action="{{ route('frontend.profile.change-password') }}" method="POST">
+                        @csrf
+                        <div class="info-item">
+                            <span class="info-label">Password</span>
+                            <span class="info-value">••••••••</span>
+                        </div>
+                        <div id="passwordFields" class="d-none">
+                            <div class="mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" name="current_password" class="form-control" required>
+                                @error('current_password')
+                                    <div class="text-danger small">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" name="new_password" class="form-control" required>
+                                @error('new_password')
+                                    <div class="text-danger small">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" name="new_password_confirmation" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn-edit" id="changePasswordBtn" onclick="toggleChangePassword()">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </button>
+                            <button type="submit" class="btn-edit d-none" id="savePasswordBtn">
+                                <i class="fas fa-save me-2"></i>Save Password
+                            </button>
+                            <button type="button" class="btn btn-secondary d-none" id="cancelPasswordBtn" onclick="cancelChangePassword()">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
+@endsection
+
+@section('extra-js')
+<script>
+    // Profile Edit Toggle
+    function toggleEditProfile() {
+        document.getElementById('display-name').classList.add('d-none');
+        document.getElementById('edit-name').classList.remove('d-none');
+        document.getElementById('editProfileBtn').classList.add('d-none');
+        document.getElementById('saveProfileBtn').classList.remove('d-none');
+        document.getElementById('cancelProfileBtn').classList.remove('d-none');
+    }
+
+    function cancelEditProfile() {
+        document.getElementById('display-name').classList.remove('d-none');
+        document.getElementById('edit-name').classList.add('d-none');
+        document.getElementById('editProfileBtn').classList.remove('d-none');
+        document.getElementById('saveProfileBtn').classList.add('d-none');
+        document.getElementById('cancelProfileBtn').classList.add('d-none');
+        
+        // Reset form values
+        document.getElementById('edit-name').value = document.getElementById('display-name').textContent;
+    }
+
+    // Address Edit Toggle
+    function toggleEditAddress() {
+        document.getElementById('display-address').classList.add('d-none');
+        document.getElementById('display-city').classList.add('d-none');
+        document.getElementById('display-state').classList.add('d-none');
+        document.getElementById('display-postal').classList.add('d-none');
+        document.getElementById('display-phone').classList.add('d-none');
+        
+        document.getElementById('edit-address').classList.remove('d-none');
+        document.getElementById('edit-city').classList.remove('d-none');
+        document.getElementById('edit-state').classList.remove('d-none');
+        document.getElementById('edit-postal').classList.remove('d-none');
+        document.getElementById('edit-phone').classList.remove('d-none');
+        
+        document.getElementById('editAddressBtn').classList.add('d-none');
+        document.getElementById('saveAddressBtn').classList.remove('d-none');
+        document.getElementById('cancelAddressBtn').classList.remove('d-none');
+    }
+
+    function cancelEditAddress() {
+        document.getElementById('display-address').classList.remove('d-none');
+        document.getElementById('display-city').classList.remove('d-none');
+        document.getElementById('display-state').classList.remove('d-none');
+        document.getElementById('display-postal').classList.remove('d-none');
+        document.getElementById('display-phone').classList.remove('d-none');
+        
+        document.getElementById('edit-address').classList.add('d-none');
+        document.getElementById('edit-city').classList.add('d-none');
+        document.getElementById('edit-state').classList.add('d-none');
+        document.getElementById('edit-postal').classList.add('d-none');
+        document.getElementById('edit-phone').classList.add('d-none');
+        
+        document.getElementById('editAddressBtn').classList.remove('d-none');
+        document.getElementById('saveAddressBtn').classList.add('d-none');
+        document.getElementById('cancelAddressBtn').classList.add('d-none');
+    }
+
+    // Password Change Toggle
+    function toggleChangePassword() {
+        document.getElementById('passwordFields').classList.remove('d-none');
+        document.getElementById('changePasswordBtn').classList.add('d-none');
+        document.getElementById('savePasswordBtn').classList.remove('d-none');
+        document.getElementById('cancelPasswordBtn').classList.remove('d-none');
+    }
+
+    function cancelChangePassword() {
+        document.getElementById('passwordFields').classList.add('d-none');
+        document.getElementById('changePasswordBtn').classList.remove('d-none');
+        document.getElementById('savePasswordBtn').classList.add('d-none');
+        document.getElementById('cancelPasswordBtn').classList.add('d-none');
+        
+        // Reset form
+        document.getElementById('passwordForm').reset();
+    }
+
+    // Form submissions with proper error handling
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = document.getElementById('saveProfileBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                                document.querySelector('input[name="_token"]')?.value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update display values
+                document.getElementById('display-name').textContent = formData.get('name');
+                cancelEditProfile();
+                
+                // Show success message
+                showNotification('Profile updated successfully!', 'success');
+                // Reload page to update header
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification(data.message || 'Error updating profile', 'error');
+                if (data.errors) {
+                    console.error('Validation errors:', data.errors);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error updating profile. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+    });
+
+    document.getElementById('addressForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = document.getElementById('saveAddressBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                                document.querySelector('input[name="_token"]')?.value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update display values
+                document.getElementById('display-address').textContent = formData.get('address') || 'Not set';
+                document.getElementById('display-city').textContent = formData.get('city') || 'Not set';
+                document.getElementById('display-state').textContent = formData.get('state') || 'Not set';
+                document.getElementById('display-postal').textContent = formData.get('postal_code') || 'Not set';
+                document.getElementById('display-phone').textContent = formData.get('phone') || 'Not set';
+                cancelEditAddress();
+                
+                // Show success message
+                showNotification('Address updated successfully!', 'success');
+            } else {
+                showNotification(data.message || 'Error updating address', 'error');
+                if (data.errors) {
+                    console.error('Validation errors:', data.errors);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error updating address. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+    });
+
+    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = document.getElementById('savePasswordBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                                document.querySelector('input[name="_token"]')?.value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Password changed successfully!', 'success');
+                cancelChangePassword();
+            } else {
+                showNotification(data.message || 'Error changing password', 'error');
+                if (data.errors) {
+                    console.error('Validation errors:', data.errors);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error changing password. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+    });
+
+    // Notification function
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+</script>
 @endsection 

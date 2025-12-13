@@ -15,7 +15,7 @@
     
     .main-image {
         width: 100%;
-        height: 500px;
+        height: 450px;
         object-fit: cover;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -152,12 +152,19 @@
         font-size: 1.1rem;
         transition: all 0.3s ease;
         flex: 1;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
     }
     
     .btn-add-to-cart:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         color: white;
+    }
+    
+    .btn-add-to-cart:active {
+        transform: translateY(0);
     }
     
     .btn-add-to-wishlist {
@@ -168,11 +175,18 @@
         border-radius: 25px;
         font-weight: 600;
         transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
     }
     
     .btn-add-to-wishlist:hover {
         background: #667eea;
         color: white;
+    }
+    
+    .btn-add-to-wishlist:active {
+        transform: scale(0.95);
     }
     
     .btn-buy-now {
@@ -185,6 +199,9 @@
         font-size: 1.1rem;
         transition: all 0.3s ease;
         flex: 1;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
     }
     
     .btn-buy-now:hover {
@@ -192,6 +209,10 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
         color: white;
+    }
+    
+    .btn-buy-now:active {
+        transform: translateY(0);
     }
     
     .product-features {
@@ -360,18 +381,46 @@
         <div class="row">
             <div class="col-lg-6">
                 <div class="product-gallery">
-                    <img src="{{ $product->image ?? 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&h=500&fit=crop' }}" 
-                         alt="{{ $product->name }}" class="main-image" id="mainImage">
+                    @if($product->image)
+                        @if(Str::startsWith($product->image, 'http'))
+                            <img src="{{ $product->image }}" 
+                                 alt="{{ $product->name }}" class="main-image" id="mainImage">
+                        @else
+                            <img src="{{ asset('storage/' . $product->image) }}" 
+                                 alt="{{ $product->name }}" class="main-image" id="mainImage">
+                        @endif
+                    @else
+                        <div class="main-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    @endif
                     
                     <div class="thumbnail-gallery">
-                        <img src="{{ $product->image ?? 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=100&h=100&fit=crop' }}" 
-                             alt="{{ $product->name }}" class="thumbnail active" onclick="changeImage(this)">
-                        <img src="https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=100&h=100&fit=crop" 
-                             alt="{{ $product->name }}" class="thumbnail" onclick="changeImage(this)">
-                        <img src="https://images.unsplash.com/photo-1609592424019-1080b4ac2418?w=100&h=100&fit=crop" 
-                             alt="{{ $product->name }}" class="thumbnail" onclick="changeImage(this)">
-                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop" 
-                             alt="{{ $product->name }}" class="thumbnail" onclick="changeImage(this)">
+                        @if($product->image)
+                            @if(Str::startsWith($product->image, 'http'))
+                                <img src="{{ $product->image }}" 
+                                     alt="{{ $product->name }}" class="thumbnail active" onclick="changeImage(this)">
+                            @else
+                                <img src="{{ asset('storage/' . $product->image) }}" 
+                                     alt="{{ $product->name }}" class="thumbnail active" onclick="changeImage(this)">
+                            @endif
+                        @else
+                            <div class="thumbnail active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        @endif
+                        
+                        @if($product->gallery && is_array($product->gallery) && count($product->gallery) > 0)
+                            @foreach($product->gallery as $galleryImage)
+                                @if(Str::startsWith($galleryImage, 'http'))
+                                    <img src="{{ $galleryImage }}" 
+                                         alt="{{ $product->name }}" class="thumbnail" onclick="changeImage(this)">
+                                @else
+                                    <img src="{{ asset('storage/' . $galleryImage) }}" 
+                                         alt="{{ $product->name }}" class="thumbnail" onclick="changeImage(this)">
+                                @endif
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
@@ -438,16 +487,16 @@
                     </div>
                     
                     <div class="product-actions">
-                        <button class="btn-add-to-cart" onclick="addToCart({{ $product->id }})">
+                        <button type="button" class="btn-add-to-cart" onclick="window.addToCart({{ $product->id }})" style="cursor: pointer;">
                             <i class="fas fa-shopping-cart me-2"></i>Add to Cart
                         </button>
-                        <button class="btn-add-to-wishlist" onclick="addToWishlist({{ $product->id }})">
+                        <button type="button" class="btn-add-to-wishlist" onclick="window.addToWishlist({{ $product->id }})" style="cursor: pointer;">
                             <i class="fas fa-heart"></i>
                         </button>
                     </div>
                     
                     <div class="product-actions">
-                        <button class="btn-buy-now" onclick="buyNow({{ $product->id }})">
+                        <button type="button" class="btn-buy-now" onclick="window.buyNow({{ $product->id }})" style="cursor: pointer;">
                             <i class="fas fa-bolt me-2"></i>Buy Now
                         </button>
                     </div>
@@ -523,8 +572,19 @@
                             </ul>
                         </div>
                         <div class="col-lg-4">
-                            <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop" 
-                                 alt="Product Features" class="img-fluid rounded">
+                            @if($product->image)
+                                @if(Str::startsWith($product->image, 'http'))
+                                    <img src="{{ $product->image }}" 
+                                         alt="Product Features" class="img-fluid rounded" style="height: 300px; width: 100%; object-fit: cover;">
+                                @else
+                                    <img src="{{ asset('storage/' . $product->image) }}" 
+                                         alt="Product Features" class="img-fluid rounded" style="height: 300px; width: 100%; object-fit: cover;">
+                                @endif
+                            @else
+                                <div class="img-fluid rounded" style="height: 300px; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -637,8 +697,10 @@ function changeImage(thumbnail) {
     // Add active class to clicked thumbnail
     thumbnail.classList.add('active');
     
-    // Change main image
-    mainImage.src = thumbnail.src.replace('w=100&h=100', 'w=600&h=500');
+    // Change main image - use the thumbnail src directly
+    if (thumbnail.tagName === 'IMG') {
+        mainImage.src = thumbnail.src;
+    }
 }
 
 function changeQuantity(delta) {
@@ -651,86 +713,273 @@ function changeQuantity(delta) {
     }
 }
 
-function addToCart(productId) {
-    const quantity = document.getElementById('quantity').value;
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+window.addToCart = function(productId) {
+    console.log('addToCart called with productId:', productId);
+    
+    const quantityInput = document.getElementById('quantity');
+    if (!quantityInput) {
+        console.error('Quantity input not found');
+        showToast('Error: Quantity input not found', 'error');
+        return;
+    }
+    
+    const quantity = quantityInput.value || 1;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        showToast('Error: CSRF token not found', 'error');
+        return;
+    }
+    
+    const addToCartBtn = document.querySelector('.btn-add-to-cart');
+    if (!addToCartBtn) {
+        console.error('Add to cart button not found');
+        showToast('Error: Add to cart button not found', 'error');
+        return;
+    }
+    
+    // Add loading state
+    const originalText = addToCartBtn.innerHTML;
+    addToCartBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
+    addToCartBtn.disabled = true;
+    
+    const requestData = {
+        product_id: parseInt(productId),
+        quantity: parseInt(quantity)
+    };
+    
+    console.log('Sending request:', requestData);
     
     fetch('/cart/add', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
         },
-        body: JSON.stringify({
-            product_id: productId,
-            quantity: parseInt(quantity)
-        })
+        body: JSON.stringify(requestData)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            return response.json().then(err => {
+                console.error('Response error:', err);
+                throw new Error(err.message || 'Request failed');
+            }).catch(() => {
+                throw new Error('Request failed with status: ' + response.status);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             // Show success message
-            alert('Product added to cart successfully!');
+            showToast('Product added to cart successfully!', 'success');
             
-            // Update cart count in navbar if exists
-            const cartBadge = document.querySelector('.navbar .badge');
-            if (cartBadge) {
-                cartBadge.textContent = data.cart_count;
+            // Update cart count in navbar
+            if (typeof updateCartCount === 'function') {
+                updateCartCount(data.cart_count);
             }
+            
+            // Reset button
+            addToCartBtn.innerHTML = originalText;
+            addToCartBtn.disabled = false;
         } else {
-            alert('Error adding product to cart: ' + data.message);
+            showToast('Error: ' + (data.message || 'Failed to add product to cart'), 'error');
+            addToCartBtn.innerHTML = originalText;
+            addToCartBtn.disabled = false;
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error adding product to cart');
+        showToast(error.message || 'Error adding product to cart', 'error');
+        addToCartBtn.innerHTML = originalText;
+        addToCartBtn.disabled = false;
     });
 }
 
-function addToWishlist(productId) {
+window.addToWishlist = function(productId) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const wishlistBtn = document.querySelector('.btn-add-to-wishlist');
+    const icon = wishlistBtn.querySelector('i');
+    const isInWishlist = icon && icon.classList.contains('fas');
     
-    fetch('/wishlist/add', {
+    if (isInWishlist) {
+        // Remove from wishlist
+        fetch(`/wishlist/remove/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                wishlistBtn.style.background = 'white';
+                wishlistBtn.style.borderColor = '#667eea';
+                wishlistBtn.style.color = '#667eea';
+                wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
+                updateWishlistCount(data.wishlist_count);
+                showToast('Product removed from wishlist', 'success');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error removing from wishlist', 'error');
+        });
+    } else {
+        // Add to wishlist
+        fetch('/wishlist/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                product_id: parseInt(productId)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                wishlistBtn.style.background = '#dc3545';
+                wishlistBtn.style.borderColor = '#dc3545';
+                wishlistBtn.style.color = 'white';
+                wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
+                updateWishlistCount(data.wishlist_count);
+                showToast('Product added to wishlist!', 'success');
+            } else {
+                showToast(data.message || 'Error adding to wishlist', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error adding product to wishlist', 'error');
+        });
+    }
+}
+
+window.buyNow = function(productId) {
+    const quantity = document.getElementById('quantity').value;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const buyNowBtn = document.querySelector('.btn-buy-now');
+    
+    // Add loading state
+    const originalText = buyNowBtn.innerHTML;
+    buyNowBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    buyNowBtn.disabled = true;
+    
+    // Add to cart first
+    fetch('/cart/add', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
         },
         body: JSON.stringify({
-            product_id: productId
+            product_id: parseInt(productId),
+            quantity: parseInt(quantity)
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.message || 'Request failed');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            alert('Product added to wishlist successfully!');
+            // Update cart count
+            updateCartCount(data.cart_count);
             
-            // Change button style to indicate added to wishlist
-            const wishlistBtn = document.querySelector('.btn-add-to-wishlist');
-            wishlistBtn.style.background = '#dc3545';
-            wishlistBtn.style.borderColor = '#dc3545';
-            wishlistBtn.style.color = 'white';
-            wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
+            // Redirect to checkout
+            window.location.href = '{{ route("frontend.checkout") }}';
         } else {
-            alert(data.message);
+            showToast('Error: ' + (data.message || 'Failed to add product to cart'), 'error');
+            buyNowBtn.innerHTML = originalText;
+            buyNowBtn.disabled = false;
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error adding product to wishlist');
+        showToast(error.message || 'Error adding product to cart', 'error');
+        buyNowBtn.innerHTML = originalText;
+        buyNowBtn.disabled = false;
     });
 }
 
-function buyNow(productId) {
-    const quantity = document.getElementById('quantity').value;
+// Helper function to show toast notifications
+window.showToast = function(message, type = 'success') {
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#667eea';
+    toast.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${bgColor};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 9999;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: slideInRight 0.3s ease;
+        ">
+            <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'} me-2"></i>${message}
+        </div>
+    `;
+    document.body.appendChild(toast);
     
-    // Add to cart first
-    addToCart(productId);
-    
-    // Then redirect to cart after a short delay
     setTimeout(() => {
-        window.location.href = '{{ route("frontend.cart") }}';
-    }, 1000);
+        toast.remove();
+    }, 3000);
+}
+
+// Helper function to update cart count in navbar
+window.updateCartCount = function(count) {
+    const cartBadges = document.querySelectorAll('.cart-count, .cart-badge, [data-cart-count], .action-badge.cart-count');
+    cartBadges.forEach(badge => {
+        badge.textContent = count;
+        if (count > 0) {
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    });
+}
+
+// Helper function to update wishlist count in navbar
+window.updateWishlistCount = function(count) {
+    const wishlistBadges = document.querySelectorAll('.wishlist-count, .wishlist-badge, [data-wishlist-count], .action-badge.wishlist-count');
+    wishlistBadges.forEach(badge => {
+        badge.textContent = count;
+        if (count > 0) {
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    });
 }
 </script>
+<style>
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
 @endsection 

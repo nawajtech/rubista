@@ -329,6 +329,93 @@
             font-size: 16px;
         }
 
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            overflow: hidden;
+        }
+
+        .profile-dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--gray-900);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .profile-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-dropdown-item:hover {
+            background: rgba(124, 58, 237, 0.08);
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .profile-dropdown-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .profile-dropdown-item.logout-item {
+            color: #dc3545;
+        }
+
+        .profile-dropdown-item.logout-item:hover {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .profile-dropdown-item.logout-item i {
+            color: #dc3545;
+        }
+
+        .profile-user-info {
+            padding: 12px 18px;
+            border-bottom: 1px solid #f8f9fa;
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .profile-user-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .profile-user-email {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
         /* Navigation Menu */
         .main-navigation {
             background: rgba(255, 255, 255, 0.95);
@@ -1000,7 +1087,13 @@
     <!-- Top Banner -->
     <div class="top-banner">
         <div class="container">
-            <strong>Free Shipping on orders over 1000/-</strong>
+            <strong>
+                @if(isset($settings['free_shipping_threshold']) && $settings['free_shipping_threshold'] > 0)
+                    Free Shipping on orders over ₹{{ number_format($settings['free_shipping_threshold'], 0) }}/-
+                @else
+                    Free Shipping Available
+                @endif
+            </strong>
         </div>
     </div>
 
@@ -1035,29 +1128,60 @@
                         </div>
                         
                         <div class="user-actions">
-                            <a href="#" class="user-action profile-action">
-                                <i class="far fa-user"></i>
-                                <span>My Profile</span>
+                            @auth
+                            <div class="profile-dropdown">
+                                <a href="#" class="user-action profile-action" onclick="toggleProfileDropdown(event)">
+                                    <i class="far fa-user"></i>
+                                    <span>My Profile</span>
+                                </a>
+                                <div class="profile-dropdown-menu" id="profileDropdown">
+                                    <div class="profile-user-info">
+                                        <div class="profile-user-name">{{ Auth::user()->name }}</div>
+                                        <div class="profile-user-email">{{ Auth::user()->email }}</div>
+                                    </div>
+                                    <a href="{{ route('frontend.profile') }}" class="profile-dropdown-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>My Profile</span>
+                                    </a>
+                                    <a href="{{ route('frontend.orders') }}" class="profile-dropdown-item">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        <span>My Orders</span>
+                                    </a>
+                                    <form action="{{ route('frontend.logout') }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        <button type="submit" class="profile-dropdown-item logout-item" style="width: 100%; border: none; background: none; text-align: left; cursor: pointer;">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                            <span>Logout</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            @else
+                            <a href="{{ route('frontend.login') }}" class="user-action profile-action">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Login</span>
                             </a>
+                            @endauth
                             
                             <a href="{{ route('frontend.cart') }}" class="user-action">
                                 <i class="fas fa-shopping-cart"></i>
                                 <span>Cart</span>
-                                <span class="action-badge">02</span>
+                                @if(isset($cartCount) && $cartCount > 0)
+                                <span class="action-badge cart-count">{{ $cartCount }}</span>
+                                @else
+                                <span class="action-badge cart-count" style="display: none;">0</span>
+                                @endif
                             </a>
                             
                             <a href="{{ route('frontend.wishlist') }}" class="user-action">
                                 <i class="far fa-heart"></i>
                                 <span>Wishlist</span>
-                                <span class="action-badge">20</span>
+                                @if(isset($wishlistCount) && $wishlistCount > 0)
+                                <span class="action-badge wishlist-count">{{ $wishlistCount }}</span>
+                                @else
+                                <span class="action-badge wishlist-count" style="display: none;">0</span>
+                                @endif
                             </a>
-                            
-                            @guest
-                                <a href="{{ route('frontend.login') }}" class="user-action profile-action">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                    <span>Login</span>
-                                </a>
-                            @endguest
                         </div>
                     </div>
                 </div>
@@ -1143,21 +1267,26 @@
                                 Discover quality products at unbeatable prices with fast delivery.
                             </p>
                             <div class="social-links">
-                                <a href="#" class="social-link facebook" target="_blank" rel="noopener">
+                                @if(isset($settings['facebook_url']) && $settings['facebook_url'])
+                                <a href="{{ $settings['facebook_url'] }}" class="social-link facebook" target="_blank" rel="noopener">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
-                                <a href="#" class="social-link twitter" target="_blank" rel="noopener">
+                                @endif
+                                @if(isset($settings['twitter_url']) && $settings['twitter_url'])
+                                <a href="{{ $settings['twitter_url'] }}" class="social-link twitter" target="_blank" rel="noopener">
                                     <i class="fab fa-twitter"></i>
                                 </a>
-                                <a href="#" class="social-link instagram" target="_blank" rel="noopener">
+                                @endif
+                                @if(isset($settings['instagram_url']) && $settings['instagram_url'])
+                                <a href="{{ $settings['instagram_url'] }}" class="social-link instagram" target="_blank" rel="noopener">
                                     <i class="fab fa-instagram"></i>
                                 </a>
-                                <a href="#" class="social-link youtube" target="_blank" rel="noopener">
+                                @endif
+                                @if(isset($settings['youtube_url']) && $settings['youtube_url'])
+                                <a href="{{ $settings['youtube_url'] }}" class="social-link youtube" target="_blank" rel="noopener">
                                     <i class="fab fa-youtube"></i>
                                 </a>
-                                <a href="#" class="social-link linkedin" target="_blank" rel="noopener">
-                                    <i class="fab fa-linkedin-in"></i>
-                                </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -1224,8 +1353,8 @@
                     <div class="footer-bottom-links">
                         <a href="#">Privacy Policy</a>
                         <a href="#">Terms of Service</a>
-                        <a href="#">Shipping Policy</a>
-                        <a href="#">Return Policy</a>
+                        <!-- <a href="#">Shipping Policy</a>
+                        <a href="#">Return Policy</a> -->
                     </div>
                 </div>
             </div>
@@ -1241,6 +1370,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        // Profile dropdown toggle
+        function toggleProfileDropdown(event) {
+            event.preventDefault();
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const profileAction = document.querySelector('.profile-action');
+            
+            if (dropdown && profileAction && !dropdown.contains(event.target) && !profileAction.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
         // Mobile menu toggle
         function toggleMobileMenu() {
             const navMenu = document.getElementById('navMenu');

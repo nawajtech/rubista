@@ -11,9 +11,9 @@
                     <h5 class="mb-0">
                         <i class="bi bi-house-gear me-2"></i>Homepage Content Management
                     </h5>
-                    <a href="{{ route('admin.homepage-content.create') }}" class="btn btn-primary">
+                    <!-- <a href="{{ route('admin.homepage-content.create') }}" class="btn btn-primary">
                         <i class="bi bi-plus-lg"></i> Add New Content
-                    </a>
+                    </a> -->
                 </div>
                 <div class="card-body">
                     @if($contents->count() > 0)
@@ -76,17 +76,17 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="Content actions">
-                                                <a href="{{ route('admin.homepage-content.show', $content) }}" 
+                                                <!-- <a href="{{ route('admin.homepage-content.show', $content) }}" 
                                                    class="btn btn-sm btn-outline-info" 
                                                    title="View">
                                                     <i class="bi bi-eye"></i>
-                                                </a>
+                                                </a> -->
                                                 <a href="{{ route('admin.homepage-content.edit', $content) }}" 
                                                    class="btn btn-sm btn-outline-primary" 
                                                    title="Edit">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-                                                <form method="POST" action="{{ route('admin.homepage-content.destroy', $content) }}" 
+                                                <!-- <form method="POST" action="{{ route('admin.homepage-content.destroy', $content) }}" 
                                                       class="d-inline" 
                                                       onsubmit="return confirm('Are you sure you want to delete this content?')">
                                                     @csrf
@@ -94,7 +94,7 @@
                                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
-                                                </form>
+                                                </form> -->
                                             </div>
                                         </td>
                                     </tr>

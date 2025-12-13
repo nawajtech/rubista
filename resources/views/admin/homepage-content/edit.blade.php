@@ -125,7 +125,7 @@
                             </div>
                         </div>
                         
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <h6>Extra Fields (Optional)</h6>
                             <div id="extra-fields-container">
                                 @if($homepageContent->extra_data && count($homepageContent->extra_data) > 0)
@@ -163,7 +163,7 @@
                             <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-extra-field">
                                 <i class="bi bi-plus-lg"></i> Add Extra Field
                             </button>
-                        </div>
+                        </div> -->
                         
                         <div class="mb-3">
                             <div class="form-check">

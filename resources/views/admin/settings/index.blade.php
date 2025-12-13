@@ -11,12 +11,12 @@
     <h1 class="h3 mb-0 text-gray-800">
         <i class="bi bi-gear"></i> Master Settings
     </h1>
-    <form method="POST" action="{{ route('admin.settings.clear-cache') }}" class="d-inline">
+    <!-- <form method="POST" action="{{ route('admin.settings.clear-cache') }}" class="d-inline">
         @csrf
         <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure you want to clear all cache?')">
             <i class="bi bi-arrow-clockwise"></i> Clear Cache
         </button>
-    </form>
+    </form> -->
 </div>
 
 <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data">
@@ -82,11 +82,32 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="free_shipping_threshold" class="form-label">
+                                    <i class="bi bi-truck"></i> Free Shipping Threshold
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" class="form-control @error('free_shipping_threshold') is-invalid @enderror" 
+                                           id="free_shipping_threshold" name="free_shipping_threshold" 
+                                           value="{{ old('free_shipping_threshold', $settings['free_shipping_threshold'] ?? '') }}" 
+                                           min="0" step="0.01" placeholder="500">
+                                    @error('free_shipping_threshold')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-text">Orders above this amount will qualify for free shipping. Leave empty to disable free shipping.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Currency & Pricing -->
-            <div class="card mb-4">
+            <!-- <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="bi bi-currency-dollar"></i> Currency & Pricing
@@ -154,7 +175,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Display Settings -->
@@ -349,7 +370,7 @@
             </div>
 
             <!-- Display Options -->
-            <div class="card mb-4">
+            <!-- <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="bi bi-display"></i> Display Options
@@ -392,7 +413,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 

@@ -11,7 +11,7 @@ class WishlistController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // Allow wishlist for all users, but check auth in methods that need it
     }
 
     /**
