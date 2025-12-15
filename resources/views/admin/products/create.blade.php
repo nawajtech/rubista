@@ -96,18 +96,102 @@
                         @enderror
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="brand" class="form-label">Brand</label>
+                                <input type="text" class="form-control @error('brand') is-invalid @enderror" 
+                                       id="brand" name="brand" value="{{ old('brand') }}" 
+                                       placeholder="e.g., Samsung, Apple, Sony">
+                                @error('brand')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="model" class="form-label">Model</label>
+                                <input type="text" class="form-control @error('model') is-invalid @enderror" 
+                                       id="model" name="model" value="{{ old('model') }}" 
+                                       placeholder="e.g., iPhone 15 Pro, Galaxy S24">
+                                @error('model')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="color" class="form-label">Color</label>
+                                <input type="text" class="form-control @error('color') is-invalid @enderror" 
+                                       id="color" name="color" value="{{ old('color') }}" 
+                                       placeholder="e.g., Black, White, Red">
+                                @error('color')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="dimension" class="form-label">Dimension</label>
+                                <input type="text" class="form-control @error('dimension') is-invalid @enderror" 
+                                       id="dimension" name="dimension" value="{{ old('dimension') }}" 
+                                       placeholder="e.g., 10 x 5 x 2 inches">
+                                @error('dimension')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
-                        <label for="image" class="form-label">Product Image</label>
+                        <label for="warranty_period" class="form-label">Warranty Period</label>
+                        <input type="text" class="form-control @error('warranty_period') is-invalid @enderror" 
+                               id="warranty_period" name="warranty_period" value="{{ old('warranty_period') }}" 
+                               placeholder="e.g., 1 Year, 2 Years, 6 Months">
+                        @error('warranty_period')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="return_policy" class="form-label">Return Policy</label>
+                        <textarea class="form-control @error('return_policy') is-invalid @enderror" 
+                                  id="return_policy" name="return_policy" rows="3" 
+                                  placeholder="Describe the return policy for this product...">{{ old('return_policy') }}</textarea>
+                        @error('return_policy')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Main Product Image *</label>
                         <input type="file" class="form-control @error('image') is-invalid @enderror" 
                                id="image" name="image" accept="image/*">
                         @error('image')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">Upload a high-quality image (JPEG, PNG, GIF). Max size: 2MB</div>
+                        <div class="form-text">Upload a high-quality main image (JPEG, PNG, GIF). Max size: 2MB</div>
                         
                         <!-- Image Preview -->
                         <div id="image-preview" class="mt-3" style="display: none;">
                             <img id="preview-img" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="gallery_images" class="form-label">Gallery Images (Multiple)</label>
+                        <input type="file" class="form-control @error('gallery_images.*') is-invalid @enderror" 
+                               id="gallery_images" name="gallery_images[]" accept="image/*" multiple>
+                        @error('gallery_images.*')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Upload multiple images for product gallery (JPEG, PNG, GIF). Max size: 2MB per image</div>
+                        
+                        <!-- Gallery Preview -->
+                        <div id="gallery-preview" class="mt-3 row g-2" style="display: none;">
                         </div>
                     </div>
 
@@ -181,7 +265,7 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Image preview functionality
+    // Main image preview functionality
     const imageInput = document.getElementById('image');
     const previewContainer = document.getElementById('image-preview');
     const previewImg = document.getElementById('preview-img');
@@ -197,6 +281,36 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.readAsDataURL(file);
         } else {
             previewContainer.style.display = 'none';
+        }
+    });
+
+    // Gallery images preview functionality
+    const galleryInput = document.getElementById('gallery_images');
+    const galleryPreview = document.getElementById('gallery-preview');
+
+    galleryInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        galleryPreview.innerHTML = '';
+        
+        if (files.length > 0) {
+            galleryPreview.style.display = 'block';
+            
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-3';
+                    col.innerHTML = `
+                        <div class="position-relative">
+                            <img src="${e.target.result}" alt="Gallery ${index + 1}" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover;">
+                        </div>
+                    `;
+                    galleryPreview.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            });
+        } else {
+            galleryPreview.style.display = 'none';
         }
     });
 

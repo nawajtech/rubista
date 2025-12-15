@@ -17,8 +17,41 @@ class HomeController extends Controller
     public function index()
     {
         $categories = Category::with('products')->get();
-        $featuredProducts = Product::where('featured', true)->take(10)->get();
-        $trendingProducts = Product::orderBy('created_at', 'desc')->take(10)->get();
+        $featuredProducts = Product::where('featured', true)
+            ->withCount(['reviews as total_reviews' => function($query) {
+                $query->where('status', true);
+            }])
+            ->with(['reviews' => function($query) {
+                $query->where('status', true);
+            }])
+            ->take(10)
+            ->get();
+        $trendingProducts = Product::orderBy('created_at', 'desc')
+            ->withCount(['reviews as total_reviews' => function($query) {
+                $query->where('status', true);
+            }])
+            ->with(['reviews' => function($query) {
+                $query->where('status', true);
+            }])
+            ->take(10)
+            ->get();
+        
+        // Calculate average ratings
+        foreach ($featuredProducts as $product) {
+            $product->average_rating = $product->reviews->avg('rating') ?? 0;
+        }
+        foreach ($trendingProducts as $product) {
+            $product->average_rating = $product->reviews->avg('rating') ?? 0;
+        }
+        
+        // Check wishlist status for all products
+        $wishlist = session()->get('wishlist', []);
+        foreach ($featuredProducts as $product) {
+            $product->is_in_wishlist = isset($wishlist[$product->id]);
+        }
+        foreach ($trendingProducts as $product) {
+            $product->is_in_wishlist = isset($wishlist[$product->id]);
+        }
         
         // Get dynamic homepage content
         $heroContent = HomepageContent::getBySection('hero')->first();
@@ -77,7 +110,25 @@ class HomeController extends Controller
     public function categoryProducts($categoryId)
     {
         $category = Category::findOrFail($categoryId);
-        $products = Product::where('category_id', $categoryId)->paginate(12);
+        $products = Product::where('category_id', $categoryId)
+            ->withCount(['reviews as total_reviews' => function($query) {
+                $query->where('status', true);
+            }])
+            ->with(['reviews' => function($query) {
+                $query->where('status', true);
+            }])
+            ->paginate(12);
+        
+        // Calculate average ratings for each product
+        foreach ($products as $product) {
+            $product->average_rating = $product->reviews->avg('rating') ?? 0;
+        }
+        
+        // Check wishlist status for all products
+        $wishlist = session()->get('wishlist', []);
+        foreach ($products as $product) {
+            $product->is_in_wishlist = isset($wishlist[$product->id]);
+        }
         
         return view('frontend.category-products', compact('category', 'products'));
     }
@@ -90,10 +141,32 @@ class HomeController extends Controller
         $product = Product::with('category')->findOrFail($id);
         $relatedProducts = Product::where('category_id', $product->category_id)
                                 ->where('id', '!=', $id)
-                                ->take(4)
+                                ->where('status', true)
+                                ->take(8)
                                 ->get();
         
-        return view('frontend.product-detail', compact('product', 'relatedProducts'));
+        // Load reviews - show all if admin, only approved if regular user
+        $reviewsQuery = $product->reviews()->with('user:id,name')->orderBy('created_at', 'desc');
+        
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            $reviewsQuery->where('status', true);
+        }
+        
+        $reviews = $reviewsQuery->get();
+        $averageRating = $product->getAverageRatingAttribute();
+        $totalReviews = $product->getTotalReviewsAttribute();
+        
+        // Check if current user has already reviewed
+        $userReview = null;
+        if (auth()->check()) {
+            $userReview = $product->reviews()->where('user_id', auth()->id())->first();
+        }
+        
+        // Check if product is in wishlist
+        $wishlist = session()->get('wishlist', []);
+        $isInWishlist = isset($wishlist[$id]);
+        
+        return view('frontend.product-detail', compact('product', 'relatedProducts', 'reviews', 'averageRating', 'totalReviews', 'userReview', 'isInWishlist'));
     }
     
     /**
@@ -104,7 +177,24 @@ class HomeController extends Controller
         $query = $request->get('q');
         $products = Product::where('name', 'like', '%' . $query . '%')
                           ->orWhere('description', 'like', '%' . $query . '%')
+                          ->withCount(['reviews as total_reviews' => function($q) {
+                              $q->where('status', true);
+                          }])
+                          ->with(['reviews' => function($q) {
+                              $q->where('status', true);
+                          }])
                           ->paginate(12);
+        
+        // Calculate average ratings for each product
+        foreach ($products as $product) {
+            $product->average_rating = $product->reviews->avg('rating') ?? 0;
+        }
+        
+        // Check wishlist status for all products
+        $wishlist = session()->get('wishlist', []);
+        foreach ($products as $product) {
+            $product->is_in_wishlist = isset($wishlist[$product->id]);
+        }
         
         return view('frontend.search', compact('products', 'query'));
     }

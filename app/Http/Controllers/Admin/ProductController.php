@@ -57,6 +57,15 @@ class ProductController extends Controller
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
+        // Handle gallery images
+        if ($request->hasFile('gallery_images')) {
+            $galleryPaths = [];
+            foreach ($request->file('gallery_images') as $galleryImage) {
+                $galleryPaths[] = $galleryImage->store('products/gallery', 'public');
+            }
+            $data['gallery'] = $galleryPaths;
+        }
+
         Product::create($data);
 
         return redirect()->route('admin.products.index')
@@ -94,7 +103,15 @@ class ProductController extends Controller
             'sale_price' => 'nullable|numeric|min:0|lt:price',
             'stock_quantity' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images' => 'nullable|array',
+            'gallery_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'required|exists:categories,id',
+            'brand' => 'nullable|string|max:255',
+            'color' => 'nullable|string|max:255',
+            'dimension' => 'nullable|string|max:255',
+            'model' => 'nullable|string|max:255',
+            'warranty_period' => 'nullable|string|max:255',
+            'return_policy' => 'nullable|string',
             'status' => 'boolean',
             'featured' => 'boolean'
         ]);
@@ -110,6 +127,17 @@ class ProductController extends Controller
                 Storage::disk('public')->delete($product->image);
             }
             $data['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        // Handle gallery images - add new ones to existing gallery
+        if ($request->hasFile('gallery_images')) {
+            $existingGallery = $product->gallery ?? [];
+            $galleryPaths = is_array($existingGallery) ? $existingGallery : [];
+            
+            foreach ($request->file('gallery_images') as $galleryImage) {
+                $galleryPaths[] = $galleryImage->store('products/gallery', 'public');
+            }
+            $data['gallery'] = $galleryPaths;
         }
 
         $product->update($data);

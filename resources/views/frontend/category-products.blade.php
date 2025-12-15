@@ -47,6 +47,27 @@
                     <div class="card-body p-3">
                         <h6 class="card-title">{{ Str::limit($product->name, 60) }}</h6>
                         <p class="card-text text-muted small">{{ Str::limit($product->description, 80) }}</p>
+                        
+                        <!-- Rating Display -->
+                        @php
+                            $avgRating = $product->average_rating ?? 0;
+                            $totalReviews = $product->total_reviews ?? 0;
+                        @endphp
+                        @if($totalReviews > 0)
+                        <div class="mb-2">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-success me-2" style="font-size: 0.85rem; padding: 4px 8px;">
+                                    <i class="fas fa-star" style="font-size: 0.75rem;"></i> {{ number_format($avgRating, 1) }}
+                                </span>
+                                <small class="text-muted">({{ $totalReviews }} {{ $totalReviews == 1 ? 'review' : 'reviews' }})</small>
+                            </div>
+                        </div>
+                        @else
+                        <div class="mb-2">
+                            <small class="text-muted">No reviews yet</small>
+                        </div>
+                        @endif
+                        
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div>
                                 @if($product->sale_price && $product->sale_price < $product->price)
@@ -56,7 +77,6 @@
                                     <span class="fw-bold">₹{{ number_format($product->price, 2) }}</span>
                                 @endif
                             </div>
-                            <small class="text-muted">⭐ 4.5</small>
                         </div>
                         <a href="{{ route('frontend.product.detail', $product->id) }}" 
                            class="btn btn-primary btn-sm w-100">View Details</a>

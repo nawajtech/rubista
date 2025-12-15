@@ -24,7 +24,13 @@ class Product extends Model
         'status',
         'featured',
         'category_id',
-        'sort_order'
+        'sort_order',
+        'brand',
+        'color',
+        'dimension',
+        'model',
+        'warranty_period',
+        'return_policy'
     ];
 
     protected $casts = [
@@ -78,5 +84,29 @@ class Product extends Model
     public function getIsOnSaleAttribute()
     {
         return !is_null($this->sale_price) && $this->sale_price < $this->price;
+    }
+
+    // Relationship with reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Get approved reviews
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class)->where('status', true);
+    }
+
+    // Get average rating
+    public function getAverageRatingAttribute()
+    {
+        return $this->approvedReviews()->avg('rating') ?? 0;
+    }
+
+    // Get total reviews count
+    public function getTotalReviewsAttribute()
+    {
+        return $this->approvedReviews()->count();
     }
 }

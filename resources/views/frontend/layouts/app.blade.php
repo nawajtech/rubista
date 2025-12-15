@@ -1139,7 +1139,11 @@
                                 <div class="profile-dropdown-menu" id="profileDropdown">
                                     <div class="profile-user-info">
                                         <div class="profile-user-name">{{ Auth::user()->name }}</div>
+                                        @if(Auth::user()->phone)
+                                        <div class="profile-user-email">+91 {{ Auth::user()->phone }}</div>
+                                        @elseif(!str_contains(Auth::user()->email, '@rubista.com'))
                                         <div class="profile-user-email">{{ Auth::user()->email }}</div>
+                                        @endif
                                     </div>
                                     <a href="{{ route('frontend.profile') }}" class="profile-dropdown-item">
                                         <i class="fas fa-user"></i>

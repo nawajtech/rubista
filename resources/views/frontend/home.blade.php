@@ -838,6 +838,20 @@
     }
 
     /* Product Cards - Compact Style */
+    .product-card-link,
+    .product-item-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+    
+    .product-card-link:hover,
+    .product-item-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+    
     .product-card {
         background: white;
         border-radius: 10px;
@@ -848,8 +862,10 @@
         border: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
+        cursor: pointer;
     }
 
+    .product-card-link:hover .product-card,
     .product-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
@@ -1037,8 +1053,10 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+        cursor: pointer;
     }
 
+    .product-item-link:hover .product-item,
     .product-item:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(124, 58, 237, 0.12);
@@ -2534,44 +2552,55 @@
         <div class="row g-4">
             @foreach($trendingProducts->take(5) as $product)
             <div class="col-5-per-row">
-                <div class="product-card">
-                    <div class="position-relative">
-                        @if($product->image)
-                            @if(Str::startsWith($product->image, 'http'))
-                                <img src="{{ $product->image }}" 
-                                     class="product-image" alt="{{ $product->name }}">
+                <a href="{{ route('frontend.product.detail', $product->id) }}" class="product-card-link">
+                    <div class="product-card">
+                        <div class="position-relative">
+                            @if($product->image)
+                                @if(Str::startsWith($product->image, 'http'))
+                                    <img src="{{ $product->image }}" 
+                                         class="product-image" alt="{{ $product->name }}">
+                                @else
+                                    <img src="{{ asset('storage/' . $product->image) }}" 
+                                         class="product-image" alt="{{ $product->name }}">
+                                @endif
                             @else
-                                <img src="{{ asset('storage/' . $product->image) }}" 
-                                     class="product-image" alt="{{ $product->name }}">
+                                <div class="product-image" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                                    <i class="fas fa-image"></i>
+                                </div>
                             @endif
-                        @else
-                            <div class="product-image" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
-                                <i class="fas fa-image"></i>
+                        </div>
+                        <div class="product-info">
+                            <h6 class="product-title">{{ $product->name }}</h6>
+                            @php
+                                $avgRating = $product->average_rating ?? 0;
+                                $totalReviews = $product->total_reviews ?? 0;
+                            @endphp
+                            @if($totalReviews > 0)
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-success me-2" style="font-size: 0.75rem; padding: 3px 6px;">
+                                    <i class="fas fa-star" style="font-size: 0.7rem;"></i> {{ number_format($avgRating, 1) }}
+                                </span>
+                                <small class="text-muted" style="font-size: 0.75rem;">({{ $totalReviews }})</small>
                             </div>
-                        @endif
-                    </div>
-                    <div class="product-info">
-                        <h6 class="product-title">{{ $product->name }}</h6>
-                        <div class="rating-stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn-add-cart flex-fill" data-product-id="{{ $product->id }}">
-                                <i class="fas fa-shopping-cart me-1"></i>Add to Cart
-                            </button>
-                            <button class="btn-add-wishlist" data-product-id="{{ $product->id }}">
-                                <i class="fas fa-heart"></i>
-                            </button>
+                            @else
+                            <div class="mb-2">
+                                <small class="text-muted" style="font-size: 0.75rem;">No reviews yet</small>
+                            </div>
+                            @endif
+                            <div class="product-price">
+                                <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn-add-cart flex-fill" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation();">
+                                    <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                                </button>
+                                <button class="btn-add-wishlist" id="wishlist-btn-{{ $product->id }}" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation();" style="@if(isset($product->is_in_wishlist) && $product->is_in_wishlist) background: #dc3545; border-color: #dc3545; color: white; @endif">
+                                    <i class="{{ (isset($product->is_in_wishlist) && $product->is_in_wishlist) ? 'fas' : 'far' }} fa-heart"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             @endforeach
         </div>
@@ -2817,73 +2846,89 @@
         
         <div class="products-grid">
             @foreach($trendingProducts->take(10) as $index => $product)
-            <div class="product-item">
-                <div class="product-image-wrapper">
-                    @if($product->image)
-                        @if(Str::startsWith($product->image, 'http'))
-                            <img src="{{ $product->image }}" 
-                                 class="product-image" alt="{{ $product->name }}">
+            <a href="{{ route('frontend.product.detail', $product->id) }}" class="product-item-link">
+                <div class="product-item">
+                    <div class="product-image-wrapper">
+                        @if($product->image)
+                            @if(Str::startsWith($product->image, 'http'))
+                                <img src="{{ $product->image }}" 
+                                     class="product-image" alt="{{ $product->name }}">
+                            @else
+                                <img src="{{ asset('storage/' . $product->image) }}" 
+                                     class="product-image" alt="{{ $product->name }}">
+                            @endif
                         @else
-                            <img src="{{ asset('storage/' . $product->image) }}" 
-                                 class="product-image" alt="{{ $product->name }}">
+                            <div class="product-image" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                                <i class="fas fa-image"></i>
+                            </div>
                         @endif
-                    @else
-                        <div class="product-image" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
-                            <i class="fas fa-image"></i>
+                        
+                        @if($index < 3)
+                        <div class="badge best-seller">
+                            <i class="fas fa-crown"></i>
                         </div>
-                    @endif
-                    
-                    @if($index < 3)
-                    <div class="badge best-seller">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    @endif
-                    
-                    @if($product->price > 5000)
-                    <div class="badge discount">
-                        {{ round((($product->price - 4000) / $product->price) * 100) }}% OFF
-                    </div>
-                    @endif
-                    
-                    <div class="product-overlay">
-                        <button class="overlay-btn wishlist-btn" data-product-id="{{ $product->id }}">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <button class="overlay-btn quick-view-btn" data-product-id="{{ $product->id }}">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="product-details">
-                    <h3 class="product-name">{{ $product->name }}</h3>
-                    
-                    <div class="product-rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <span class="review-count">({{ rand(50, 200) }})</span>
-                    </div>
-                    
-                    <div class="product-price">
+                        @endif
+                        
                         @if($product->price > 5000)
-                            <span class="current-price">₹{{ number_format($product->price - 1000, 0) }}</span>
-                            <span class="original-price">₹{{ number_format($product->price, 0) }}</span>
-                        @else
-                            <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
+                        <div class="badge discount">
+                            {{ round((($product->price - 4000) / $product->price) * 100) }}% OFF
+                        </div>
                         @endif
+                        
+                        <div class="product-overlay">
+                            <button class="overlay-btn wishlist-btn" id="wishlist-overlay-btn-{{ $product->id }}" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation();" style="@if(isset($product->is_in_wishlist) && $product->is_in_wishlist) background: #dc3545; color: white; @endif">
+                                <i class="{{ (isset($product->is_in_wishlist) && $product->is_in_wishlist) ? 'fas' : 'far' }} fa-heart"></i>
+                            </button>
+                            <button class="overlay-btn quick-view-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation();">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     
-                    <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
-                        <i class="fas fa-shopping-cart"></i>
-                        Add to Cart
-                    </button>
+                    <div class="product-details">
+                        <h3 class="product-name">{{ $product->name }}</h3>
+                        
+                        @php
+                            $avgRating = $product->average_rating ?? 0;
+                            $totalReviews = $product->total_reviews ?? 0;
+                        @endphp
+                        @if($totalReviews > 0)
+                        <div class="product-rating">
+                            <div class="stars">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= floor($avgRating))
+                                        <i class="fas fa-star"></i>
+                                    @elseif($i == floor($avgRating) + 1 && ($avgRating - floor($avgRating)) >= 0.5)
+                                        <i class="fas fa-star-half-alt"></i>
+                                    @else
+                                        <i class="far fa-star"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                            <span class="review-count">({{ $totalReviews }})</span>
+                        </div>
+                        @else
+                        <div class="product-rating">
+                            <small class="text-muted">No reviews yet</small>
+                        </div>
+                        @endif
+                        
+                        <div class="product-price">
+                            @if($product->price > 5000)
+                                <span class="current-price">₹{{ number_format($product->price - 1000, 0) }}</span>
+                                <span class="original-price">₹{{ number_format($product->price, 0) }}</span>
+                            @else
+                                <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
+                            @endif
+                        </div>
+                        
+                        <button class="add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation();">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
         
@@ -3339,44 +3384,46 @@
         <div class="row g-4">
             @foreach($trendingProducts->skip(5)->take(10) as $product)
             <div class="col-5-per-row">
-                <div class="product-card">
-                    <div class="position-relative">
-                        @if($product->image)
-                            @if(Str::startsWith($product->image, 'http'))
-                                <img src="{{ $product->image }}" 
-                                     class="product-image" alt="{{ $product->name }}">
+                <a href="{{ route('frontend.product.detail', $product->id) }}" class="product-card-link">
+                    <div class="product-card">
+                        <div class="position-relative">
+                            @if($product->image)
+                                @if(Str::startsWith($product->image, 'http'))
+                                    <img src="{{ $product->image }}" 
+                                         class="product-image" alt="{{ $product->name }}">
+                                @else
+                                    <img src="{{ asset('storage/' . $product->image) }}" 
+                                         class="product-image" alt="{{ $product->name }}">
+                                @endif
                             @else
-                                <img src="{{ asset('storage/' . $product->image) }}" 
-                                     class="product-image" alt="{{ $product->name }}">
+                                <div class="product-image" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                                    <i class="fas fa-image"></i>
+                                </div>
                             @endif
-                        @else
-                            <div class="product-image" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
-                                <i class="fas fa-image"></i>
+                        </div>
+                        <div class="product-info">
+                            <h6 class="product-title">{{ $product->name }}</h6>
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
                             </div>
-                        @endif
-                    </div>
-                    <div class="product-info">
-                        <h6 class="product-title">{{ $product->name }}</h6>
-                        <div class="rating-stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn-add-cart flex-fill" data-product-id="{{ $product->id }}">
-                                <i class="fas fa-shopping-cart me-1"></i>Add to Cart
-                            </button>
-                            <button class="btn-add-wishlist" data-product-id="{{ $product->id }}">
-                                <i class="fas fa-heart"></i>
-                            </button>
+                            <div class="product-price">
+                                <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn-add-cart flex-fill" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation();">
+                                    <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                                </button>
+                                <button class="btn-add-wishlist" id="wishlist-btn-{{ $product->id }}" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation();" style="@if(isset($product->is_in_wishlist) && $product->is_in_wishlist) background: #dc3545; border-color: #dc3545; color: white; @endif">
+                                    <i class="{{ (isset($product->is_in_wishlist) && $product->is_in_wishlist) ? 'fas' : 'far' }} fa-heart"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             @endforeach
         </div>
@@ -3629,7 +3676,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add to cart functionality with better feedback
     const addToCartButtons = document.querySelectorAll('.btn-add-cart');
     addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const productId = this.dataset.productId;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             
@@ -3694,7 +3743,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add to wishlist functionality
     const addToWishlistButtons = document.querySelectorAll('.btn-add-wishlist');
     addToWishlistButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const productId = this.dataset.productId;
             const icon = this.querySelector('i');
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -3728,13 +3779,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.in_wishlist) {
                         icon.classList.remove('far');
                         icon.classList.add('fas');
-                        this.style.background = '#fecaca';
-                        this.style.color = '#dc2626';
+                        this.style.background = '#dc3545';
+                        this.style.borderColor = '#dc3545';
+                        this.style.color = 'white';
                     } else {
                         icon.classList.remove('fas');
                         icon.classList.add('far');
-                        this.style.background = '#f1f5f9';
-                        this.style.color = 'var(--primary-purple)';
+                        this.style.background = '';
+                        this.style.borderColor = '';
+                        this.style.color = '';
                     }
                     updateWishlistCount(data.wishlist_count);
                     showToast(data.message, 'success');
@@ -3752,7 +3805,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Best Selling Products functionality - Compact Design
     const bestSellingCartButtons = document.querySelectorAll('.add-to-cart-btn');
     bestSellingCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const productId = this.dataset.productId;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             
@@ -3817,7 +3872,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wishlist functionality
     const wishlistButtons = document.querySelectorAll('.wishlist-btn');
     wishlistButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const productId = this.dataset.productId;
             const icon = this.querySelector('i');
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -3851,10 +3908,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.in_wishlist) {
                         icon.classList.remove('far');
                         icon.classList.add('fas');
+                        this.style.background = '#dc3545';
+                        this.style.color = 'white';
                         this.classList.add('active');
                     } else {
                         icon.classList.remove('fas');
                         icon.classList.add('far');
+                        this.style.background = '';
+                        this.style.color = '';
                         this.classList.remove('active');
                     }
                     updateWishlistCount(data.wishlist_count);
@@ -3873,7 +3934,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Quick view functionality
     const quickViewButtons = document.querySelectorAll('.quick-view-btn');
     quickViewButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const productId = this.dataset.productId;
             showQuickViewModal(productId);
         });

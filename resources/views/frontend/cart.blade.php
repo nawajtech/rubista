@@ -176,13 +176,19 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify({
                 quantity: parseInt(quantity)
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 // Update item total
@@ -217,12 +223,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 showNotification('Cart updated successfully!', 'success');
             } else {
-                showNotification('Error updating cart: ' + data.message, 'error');
+                showNotification('Error updating cart: ' + (data.message || 'Unknown error'), 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('Error updating cart', 'error');
+            const errorMessage = error.message || error.errors || 'Error updating cart';
+            showNotification(typeof errorMessage === 'string' ? errorMessage : 'Error updating cart', 'error');
         });
     }
     
@@ -231,10 +238,16 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 // Remove the row
@@ -276,12 +289,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 1000);
                 }
             } else {
-                showNotification('Error removing product from cart', 'error');
+                showNotification('Error removing product from cart: ' + (data.message || 'Unknown error'), 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('Error removing product from cart', 'error');
+            const errorMessage = error.message || error.errors || 'Error removing product from cart';
+            showNotification(typeof errorMessage === 'string' ? errorMessage : 'Error removing product from cart', 'error');
         });
     }
     
@@ -290,10 +304,16 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 showNotification('Cart cleared successfully!', 'success');
@@ -304,12 +324,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     location.reload();
                 }, 1000);
             } else {
-                showNotification('Error clearing cart', 'error');
+                showNotification('Error clearing cart: ' + (data.message || 'Unknown error'), 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('Error clearing cart', 'error');
+            const errorMessage = error.message || error.errors || 'Error clearing cart';
+            showNotification(typeof errorMessage === 'string' ? errorMessage : 'Error clearing cart', 'error');
         });
     }
     

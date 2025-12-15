@@ -38,6 +38,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('frontend.register');
     Route::post('/register', [AuthController::class, 'register']);
+    
+    // OTP Routes
+    Route::post('/otp/send', [AuthController::class, 'sendOtp'])->name('frontend.otp.send');
+    Route::post('/otp/verify', [AuthController::class, 'verifyOtp'])->name('frontend.otp.verify');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
@@ -56,6 +60,10 @@ Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('frontend
 Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'remove'])->name('frontend.wishlist.remove');
 Route::delete('/wishlist/clear', [WishlistController::class, 'clear'])->name('frontend.wishlist.clear');
 Route::post('/wishlist/move-to-cart/{id}', [WishlistController::class, 'moveToCart'])->name('frontend.wishlist.move-to-cart');
+
+// Review Routes
+Route::get('/product/{id}/reviews', [\App\Http\Controllers\Frontend\ReviewController::class, 'getReviews'])->name('frontend.reviews.get');
+Route::post('/reviews', [\App\Http\Controllers\Frontend\ReviewController::class, 'store'])->name('frontend.reviews.store');
 
 // Protected Frontend Routes (for logged in non-admin users)
 Route::middleware(['frontend.user'])->group(function () {

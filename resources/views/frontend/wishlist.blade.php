@@ -156,16 +156,16 @@
         @if(count($wishlistItems) > 0)
             <div class="row">
                 <div class="col-12">
-                    @foreach($wishlistItems as $product)
+                    @foreach($wishlistItems as $item)
                     <div class="wishlist-item">
                         <div class="row align-items-center">
                             <div class="col-md-2">
-                                <img src="{{ $product->image ?? 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200&h=200&fit=crop' }}" 
-                                     alt="{{ $product->name }}" class="product-image">
+                                <img src="{{ $item->product->image ?? 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200&h=200&fit=crop' }}" 
+                                     alt="{{ $item->product->name ?? '' }}" class="product-image">
                             </div>
                             <div class="col-md-5">
-                                <h5 class="fw-bold mb-2">{{ $product->name }}</h5>
-                                <p class="text-muted small mb-2">{{ Str::limit($product->description, 150) }}</p>
+                                <h5 class="fw-bold mb-2">{{ $item->product->name ?? '' }}</h5>
+                                <p class="text-muted small mb-2">{{ Str::limit($item->product->description ?? '', 150) }}</p>
                                 
                                 <div class="product-rating">
                                     <div class="stars">
@@ -179,15 +179,7 @@
                                 </div>
                                 
                                 <div class="d-flex align-items-center gap-2 mt-2">
-                                    @if($product->sale_price && $product->sale_price < $product->price)
-                                        <span class="price-sale fs-5">₹{{ number_format($product->sale_price) }}</span>
-                                        <span class="price-original">₹{{ number_format($product->price) }}</span>
-                                        <span class="badge bg-success">
-                                            {{ round((($product->price - $product->sale_price) / $product->price) * 100) }}% OFF
-                                        </span>
-                                    @else
-                                        <span class="fw-bold fs-5">₹{{ number_format($product->price) }}</span>
-                                    @endif
+                                    
                                 </div>
                                 
                                 <div class="mt-2">
@@ -197,7 +189,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="wishlist-actions">
-                                    <form method="POST" action="{{ route('frontend.wishlist.move-to-cart', $product->id) }}" class="d-inline">
+                                    <form method="POST" action="{{ route('frontend.wishlist.move-to-cart', $item['id']) }}" class="d-inline">
                                         @csrf
                                         <button type="submit" class="btn-move-to-cart">
                                             <i class="fas fa-shopping-cart me-2"></i>Move to Cart
@@ -205,14 +197,14 @@
                                     </form>
                                 </div>
                                 <div class="mt-2">
-                                    <a href="{{ route('frontend.product.detail', $product->id) }}" class="save-for-later">
+                                    <a href="{{ route('frontend.product.detail', $item['product']->id) }}" class="save-for-later">
                                         <i class="fas fa-eye me-1"></i>View Details
                                     </a>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="text-end">
-                                    <form method="POST" action="{{ route('frontend.wishlist.remove', $product->id) }}" class="d-inline">
+                                    <form method="POST" action="{{ route('frontend.wishlist.remove', $item['product']->id) }}" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-remove" 
