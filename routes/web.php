@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CmsController;
 use App\Http\Controllers\Admin\HomepageContentController;
+use App\Http\Controllers\Admin\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,6 +46,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('cms', CmsController::class);
         Route::resource('homepage-content', HomepageContentController::class);
         Route::patch('homepage-content/{homepageContent}/toggle-status', [HomepageContentController::class, 'toggleStatus'])->name('homepage-content.toggle-status');
+        // Reviews Management
+        Route::resource('reviews', ReviewController::class);
+        Route::patch('reviews/{review}/toggle-status', [ReviewController::class, 'toggleStatus'])->name('reviews.toggle-status');
+        Route::delete('reviews/{review}/delete-photo', [ReviewController::class, 'deletePhoto'])->name('reviews.delete-photo');
+        Route::delete('reviews/{review}/delete-video', [ReviewController::class, 'deleteVideo'])->name('reviews.delete-video');
         // Settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');

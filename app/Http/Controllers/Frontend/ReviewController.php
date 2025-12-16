@@ -7,6 +7,7 @@ use App\Models\Review;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
@@ -28,6 +29,8 @@ class ReviewController extends Controller
             'product_id' => 'required|exists:products,id',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string|max:1000',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max per image
+            'videos.*' => 'nullable|mimes:mp4,mov,avi,wmv|max:20480', // 20MB max per video
         ]);
 
         $product = Product::findOrFail($request->product_id);
@@ -44,13 +47,33 @@ class ReviewController extends Controller
             ], 422);
         }
 
+        // Handle photo uploads
+        $photos = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store('reviews/photos', 'public');
+                $photos[] = $path;
+            }
+        }
+
+        // Handle video uploads
+        $videos = [];
+        if ($request->hasFile('videos')) {
+            foreach ($request->file('videos') as $video) {
+                $path = $video->store('reviews/videos', 'public');
+                $videos[] = $path;
+            }
+        }
+
         // Create review (admin can see all, but regular users see only approved)
         $review = Review::create([
             'product_id' => $request->product_id,
             'user_id' => Auth::id(),
             'rating' => $request->rating,
             'comment' => $request->comment,
-            'status' => true, // Auto-approve for now, can be changed to false for admin approval
+            'photos' => !empty($photos) ? $photos : null,
+            'videos' => !empty($videos) ? $videos : null,
+            'status' => false, // Require admin approval
         ]);
 
         // Calculate average rating for the product
@@ -60,14 +83,17 @@ class ReviewController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Review submitted successfully!',
+            'message' => 'Review submitted successfully! It will be visible after admin approval.',
             'review' => [
                 'id' => $review->id,
                 'user_name' => Auth::user()->name,
                 'rating' => $review->rating,
                 'comment' => $review->comment,
+                'photos' => $review->photos,
+                'videos' => $review->videos,
                 'created_at' => $review->created_at->format('M d, Y'),
                 'created_at_human' => $review->created_at->diffForHumans(),
+                'status' => $review->status,
             ],
             'average_rating' => round($averageRating, 1),
             'total_reviews' => Review::where('product_id', $product->id)
@@ -106,6 +132,12 @@ class ReviewController extends Controller
                     'user_name' => $review->user->name,
                     'rating' => $review->rating,
                     'comment' => $review->comment,
+                    'photos' => $review->photos ? array_map(function($photo) {
+                        return Storage::url($photo);
+                    }, $review->photos) : [],
+                    'videos' => $review->videos ? array_map(function($video) {
+                        return Storage::url($video);
+                    }, $review->videos) : [],
                     'created_at' => $review->created_at->format('M d, Y'),
                     'created_at_human' => $review->created_at->diffForHumans(),
                     'status' => $review->status,

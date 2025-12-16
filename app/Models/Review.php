@@ -15,11 +15,15 @@ class Review extends Model
         'rating',
         'comment',
         'status',
+        'photos',
+        'videos',
     ];
 
     protected $casts = [
         'status' => 'boolean',
         'rating' => 'integer',
+        'photos' => 'array',
+        'videos' => 'array',
     ];
 
     // Relationship with product

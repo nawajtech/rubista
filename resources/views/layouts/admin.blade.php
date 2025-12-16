@@ -372,6 +372,13 @@
                         <span>Customers</span>
                     </a>
                 </div>
+                <div class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}" 
+                       href="{{ route('admin.reviews.index') }}">
+                        <i class="bi bi-star"></i>
+                        <span>Reviews & Ratings</span>
+                    </a>
+                </div>
             </div>
 
             <div class="nav-section">

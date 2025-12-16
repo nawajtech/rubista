@@ -949,7 +949,7 @@
                                     @if(!isset($userReview) || !$userReview)
                                     <div class="review-form-card mt-4 p-4" id="review-form-container" style="background: white; border: 2px solid #e9ecef; border-radius: 15px; display: none;">
                                         <h5 class="mb-3 fw-bold">Write a Review</h5>
-                                        <form id="review-form">
+                                        <form id="review-form" enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                                             
@@ -970,6 +970,26 @@
                                                 <label for="review-comment" class="form-label fw-bold">Your Review</label>
                                                 <textarea class="form-control" id="review-comment" name="comment" rows="4" placeholder="Share your experience with this product..." maxlength="1000"></textarea>
                                                 <small class="text-muted"><span id="char-count">0</span>/1000 characters</small>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="review-photos" class="form-label fw-bold">
+                                                    <i class="fas fa-image me-2"></i>Photos (Optional)
+                                                </label>
+                                                <input type="file" class="form-control" id="review-photos" name="photos[]" 
+                                                       accept="image/*" multiple>
+                                                <small class="text-muted">You can upload up to 5 photos. Max size: 5MB per image. Supported formats: JPG, PNG, GIF, WEBP</small>
+                                                <div id="photo-preview" class="mt-2 d-flex flex-wrap gap-2"></div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="review-videos" class="form-label fw-bold">
+                                                    <i class="fas fa-video me-2"></i>Videos (Optional)
+                                                </label>
+                                                <input type="file" class="form-control" id="review-videos" name="videos[]" 
+                                                       accept="video/*" multiple>
+                                                <small class="text-muted">You can upload up to 2 videos. Max size: 20MB per video. Supported formats: MP4, MOV, AVI, WMV</small>
+                                                <div id="video-preview" class="mt-2"></div>
                                             </div>
                                             
                                             <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; padding: 12px; font-weight: 600;">
@@ -1553,6 +1573,113 @@ function initializeReviewSystem() {
         });
     }
     
+    // Photo preview
+    const photoInput = document.getElementById('review-photos');
+    const photoPreview = document.getElementById('photo-preview');
+    if (photoInput && photoPreview) {
+        photoInput.addEventListener('change', function(e) {
+            photoPreview.innerHTML = '';
+            const files = Array.from(e.target.files);
+            
+            // Limit to 5 photos
+            if (files.length > 5) {
+                showToast('You can only upload up to 5 photos', 'error');
+                this.value = '';
+                return;
+            }
+            
+            files.forEach((file, index) => {
+                // Check file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast(`Photo ${index + 1} is too large. Max size is 5MB.`, 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'position-relative';
+                    div.style.width = '100px';
+                    div.style.height = '100px';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="img-thumbnail w-100 h-100" style="object-fit: cover;">
+                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1" onclick="this.parentElement.remove(); updatePhotoInput();">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    photoPreview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+    
+    // Video preview
+    const videoInput = document.getElementById('review-videos');
+    const videoPreview = document.getElementById('video-preview');
+    if (videoInput && videoPreview) {
+        videoInput.addEventListener('change', function(e) {
+            videoPreview.innerHTML = '';
+            const files = Array.from(e.target.files);
+            
+            // Limit to 2 videos
+            if (files.length > 2) {
+                showToast('You can only upload up to 2 videos', 'error');
+                this.value = '';
+                return;
+            }
+            
+            files.forEach((file, index) => {
+                // Check file size (20MB)
+                if (file.size > 20 * 1024 * 1024) {
+                    showToast(`Video ${index + 1} is too large. Max size is 20MB.`, 'error');
+                    return;
+                }
+                
+                const video = document.createElement('video');
+                video.src = URL.createObjectURL(file);
+                video.controls = true;
+                video.style.maxWidth = '200px';
+                video.style.maxHeight = '150px';
+                video.className = 'me-2 mb-2';
+                
+                const div = document.createElement('div');
+                div.className = 'd-inline-block position-relative me-2 mb-2';
+                div.innerHTML = `
+                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1" onclick="this.parentElement.remove(); updateVideoInput();">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                div.appendChild(video);
+                videoPreview.appendChild(div);
+            });
+        });
+    }
+    
+    // Update photo input after removal
+    window.updatePhotoInput = function() {
+        // Just clear the preview, the input will be reset when form is submitted
+        const photoPreview = document.getElementById('photo-preview');
+        if (photoPreview && photoPreview.children.length === 0) {
+            const photoInput = document.getElementById('review-photos');
+            if (photoInput) {
+                photoInput.value = '';
+            }
+        }
+    };
+    
+    // Update video input after removal
+    window.updateVideoInput = function() {
+        // Just clear the preview, the input will be reset when form is submitted
+        const videoPreview = document.getElementById('video-preview');
+        if (videoPreview && videoPreview.children.length === 0) {
+            const videoInput = document.getElementById('review-videos');
+            if (videoInput) {
+                videoInput.value = '';
+            }
+        }
+    };
+    
     // Review form submission
     const reviewForm = document.getElementById('review-form');
     if (reviewForm) {
@@ -1617,6 +1744,12 @@ function submitReview() {
             document.getElementById('rating-value').value = '5';
             document.getElementById('rating-text').textContent = '5 - Excellent';
             document.getElementById('char-count').textContent = '0';
+            
+            // Clear photo and video previews
+            const photoPreview = document.getElementById('photo-preview');
+            const videoPreview = document.getElementById('video-preview');
+            if (photoPreview) photoPreview.innerHTML = '';
+            if (videoPreview) videoPreview.innerHTML = '';
             
         // Reset stars
         const allStars = document.querySelectorAll('.star-rating');
@@ -1685,7 +1818,23 @@ function addReviewToDOM(review) {
                 </div>
                 <small class="text-muted">${review.created_at}</small>
             </div>
-            ${review.comment ? `<p class="mb-0" style="color: #555;">${escapeHtml(review.comment)}</p>` : ''}
+            ${review.comment ? `<p class="mb-2" style="color: #555;">${escapeHtml(review.comment)}</p>` : ''}
+            ${review.photos && review.photos.length > 0 ? `
+                <div class="review-photos mb-2">
+                    ${review.photos.map(photo => `
+                        <img src="${photo}" alt="Review photo" class="img-thumbnail me-2 mb-2" style="max-width: 150px; max-height: 150px; object-fit: cover;">
+                    `).join('')}
+                </div>
+            ` : ''}
+            ${review.videos && review.videos.length > 0 ? `
+                <div class="review-videos mb-2">
+                    ${review.videos.map(video => `
+                        <video controls class="me-2 mb-2" style="max-width: 200px; max-height: 150px;">
+                            <source src="${video}" type="video/mp4">
+                        </video>
+                    `).join('')}
+                </div>
+            ` : ''}
         </div>
     `;
     
