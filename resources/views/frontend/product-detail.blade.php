@@ -2,6 +2,7 @@
 
 @php
     use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Storage;
 @endphp
 
 @section('title', $product->name . ' - Rubista')
@@ -946,7 +947,6 @@
                                 </div>
                                 
                                 @auth
-                                    @if(!isset($userReview) || !$userReview)
                                     <div class="review-form-card mt-4 p-4" id="review-form-container" style="background: white; border: 2px solid #e9ecef; border-radius: 15px; display: none;">
                                         <h5 class="mb-3 fw-bold">Write a Review</h5>
                                         <form id="review-form" enctype="multipart/form-data">
@@ -997,11 +997,6 @@
                                             </button>
                                         </form>
                                     </div>
-                                    @else
-                                    <div class="alert alert-info mt-4">
-                                        <i class="fas fa-info-circle me-2"></i>You have already reviewed this product.
-                                    </div>
-                                    @endif
                                 @else
                                     <div class="review-login-prompt mt-4 p-4" style="background: white; border: 2px dashed #667eea; border-radius: 15px; text-align: center;">
                                         <i class="fas fa-lock fa-2x mb-3" style="color: #667eea;"></i>
@@ -1037,8 +1032,28 @@
                                                     <small class="text-muted">{{ $review->created_at->format('M d, Y') }}</small>
                                                 </div>
                                                 @if($review->comment)
-                                                <p class="mb-0" style="color: #555;">{{ $review->comment }}</p>
+                                                <p class="mb-2" style="color: #555;">{{ $review->comment }}</p>
                                                 @endif
+                                                
+                                                @if($review->photos && count($review->photos) > 0)
+                                                <div class="review-photos mb-2">
+                                                    @foreach($review->photos as $photo)
+                                                    <img src="{{ Storage::url($photo) }}" alt="Review photo" class="img-thumbnail me-2 mb-2" style="max-width: 150px; max-height: 150px; object-fit: cover; cursor: pointer;" onclick="openImageModal('{{ Storage::url($photo) }}')">
+                                                    @endforeach
+                                                </div>
+                                                @endif
+                                                
+                                                @if($review->videos && count($review->videos) > 0)
+                                                <div class="review-videos mb-2">
+                                                    @foreach($review->videos as $video)
+                                                    <video controls class="me-2 mb-2" style="max-width: 200px; max-height: 150px;">
+                                                        <source src="{{ Storage::url($video) }}" type="video/mp4">
+                                                        Your browser does not support the video tag.
+                                                    </video>
+                                                    @endforeach
+                                                </div>
+                                                @endif
+                                                
                                                 @auth
                                                     @if(auth()->user()->isAdmin() && !$review->status)
                                                     <div class="mt-2">
@@ -1728,13 +1743,18 @@ function submitReview() {
         },
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             showToast(data.message, 'success');
             
-            // Add new review to the list
-            addReviewToDOM(data.review);
+            // Reload reviews from server to ensure consistency
+            loadReviewsFromServer();
             
             // Update rating summary
             updateRatingSummary(data.average_rating, data.total_reviews);
@@ -1751,32 +1771,22 @@ function submitReview() {
             if (photoPreview) photoPreview.innerHTML = '';
             if (videoPreview) videoPreview.innerHTML = '';
             
-        // Reset stars
-        const allStars = document.querySelectorAll('.star-rating');
-        allStars.forEach((star, index) => {
-            const rating = parseInt(star.dataset.rating);
-            if (rating <= 5) {
-                star.classList.add('active');
-                star.style.color = '#ffc107';
-                star.style.opacity = '1';
-            } else {
-                star.classList.remove('active');
-                star.style.opacity = '0.3';
-            }
-        });
+            // Reset stars
+            const allStars = document.querySelectorAll('.star-rating');
+            allStars.forEach((star, index) => {
+                const rating = parseInt(star.dataset.rating);
+                if (rating <= 5) {
+                    star.classList.add('active');
+                    star.style.color = '#ffc107';
+                    star.style.opacity = '1';
+                } else {
+                    star.classList.remove('active');
+                    star.style.opacity = '0.3';
+                }
+            });
             
-            // Hide form if user already reviewed
-            const reviewFormContainer = document.getElementById('review-form-container');
-            if (reviewFormContainer) {
-                reviewFormContainer.style.display = 'none';
-                reviewFormContainer.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>You have already reviewed this product.</div>';
-            }
-            
-            // Hide rate product button
-            const rateProductBtn = document.getElementById('rate-product-btn');
-            if (rateProductBtn) {
-                rateProductBtn.style.display = 'none';
-            }
+            // Keep form visible so user can submit multiple reviews
+            // Don't hide the form or button - allow multiple reviews
         } else {
             if (data.redirect) {
                 // User not logged in, redirect to login
@@ -1787,7 +1797,7 @@ function submitReview() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error submitting review:', error);
         showToast('Error submitting review. Please try again.', 'error');
     })
     .finally(() => {
@@ -1820,17 +1830,18 @@ function addReviewToDOM(review) {
             </div>
             ${review.comment ? `<p class="mb-2" style="color: #555;">${escapeHtml(review.comment)}</p>` : ''}
             ${review.photos && review.photos.length > 0 ? `
-                <div class="review-photos mb-2">
+                <div class="review-photos mb-2 d-flex flex-wrap">
                     ${review.photos.map(photo => `
-                        <img src="${photo}" alt="Review photo" class="img-thumbnail me-2 mb-2" style="max-width: 150px; max-height: 150px; object-fit: cover;">
+                        <img src="${photo}" alt="Review photo" class="img-thumbnail me-2 mb-2" style="max-width: 150px; max-height: 150px; object-fit: cover; cursor: pointer;" onclick="openImageModal('${photo}')">
                     `).join('')}
                 </div>
             ` : ''}
             ${review.videos && review.videos.length > 0 ? `
-                <div class="review-videos mb-2">
+                <div class="review-videos mb-2 d-flex flex-wrap">
                     ${review.videos.map(video => `
                         <video controls class="me-2 mb-2" style="max-width: 200px; max-height: 150px;">
                             <source src="${video}" type="video/mp4">
+                            Your browser does not support the video tag.
                         </video>
                     `).join('')}
                 </div>
@@ -1847,6 +1858,76 @@ function addReviewToDOM(review) {
         const reviewsCount = parseInt(totalReviewsDisplay.textContent) + 1;
         totalReviewsDisplay.textContent = reviewsCount;
     }
+}
+
+// Load reviews from server
+function loadReviewsFromServer() {
+    const productId = document.querySelector('input[name="product_id"]').value;
+    const reviewsContainer = document.getElementById('reviews-container');
+    
+    fetch(`/product/${productId}/reviews`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.reviews) {
+            // Clear existing reviews
+            reviewsContainer.innerHTML = '';
+            
+            // Add all reviews
+            if (data.reviews.length > 0) {
+                data.reviews.forEach(review => {
+                    addReviewToDOM(review);
+                });
+            } else {
+                reviewsContainer.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+                    </div>
+                `;
+            }
+            
+            // Update rating summary
+            updateRatingSummary(data.average_rating, data.total_reviews);
+        }
+    })
+    .catch(error => {
+        console.error('Error loading reviews:', error);
+    });
+}
+
+// Open image in modal for full view
+function openImageModal(imageSrc) {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('imageModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'imageModal';
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Review Photo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="modalImage" src="" class="img-fluid" alt="Review photo">
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    document.getElementById('modalImage').src = imageSrc;
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
 }
 
 // Generate star rating HTML

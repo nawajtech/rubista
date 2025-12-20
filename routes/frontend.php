@@ -32,6 +32,9 @@ Route::post('/contact-us', [PageController::class, 'contactSubmit'])->name('fron
 Route::get('/faq', [PageController::class, 'faq'])->name('frontend.faq');
 Route::get('/categories', [PageController::class, 'categories'])->name('frontend.categories');
 
+// CMS Pages (Policy Pages)
+Route::get('/page/{slug}', [PageController::class, 'cmsPage'])->name('frontend.cms.page');
+
 // Frontend Authentication Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('frontend.login');

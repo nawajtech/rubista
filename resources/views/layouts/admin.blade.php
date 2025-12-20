@@ -354,6 +354,40 @@
                         <span>Homepage Content</span>
                     </a>
                 </div>
+                <div class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.about-us.*') ? 'active' : '' }}" 
+                       href="{{ route('admin.about-us.index') }}">
+                        <i class="bi bi-info-circle"></i>
+                        <span>About Us</span>
+                    </a>
+                </div>
+                <!-- <div class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.contact-us.*') ? 'active' : '' }}" 
+                       href="{{ route('admin.contact-us.index') }}">
+                        <i class="bi bi-telephone"></i>
+                        <span>Contact Us</span>
+                    </a>
+                </div> -->
+                <div class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}" 
+                       href="{{ route('admin.contact-messages.index') }}">
+                        <i class="bi bi-envelope"></i>
+                        <span>Contact Messages</span>
+                        @php
+                            $unreadMessagesCount = \App\Models\ContactMessage::unread()->count();
+                        @endphp
+                        @if($unreadMessagesCount > 0)
+                            <span class="badge bg-danger ms-2">{{ $unreadMessagesCount }}</span>
+                        @endif
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.faq.*') ? 'active' : '' }}" 
+                       href="{{ route('admin.faq.index') }}">
+                        <i class="bi bi-question-circle"></i>
+                        <span>FAQs</span>
+                    </a>
+                </div>
             </div>
 
             <div class="nav-section">

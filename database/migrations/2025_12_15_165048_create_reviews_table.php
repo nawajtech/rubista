@@ -20,8 +20,8 @@ return new class extends Migration
             $table->boolean('status')->default(true); // For admin approval
             $table->timestamps();
             
-            // Prevent duplicate reviews from same user for same product
-            $table->unique(['product_id', 'user_id']);
+            // Allow multiple reviews from same user for same product
+            // No unique constraint - users can submit multiple reviews
         });
     }
 

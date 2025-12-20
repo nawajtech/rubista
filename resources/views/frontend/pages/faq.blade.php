@@ -313,165 +313,43 @@
             <!-- FAQ Categories -->
             <div class="faq-categories">
                 <button class="faq-category-btn active" data-category="all">All Questions</button>
-                <button class="faq-category-btn" data-category="orders">Orders & Shipping</button>
-                <button class="faq-category-btn" data-category="returns">Returns & Refunds</button>
-                <button class="faq-category-btn" data-category="products">Products & Warranty</button>
-                <button class="faq-category-btn" data-category="payment">Payment & Security</button>
+                @if($faqsByCategory->has('orders'))
+                    <button class="faq-category-btn" data-category="orders">Orders & Shipping</button>
+                @endif
+                @if($faqsByCategory->has('returns'))
+                    <button class="faq-category-btn" data-category="returns">Returns & Refunds</button>
+                @endif
+                @if($faqsByCategory->has('products'))
+                    <button class="faq-category-btn" data-category="products">Products & Warranty</button>
+                @endif
+                @if($faqsByCategory->has('payment'))
+                    <button class="faq-category-btn" data-category="payment">Payment & Security</button>
+                @endif
+                @if($faqsByCategory->has('shipping'))
+                    <button class="faq-category-btn" data-category="shipping">Shipping</button>
+                @endif
+                @if($faqsByCategory->has('general'))
+                    <button class="faq-category-btn" data-category="general">General</button>
+                @endif
             </div>
 
             <!-- FAQ Accordion -->
-            <div class="faq-accordion">
-                <!-- Orders & Shipping -->
-                <div class="faq-item" data-category="orders">
-                    <button class="faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true">
-                        How long does delivery take?
+            <div class="faq-accordion" id="faqAccordion">
+                @forelse($faqs as $index => $faq)
+                <div class="faq-item" data-category="{{ $faq->category }}">
+                    <button class="faq-question {{ $index === 0 ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#faq{{ $faq->id }}" aria-expanded="{{ $index === 0 ? 'true' : 'false' }}">
+                        {{ $faq->question }}
                     </button>
-                    <div id="faq1" class="faq-answer collapse show" data-bs-parent="#faqAccordion">
-                        <p>Our delivery times vary based on your location and the shipping method you choose:</p>
-                        <ul>
-                            <li><strong>Standard Delivery:</strong> 3-5 business days</li>
-                            <li><strong>Express Delivery:</strong> 1-2 business days</li>
-                            <li><strong>Same Day Delivery:</strong> Available in select cities</li>
-                        </ul>
-                        <p>You'll receive tracking information via email once your order ships.</p>
+                    <div id="faq{{ $faq->id }}" class="faq-answer collapse {{ $index === 0 ? 'show' : '' }}" data-bs-parent="#faqAccordion">
+                        {!! nl2br(e($faq->answer)) !!}
                     </div>
                 </div>
-
-                <div class="faq-item" data-category="orders">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                        Do you ship internationally?
-                    </button>
-                    <div id="faq2" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>Currently, we ship to all major cities in India. International shipping is not available at this time. We're working on expanding our shipping network to serve customers worldwide.</p>
-                    </div>
+                @empty
+                <div class="text-center py-5">
+                    <p class="text-muted">No FAQs available at the moment. Please check back later.</p>
                 </div>
-
-                <div class="faq-item" data-category="orders">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                        How can I track my order?
-                    </button>
-                    <div id="faq3" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>You can track your order in several ways:</p>
-                        <ul>
-                            <li>Check your email for tracking information</li>
-                            <li>Log into your account and visit the "My Orders" section</li>
-                            <li>Contact our customer support team</li>
-                        </ul>
-                        <p>Tracking information is typically available within 24 hours of order confirmation.</p>
-                    </div>
-                </div>
-
-                <!-- Returns & Refunds -->
-                <div class="faq-item" data-category="returns">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                        What is your return policy?
-                    </button>
-                    <div id="faq4" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>We offer a 30-day return policy for all products with the following conditions:</p>
-                        <ul>
-                            <li>Items must be in original condition with all packaging</li>
-                            <li>No signs of use or damage</li>
-                            <li>Original receipt or order confirmation required</li>
-                        </ul>
-                        <p>Contact our support team to initiate a return. We'll provide a prepaid shipping label for your convenience.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item" data-category="returns">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-                        How long does it take to process a refund?
-                    </button>
-                    <div id="faq5" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>Refund processing times depend on your payment method:</p>
-                        <ul>
-                            <li><strong>Credit/Debit Cards:</strong> 5-7 business days</li>
-                            <li><strong>UPI/Net Banking:</strong> 2-3 business days</li>
-                            <li><strong>Cash on Delivery:</strong> Bank transfer within 3-5 days</li>
-                        </ul>
-                        <p>You'll receive an email confirmation once the refund is processed.</p>
-                    </div>
-                </div>
-
-                <!-- Products & Warranty -->
-                <div class="faq-item" data-category="products">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
-                        Do you offer warranty on products?
-                    </button>
-                    <div id="faq6" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>Yes, all our products come with manufacturer warranty:</p>
-                        <ul>
-                            <li><strong>Standard Warranty:</strong> 1 year manufacturer warranty</li>
-                            <li><strong>Extended Warranty:</strong> Available for select items</li>
-                            <li><strong>Warranty Coverage:</strong> Manufacturing defects and hardware issues</li>
-                        </ul>
-                        <p>Check individual product pages for specific warranty details. Extended warranty can be purchased at checkout.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item" data-category="products">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
-                        Are your products genuine and authentic?
-                    </button>
-                    <div id="faq7" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>Absolutely! We only sell genuine, authentic products from authorized manufacturers and distributors. All our products come with:</p>
-                        <ul>
-                            <li>Original manufacturer warranty</li>
-                            <li>Genuine product packaging</li>
-                            <li>Authenticity certificates where applicable</li>
-                            <li>Direct partnership with brands</li>
-                        </ul>
-                        <p>We never sell counterfeit or refurbished products as new.</p>
-                    </div>
-                </div>
-
-                <!-- Payment & Security -->
-                <div class="faq-item" data-category="payment">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">
-                        What payment methods do you accept?
-                    </button>
-                    <div id="faq8" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>We accept all major payment methods:</p>
-                        <ul>
-                            <li><strong>Cards:</strong> Visa, MasterCard, American Express, RuPay</li>
-                            <li><strong>Digital Wallets:</strong> Paytm, PhonePe, Google Pay, Amazon Pay</li>
-                            <li><strong>UPI:</strong> All UPI apps supported</li>
-                            <li><strong>Net Banking:</strong> All major banks</li>
-                            <li><strong>Cash on Delivery:</strong> Available for orders up to ₹10,000</li>
-                        </ul>
-                        <p>All online payments are secured with SSL encryption.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item" data-category="payment">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9">
-                        Is my payment information secure?
-                    </button>
-                    <div id="faq9" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>Yes, your payment information is completely secure. We use:</p>
-                        <ul>
-                            <li><strong>SSL Encryption:</strong> 256-bit encryption for all transactions</li>
-                            <li><strong>PCI DSS Compliance:</strong> Industry-standard security protocols</li>
-                            <li><strong>Secure Payment Gateways:</strong> Trusted payment processors</li>
-                            <li><strong>No Data Storage:</strong> We don't store your card details</li>
-                        </ul>
-                        <p>Your personal and financial information is protected at every step.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item" data-category="payment">
-                    <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq10">
-                        Can I cancel my order after payment?
-                    </button>
-                    <div id="faq10" class="faq-answer collapse" data-bs-parent="#faqAccordion">
-                        <p>Yes, you can cancel your order under certain conditions:</p>
-                        <ul>
-                            <li><strong>Before Shipping:</strong> Full refund available</li>
-                            <li><strong>After Shipping:</strong> Return policy applies</li>
-                            <li><strong>Processing Time:</strong> 24-48 hours for cancellation</li>
-                        </ul>
-                        <p>Contact our customer support immediately if you need to cancel your order.</p>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </div>

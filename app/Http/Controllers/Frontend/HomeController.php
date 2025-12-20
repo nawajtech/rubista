@@ -16,23 +16,44 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $categories = Category::with('products')->get();
+        // Get categories with products, sorted by name
+        $categories = Category::where('status', true)
+            ->withCount(['products' => function($query) {
+                $query->where('status', true);
+            }])
+            ->with(['products' => function($query) {
+                $query->where('status', true)
+                      ->orderBy('sort_order', 'asc')
+                      ->orderBy('featured', 'desc')
+                      ->orderBy('created_at', 'desc');
+            }])
+            ->orderBy('name', 'asc')
+            ->get();
+        
+        // Get featured products with proper sorting
         $featuredProducts = Product::where('featured', true)
+            ->where('status', true)
             ->withCount(['reviews as total_reviews' => function($query) {
                 $query->where('status', true);
             }])
             ->with(['reviews' => function($query) {
                 $query->where('status', true);
             }])
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
-        $trendingProducts = Product::orderBy('created_at', 'desc')
+        
+        // Get trending/latest products with proper sorting
+        $trendingProducts = Product::where('status', true)
             ->withCount(['reviews as total_reviews' => function($query) {
                 $query->where('status', true);
             }])
             ->with(['reviews' => function($query) {
                 $query->where('status', true);
             }])
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
         
@@ -53,7 +74,7 @@ class HomeController extends Controller
             $product->is_in_wishlist = isset($wishlist[$product->id]);
         }
         
-        // Get dynamic homepage content
+        // Get dynamic homepage content with proper sorting (already sorted by sort_order in model)
         $heroContent = HomepageContent::getBySection('hero')->first();
         $serviceContent = HomepageContent::getBySection('service');
         $offerContent = HomepageContent::getBySection('offer');
@@ -66,6 +87,30 @@ class HomeController extends Controller
         $brandsContent = HomepageContent::getBySection('brands')->first();
         $testimonialsContent = HomepageContent::getBySection('testimonial');
         $latestProductsContent = HomepageContent::getBySection('latest_products')->first();
+        
+        // Get latest products for latest products section
+        $latestProducts = Product::where('status', true)
+            ->withCount(['reviews as total_reviews' => function($query) {
+                $query->where('status', true);
+            }])
+            ->with(['reviews' => function($query) {
+                $query->where('status', true);
+            }])
+            ->orderBy('created_at', 'desc')
+            ->orderBy('sort_order', 'asc')
+            ->take(8)
+            ->get();
+        
+        // Calculate average ratings for latest products
+        foreach ($latestProducts as $product) {
+            $product->average_rating = $product->reviews->avg('rating') ?? 0;
+        }
+        
+        // Check wishlist status for latest products
+        $wishlist = session()->get('wishlist', []);
+        foreach ($latestProducts as $product) {
+            $product->is_in_wishlist = isset($wishlist[$product->id]);
+        }
         
         // Get settings for contact and shipping info
         $settings = Cache::remember('site_settings', 3600, function () {
@@ -88,6 +133,7 @@ class HomeController extends Controller
             'categories', 
             'featuredProducts', 
             'trendingProducts',
+            'latestProducts',
             'heroContent',
             'serviceContent',
             'offerContent',

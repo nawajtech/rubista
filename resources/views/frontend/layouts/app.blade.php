@@ -1311,16 +1311,18 @@
                         </div>
                     </div>
                     
-                    <!-- Categories -->
+                    <!-- Information -->
                     <div class="col-lg-2 col-md-6 mb-4">
                         <div class="footer-section">
-                            <h5>Categories</h5>
+                            <h5>Information</h5>
                             <ul class="footer-links">
-                                <li><a href="#">Electronics</a></li>
-                                <li><a href="#">Smartphones</a></li>
-                                <li><a href="#">Laptops</a></li>
-                                <li><a href="#">Accessories</a></li>
-                                <li><a href="#">Gaming</a></li>
+                                <li><a href="{{ route('frontend.about') }}" target="_blank" rel="noopener">About Us</a></li>
+                                <li><a href="{{ route('frontend.cms.page', 'cancellation-policy') }}" target="_blank" rel="noopener">Cancellation Policy</a></li>
+                                <li><a href="{{ route('frontend.cms.page', 'exchange-policy') }}" target="_blank" rel="noopener">Exchange Policy</a></li>
+                                <li><a href="{{ route('frontend.cms.page', 'privacy-policy') }}" target="_blank" rel="noopener">Privacy Policy</a></li>
+                                <li><a href="{{ route('frontend.cms.page', 'return-policy') }}" target="_blank" rel="noopener">Return Policy</a></li>
+                                <li><a href="{{ route('frontend.cms.page', 'shipping-policy') }}" target="_blank" rel="noopener">Shipping Policy</a></li>
+                                <li><a href="{{ route('frontend.cms.page', 'terms-conditions') }}" target="_blank" rel="noopener">Terms & Conditions</a></li>
                             </ul>
                         </div>
                     </div>
@@ -1357,10 +1359,12 @@
                         <p>&copy; 2024 Rubista.com. All rights reserved.</p>
                     </div>
                     <div class="footer-bottom-links">
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Terms of Service</a>
-                        <!-- <a href="#">Shipping Policy</a>
-                        <a href="#">Return Policy</a> -->
+                        <a href="{{ route('frontend.cms.page', 'privacy-policy') }}" target="_blank" rel="noopener">Privacy Policy</a>
+                        <a href="{{ route('frontend.cms.page', 'terms-conditions') }}" target="_blank" rel="noopener">Terms & Conditions</a>
+                        <a href="{{ route('frontend.cms.page', 'shipping-policy') }}" target="_blank" rel="noopener">Shipping Policy</a>
+                        <a href="{{ route('frontend.cms.page', 'return-policy') }}" target="_blank" rel="noopener">Return Policy</a>
+                        <a href="{{ route('frontend.cms.page', 'cancellation-policy') }}" target="_blank" rel="noopener">Cancellation Policy</a>
+                        <a href="{{ route('frontend.cms.page', 'exchange-policy') }}" target="_blank" rel="noopener">Exchange Policy</a>
                     </div>
                 </div>
             </div>

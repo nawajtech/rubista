@@ -101,12 +101,19 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">About RUBISTA</h1>
-                <p class="lead mb-4">Your trusted partner in electronics since 2020. We bring you the latest technology with uncompromising quality and exceptional service.</p>
+                <h1 class="display-4 fw-bold mb-4">{!! ($aboutUs && !empty($aboutUs->hero_title)) ? $aboutUs->hero_title : 'About RUBISTA' !!}</h1>
+                <p class="lead mb-4">{!! ($aboutUs && !empty($aboutUs->hero_subtitle)) ? $aboutUs->hero_subtitle : 'Your trusted partner in electronics since 2020. We bring you the latest technology with uncompromising quality and exceptional service.' !!}</p>
+                @if($aboutUs && $aboutUs->hero_description)
+                    <p>{!! $aboutUs->hero_description !!}</p>
+                @endif
             </div>
             <div class="col-lg-6">
-                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop" 
-                     alt="About Us" class="img-fluid rounded shadow-lg">
+                @if($aboutUs && $aboutUs->hero_image_url)
+                    <img src="{{ $aboutUs->hero_image_url }}" alt="About Us" class="img-fluid rounded shadow-lg">
+                @else
+                    <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop" 
+                         alt="About Us" class="img-fluid rounded shadow-lg">
+                @endif
             </div>
         </div>
     </div>
@@ -117,15 +124,23 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6">
-                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop" 
-                     alt="Our Story" class="img-fluid rounded shadow">
+                @if($aboutUs && $aboutUs->our_story_image_url)
+                    <img src="{{ $aboutUs->our_story_image_url }}" alt="Our Story" class="img-fluid rounded shadow">
+                @else
+                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop" 
+                         alt="Our Story" class="img-fluid rounded shadow">
+                @endif
             </div>
             <div class="col-lg-6">
                 <div class="ps-lg-5">
                     <h2 class="fw-bold mb-4">Our Story</h2>
-                    <p class="mb-4">Founded in 2020, RUBISTA began as a small electronics store with a big vision: to make cutting-edge technology accessible to everyone. What started as a passion project has grown into a trusted online destination for electronics enthusiasts across the country.</p>
-                    <p class="mb-4">We believe that great technology should enhance your life, not complicate it. That's why we carefully curate our selection to include only the best products from renowned brands, ensuring quality, reliability, and innovation in every purchase.</p>
-                    <p>Today, we serve thousands of satisfied customers, building lasting relationships through exceptional service, competitive prices, and unwavering commitment to excellence.</p>
+                    @if($aboutUs && $aboutUs->content)
+                        {!! nl2br(e($aboutUs->content)) !!}
+                    @else
+                        <p class="mb-4">Founded in 2020, RUBISTA began as a small electronics store with a big vision: to make cutting-edge technology accessible to everyone. What started as a passion project has grown into a trusted online destination for electronics enthusiasts across the country.</p>
+                        <p class="mb-4">We believe that great technology should enhance your life, not complicate it. That's why we carefully curate our selection to include only the best products from renowned brands, ensuring quality, reliability, and innovation in every purchase.</p>
+                        <p>Today, we serve thousands of satisfied customers, building lasting relationships through exceptional service, competitive prices, and unwavering commitment to excellence.</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -133,6 +148,7 @@
 </section>
 
 <!-- Features Section -->
+@if($aboutUs && $aboutUs->features && count($aboutUs->features) > 0)
 <section class="about-section bg-light">
     <div class="container">
         <div class="row text-center mb-5">
@@ -142,79 +158,99 @@
             </div>
         </div>
         <div class="row">
+            @foreach($aboutUs->features as $feature)
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="feature-card bg-white">
                     <div class="feature-icon">
-                        <i class="fas fa-shield-check"></i>
+                        <i class="{{ $feature['icon'] ?? 'fas fa-star' }}"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">Quality Assurance</h5>
-                    <p class="text-muted">Every product undergoes rigorous quality checks to ensure you receive only the best.</p>
+                    <h5 class="fw-bold mb-3">{{ $feature['title'] ?? '' }}</h5>
+                    <p class="text-muted">{{ $feature['description'] ?? '' }}</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="feature-card bg-white">
-                    <div class="feature-icon">
-                        <i class="fas fa-shipping-fast"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Fast Delivery</h5>
-                    <p class="text-muted">Quick and secure delivery to your doorstep with real-time tracking.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="feature-card bg-white">
-                    <div class="feature-icon">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Expert Support</h5>
-                    <p class="text-muted">Our knowledgeable team is here to help you make the right choice.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="feature-card bg-white">
-                    <div class="feature-icon">
-                        <i class="fas fa-tag"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Best Prices</h5>
-                    <p class="text-muted">Competitive pricing with regular deals and discounts for maximum value.</p>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
+@endif
 
 <!-- Stats Section -->
+@if($aboutUs && $aboutUs->stats && count($aboutUs->stats) > 0)
 <section class="stats-section">
     <div class="container">
         <div class="row">
+            @foreach($aboutUs->stats as $stat)
             <div class="col-lg-3 col-md-6">
                 <div class="stat-item">
-                    <span class="stat-number">50K+</span>
-                    <div class="stat-label">Happy Customers</div>
+                    <span class="stat-number">{{ $stat['number'] ?? '' }}</span>
+                    <div class="stat-label">{{ $stat['label'] ?? '' }}</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-item">
-                    <span class="stat-number">10K+</span>
-                    <div class="stat-label">Products Sold</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-item">
-                    <span class="stat-number">500+</span>
-                    <div class="stat-label">Product Varieties</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-item">
-                    <span class="stat-number">4.8★</span>
-                    <div class="stat-label">Customer Rating</div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
+@endif
+
+<!-- Mission, Vision, Values Section -->
+@if($aboutUs && ($aboutUs->mission || $aboutUs->vision || $aboutUs->values))
+<section class="about-section">
+    <div class="container">
+        <div class="row">
+            @if($aboutUs->mission)
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    @if($aboutUs->mission_image_url)
+                        <div class="mb-3">
+                            <img src="{{ $aboutUs->mission_image_url }}" alt="Our Mission" 
+                                 class="img-fluid rounded shadow" style="max-height: 200px; object-fit: cover;">
+                        </div>
+                    @else
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                    @endif
+                    <h3 class="fw-bold mb-3">Our Mission</h3>
+                    <p class="text-muted">{!! nl2br(e($aboutUs->mission)) !!}</p>
+                </div>
+            </div>
+            @endif
+            @if($aboutUs->vision)
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    @if($aboutUs->vision_image_url)
+                        <div class="mb-3">
+                            <img src="{{ $aboutUs->vision_image_url }}" alt="Our Vision" 
+                                 class="img-fluid rounded shadow" style="max-height: 200px; object-fit: cover;">
+                        </div>
+                    @else
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    @endif
+                    <h3 class="fw-bold mb-3">Our Vision</h3>
+                    <p class="text-muted">{!! nl2br(e($aboutUs->vision)) !!}</p>
+                </div>
+            </div>
+            @endif
+            @if($aboutUs->values)
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">Our Values</h3>
+                    <p class="text-muted">{!! nl2br(e($aboutUs->values)) !!}</p>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+</section>
+@endif
 
 <!-- Team Section -->
+@if($aboutUs && $aboutUs->team && count($aboutUs->team) > 0)
 <section class="team-section">
     <div class="container">
         <div class="row text-center mb-5">
@@ -224,49 +260,24 @@
             </div>
         </div>
         <div class="row">
+            @foreach($aboutUs->team as $member)
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="team-card">
                     <div class="team-photo">
                         <i class="fas fa-user"></i>
                     </div>
-                    <h5 class="fw-bold">Rajesh Kumar</h5>
-                    <p class="text-muted mb-3">Founder & CEO</p>
-                    <p class="small">Visionary leader with 15+ years in electronics industry, passionate about bringing latest technology to customers.</p>
+                    <h5 class="fw-bold">{{ $member['name'] ?? '' }}</h5>
+                    <p class="text-muted mb-3">{{ $member['position'] ?? '' }}</p>
+                    @if(!empty($member['description']))
+                    <p class="small">{{ $member['description'] }}</p>
+                    @endif
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="team-card">
-                    <div class="team-photo">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h5 class="fw-bold">Priya Sharma</h5>
-                    <p class="text-muted mb-3">Head of Customer Experience</p>
-                    <p class="small">Ensuring every customer has an exceptional experience with our products and services.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="team-card">
-                    <div class="team-photo">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h5 class="fw-bold">Amit Patel</h5>
-                    <p class="text-muted mb-3">Technical Director</p>
-                    <p class="small">Electronics expert who carefully selects and tests every product in our catalog.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="team-card">
-                    <div class="team-photo">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h5 class="fw-bold">Neha Singh</h5>
-                    <p class="text-muted mb-3">Operations Manager</p>
-                    <p class="small">Ensuring smooth operations and timely delivery of products to our customers.</p>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
+@endif
 
 <!-- CTA Section -->
 <section class="about-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">

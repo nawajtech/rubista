@@ -29,76 +29,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample data - in real app this would come from database -->
+                    @forelse($pages as $page)
                     <tr>
-                        <td><strong>About Us</strong></td>
-                        <td><code>about-us</code></td>
-                        <td><span class="badge bg-success">Published</span></td>
-                        <td><small class="text-muted">2 days ago</small></td>
+                        <td><strong>{{ $page->title }}</strong></td>
+                        <td><code>{{ $page->slug }}</code></td>
+                        <td>
+                            @if($page->status)
+                                <span class="badge bg-success">Published</span>
+                            @else
+                                <span class="badge bg-secondary">Draft</span>
+                            @endif
+                        </td>
+                        <td><small class="text-muted">{{ $page->created_at->diffForHumans() }}</small></td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ route('admin.cms.show', 1) }}" class="btn btn-outline-info">
+                                <a href="{{ route('admin.cms.show', $page->id) }}" class="btn btn-outline-info" title="View">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.cms.edit', 1) }}" class="btn btn-outline-primary">
+                                <a href="{{ route('admin.cms.edit', $page->id) }}" class="btn btn-outline-primary" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <!-- <form method="POST" action="{{ route('admin.cms.destroy', 1) }}" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form> -->
                             </div>
                         </td>
                     </tr>
+                    @empty
                     <tr>
-                        <td><strong>Privacy Policy</strong></td>
-                        <td><code>privacy-policy</code></td>
-                        <td><span class="badge bg-success">Published</span></td>
-                        <td><small class="text-muted">1 week ago</small></td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a href="{{ route('admin.cms.show', 2) }}" class="btn btn-outline-info">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <a href="{{ route('admin.cms.edit', 2) }}" class="btn btn-outline-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <!-- <form method="POST" action="{{ route('admin.cms.destroy', 2) }}" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form> -->
-                            </div>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox"></i> No CMS pages found. Create your first page to get started.
                         </td>
                     </tr>
-                    <tr>
-                        <td><strong>Terms of Service</strong></td>
-                        <td><code>terms-of-service</code></td>
-                        <td><span class="badge bg-secondary">Draft</span></td>
-                        <td><small class="text-muted">3 days ago</small></td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a href="{{ route('admin.cms.show', 3) }}" class="btn btn-outline-info">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <a href="{{ route('admin.cms.edit', 3) }}" class="btn btn-outline-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <!-- <form method="POST" action="{{ route('admin.cms.destroy', 3) }}" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form> -->
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

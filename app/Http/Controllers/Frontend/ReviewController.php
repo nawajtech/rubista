@@ -16,36 +16,25 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
-        // Check if user is authenticated
-        if (!Auth::check()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Please login to submit a review.',
-                'redirect' => route('frontend.login')
-            ], 401);
-        }
+        try {
+            // Check if user is authenticated
+            if (!Auth::check()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please login to submit a review.',
+                    'redirect' => route('frontend.login')
+                ], 401);
+            }
 
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:1000',
-            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max per image
-            'videos.*' => 'nullable|mimes:mp4,mov,avi,wmv|max:20480', // 20MB max per video
-        ]);
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'rating' => 'required|integer|min:1|max:5',
+                'comment' => 'nullable|string|max:1000',
+                'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max per image
+                'videos.*' => 'nullable|mimes:mp4,mov,avi,wmv|max:20480', // 20MB max per video
+            ]);
 
-        $product = Product::findOrFail($request->product_id);
-
-        // Check if user already reviewed this product
-        $existingReview = Review::where('product_id', $request->product_id)
-            ->where('user_id', Auth::id())
-            ->first();
-
-        if ($existingReview) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You have already reviewed this product.',
-            ], 422);
-        }
+            $product = Product::findOrFail($request->product_id);
 
         // Handle photo uploads
         $photos = [];
@@ -65,7 +54,7 @@ class ReviewController extends Controller
             }
         }
 
-        // Create review (admin can see all, but regular users see only approved)
+        // Create review (auto-approve so it shows immediately)
         $review = Review::create([
             'product_id' => $request->product_id,
             'user_id' => Auth::id(),
@@ -73,7 +62,7 @@ class ReviewController extends Controller
             'comment' => $request->comment,
             'photos' => !empty($photos) ? $photos : null,
             'videos' => !empty($videos) ? $videos : null,
-            'status' => false, // Require admin approval
+            'status' => true, // Auto-approve so review shows immediately
         ]);
 
         // Calculate average rating for the product
@@ -83,14 +72,18 @@ class ReviewController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Review submitted successfully! It will be visible after admin approval.',
+            'message' => 'Review submitted successfully! Your review is now visible.',
             'review' => [
                 'id' => $review->id,
                 'user_name' => Auth::user()->name,
                 'rating' => $review->rating,
                 'comment' => $review->comment,
-                'photos' => $review->photos,
-                'videos' => $review->videos,
+                'photos' => $review->photos ? array_map(function($photo) {
+                    return Storage::url($photo);
+                }, $review->photos) : [],
+                'videos' => $review->videos ? array_map(function($video) {
+                    return Storage::url($video);
+                }, $review->videos) : [],
                 'created_at' => $review->created_at->format('M d, Y'),
                 'created_at_human' => $review->created_at->diffForHumans(),
                 'status' => $review->status,
@@ -100,6 +93,21 @@ class ReviewController extends Controller
                 ->where('status', true)
                 ->count(),
         ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed: ' . implode(', ', $e->errors()),
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error storing review: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while submitting your review. Please try again.',
+            ], 500);
+        }
     }
 
     /**

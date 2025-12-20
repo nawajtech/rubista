@@ -106,8 +106,11 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">Get in Touch</h1>
-                <p class="lead mb-4">Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+                <h1 class="display-4 fw-bold mb-4">{!! $contactUs->hero_title ?? 'Get in Touch' !!}</h1>
+                <p class="lead mb-4">{!! $contactUs->hero_subtitle ?? 'Have questions? We\'d love to hear from you. Send us a message and we\'ll respond as soon as possible.' !!}</p>
+                @if($contactUs && $contactUs->hero_description)
+                    <p>{!! $contactUs->hero_description !!}</p>
+                @endif
             </div>
             <div class="col-lg-6">
                 <img src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=600&h=400&fit=crop" 
@@ -133,7 +136,7 @@
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
                     <h5 class="fw-bold mb-3">Visit Our Store</h5>
-                    <p class="text-muted">123 Electronics Street<br>Tech City, TC 12345<br>India</p>
+                    <p class="text-muted">{!! $contactUs->address ?? '123 Electronics Street<br>Tech City, TC 12345<br>India' !!}</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 mb-4">
@@ -142,7 +145,18 @@
                         <i class="fas fa-phone"></i>
                     </div>
                     <h5 class="fw-bold mb-3">Call Us</h5>
-                    <p class="text-muted">Phone: +91 98765 43210<br>Toll Free: 1800-123-4567<br>Mon-Sat 9AM-8PM</p>
+                    <p class="text-muted">
+                        @if($contactUs && $contactUs->phone)
+                            Phone: {{ $contactUs->phone }}<br>
+                        @else
+                            Phone: +91 98765 43210<br>
+                        @endif
+                        @if($contactUs && $contactUs->working_hours)
+                            {{ $contactUs->working_hours }}
+                        @else
+                            Mon-Sat 9AM-8PM
+                        @endif
+                    </p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 mb-4">
@@ -151,7 +165,14 @@
                         <i class="fas fa-envelope"></i>
                     </div>
                     <h5 class="fw-bold mb-3">Email Us</h5>
-                    <p class="text-muted">info@rubista.com<br>support@rubista.com<br>We reply within 24 hours</p>
+                    <p class="text-muted">
+                        @if($contactUs && $contactUs->email)
+                            {{ $contactUs->email }}<br>
+                        @else
+                            info@rubista.com<br>
+                        @endif
+                        We reply within 24 hours
+                    </p>
                 </div>
             </div>
         </div>
@@ -165,8 +186,8 @@
             <div class="col-lg-8 mx-auto">
                 <div class="contact-card">
                     <div class="text-center mb-5">
-                        <h2 class="fw-bold mb-3">Send Us a Message</h2>
-                        <p class="text-muted">Fill out the form below and we'll get back to you soon</p>
+                        <h2 class="fw-bold mb-3">{!! $contactUs->form_title ?? 'Send Us a Message' !!}</h2>
+                        <p class="text-muted">{!! $contactUs->form_description ?? 'Fill out the form below and we\'ll get back to you soon' !!}</p>
                     </div>
                     
                     @if(session('success'))

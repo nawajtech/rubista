@@ -14,7 +14,12 @@ class PageController extends Controller
      */
     public function about()
     {
-        return view('frontend.pages.about');
+        $aboutUs = \App\Models\AboutUs::active()->first();
+        // If no active page, get any page (for preview purposes)
+        if (!$aboutUs) {
+            $aboutUs = \App\Models\AboutUs::first();
+        }
+        return view('frontend.pages.about', compact('aboutUs'));
     }
     
     /**
@@ -22,7 +27,8 @@ class PageController extends Controller
      */
     public function contact()
     {
-        return view('frontend.pages.contact');
+        $contactUs = \App\Models\ContactUs::active()->first();
+        return view('frontend.pages.contact', compact('contactUs'));
     }
     
     /**
@@ -30,7 +36,9 @@ class PageController extends Controller
      */
     public function faq()
     {
-        return view('frontend.pages.faq');
+        $faqs = \App\Models\Faq::active()->ordered()->get();
+        $faqsByCategory = $faqs->groupBy('category');
+        return view('frontend.pages.faq', compact('faqs', 'faqsByCategory'));
     }
     
     /**
@@ -63,9 +71,47 @@ class PageController extends Controller
                 ->withInput();
         }
 
-        // Here you can add email sending logic
-        // For now, we'll just show a success message
+        // Save the contact message to database
+        \App\Models\ContactMessage::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'message' => $request->message,
+            'is_read' => false,
+        ]);
+
+        // Here you can add email sending logic if needed
         
         return back()->with('success', 'Thank you for your message! We will get back to you soon.');
+    }
+    
+    /**
+     * Show CMS page by slug
+     */
+    public function cmsPage($slug)
+    {
+        // Get the page by slug - prioritize published pages
+        $page = \App\Models\CmsPage::where('slug', $slug)
+            ->where('status', true)
+            ->first();
+        
+        // If not found with status=true, try any page (for admin preview)
+        if (!$page) {
+            $page = \App\Models\CmsPage::where('slug', $slug)->first();
+        }
+        
+        if (!$page) {
+            // Check if any CMS pages exist at all
+            $totalPages = \App\Models\CmsPage::count();
+            if ($totalPages == 0) {
+                abort(404, "No CMS pages found in database. Please run: php artisan db:seed --class=CmsPageSeeder");
+            }
+            
+            // List available slugs for debugging
+            $availableSlugs = \App\Models\CmsPage::pluck('slug')->implode(', ');
+            abort(404, "Page with slug '{$slug}' not found. Available slugs: {$availableSlugs}");
+        }
+        
+        return view('frontend.pages.cms-page', compact('page'));
     }
 } 
