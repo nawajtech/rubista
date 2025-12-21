@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -104,30 +105,61 @@ class AuthController extends Controller
         ]);
 
         $phone = $request->phone;
+        $type = $request->type;
         
-        // Generate 6-digit OTP
-        $otp = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        // Generate 4-digit OTP (as per user's example)
+        $otp = rand(1000, 9999);
         
-        // Store OTP in session with expiry (10 minutes)
+        // Store OTP in session with expiry (5 minutes for login, 10 minutes for registration)
+        $expiryMinutes = $type === 'login' ? 5 : 10;
         Session::put('otp_' . $phone, [
             'code' => $otp,
-            'expires_at' => now()->addMinutes(10),
-            'type' => $request->type
+            'expires_at' => now()->addMinutes($expiryMinutes),
+            'type' => $type
         ]);
 
-        // In production, send OTP via SMS service
-        // For now, we'll return it in response for testing
-        // You can remove this in production
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'OTP sent successfully!',
-                'otp' => $otp, // Remove this in production
-                'phone' => $phone
-            ]);
+        // Send OTP via SMS service
+        $smsResult = null;
+        if ($type === 'register') {
+            $smsResult = SmsService::sendRegistrationOtp($phone, $otp);
+        } else {
+            $smsResult = SmsService::sendLoginOtp($phone, $otp);
         }
 
-        return back()->with('otp_sent', true)->with('phone', $phone)->with('otp', $otp); // Remove 'otp' in production
+        // Check if SMS was sent successfully
+        $smsSuccess = $smsResult['success'] ?? false;
+        
+        // For development/testing: if SMS fails, still allow OTP in response (remove in production)
+        $showOtpInResponse = !$smsSuccess && config('app.debug', false);
+
+        if ($request->ajax()) {
+            $response = [
+                'success' => true,
+                'message' => $smsSuccess 
+                    ? 'OTP sent successfully to your mobile number!' 
+                    : 'OTP generated. ' . ($smsResult['message'] ?? 'SMS service unavailable.'),
+                'phone' => $phone
+            ];
+
+            // Only include OTP in response if debugging or SMS failed (remove in production)
+            if ($showOtpInResponse) {
+                $response['otp'] = $otp;
+                $response['debug'] = true;
+            }
+
+            return response()->json($response);
+        }
+
+        $redirect = back()->with('otp_sent', true)
+            ->with('phone', $phone)
+            ->with('sms_sent', $smsSuccess);
+
+        // Only include OTP in session if debugging (remove in production)
+        if ($showOtpInResponse) {
+            $redirect = $redirect->with('otp', $otp);
+        }
+
+        return $redirect;
     }
 
     /**

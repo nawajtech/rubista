@@ -35,8 +35,19 @@
             <div class="col-lg-3 col-md-4 col-6 mb-4">
                 <div class="card product-card h-100">
                     <div class="position-relative">
-                        <img src="{{ $product->image ?? 'https://via.placeholder.com/250x250/7c3aed/ffffff?text=Product' }}" 
-                             class="card-img-top" alt="{{ $product->name }}" style="height: 250px; object-fit: cover;">
+                        @if($product->image)
+                            @if(Str::startsWith($product->image, 'http'))
+                                <img src="{{ $product->image }}" 
+                                     class="card-img-top" alt="{{ $product->name }}" style="height: 250px; object-fit: cover;">
+                            @else
+                                <img src="{{ asset('storage/' . $product->image) }}" 
+                                     class="card-img-top" alt="{{ $product->name }}" style="height: 250px; object-fit: cover;">
+                            @endif
+                        @else
+                            <div class="card-img-top" style="height: 250px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        @endif
                         @if($product->sale_price && $product->sale_price < $product->price)
                             <span class="badge-sale position-absolute top-0 start-0 m-2">SALE</span>
                         @endif

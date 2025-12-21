@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -223,6 +224,24 @@ class OrderController extends Controller
             }
 
             DB::commit();
+
+            // Send SMS notification for order confirmation
+            try {
+                $phone = $request->billing_phone;
+                // Remove any non-numeric characters and extract last 10 digits
+                $phone = preg_replace('/[^0-9]/', '', $phone);
+                $phone = substr($phone, -10);
+                
+                if (strlen($phone) === 10) {
+                    SmsService::sendOrderConfirmation($phone, $order->order_number, $order->total_amount);
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the order
+                \Log::error('Failed to send order confirmation SMS', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             // Clear cart
             Session::forget('cart');

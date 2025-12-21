@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+
+    'sms' => [
+        'api_url' => env('SMS_API_URL'),
+        'username' => env('SMS_USER'),
+        'password' => env('SMS_PASS'),
+        'sender_id' => env('SMS_SENDER', 'RUBISTA'),
+        'country_code' => env('SMS_COUNTRY_CODE', '91'),
+        'enabled' => env('SMS_ENABLED', true),
+    ],
+
 ];

@@ -365,8 +365,19 @@
                 @foreach($category->products->take(4) as $product)
                 <div class="product-item">
                     <div class="product-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300&h=200&fit=crop" 
-                             class="product-image" alt="{{ $product->name }}">
+                        @if($product->image)
+                            @if(Str::startsWith($product->image, 'http'))
+                                <img src="{{ $product->image }}" 
+                                     class="product-image" alt="{{ $product->name }}">
+                            @else
+                                <img src="{{ asset('storage/' . $product->image) }}" 
+                                     class="product-image" alt="{{ $product->name }}">
+                            @endif
+                        @else
+                            <div class="product-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        @endif
                         @if($product->price > 5000)
                         <div class="product-badge">Sale</div>
                         @endif
