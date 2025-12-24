@@ -43,6 +43,18 @@ return [
         'sender_id' => env('SMS_SENDER', 'RUBISTA'),
         'country_code' => env('SMS_COUNTRY_CODE', '91'),
         'enabled' => env('SMS_ENABLED', true),
+        'template_ids' => [
+            'registration' => env('SMS_TEMPLATE_ID_REGISTRATION', 'TEMPLATE_ID_REGISTRATION'),
+            'login' => env('SMS_TEMPLATE_ID_LOGIN', 'TEMPLATE_ID_LOGIN'),
+            'booking' => env('SMS_TEMPLATE_ID_BOOKING', 'TEMPLATE_ID_BOOKING'),
+            'order' => env('SMS_TEMPLATE_ID_ORDER', 'TEMPLATE_ID_ORDER'),
+            'general' => env('SMS_TEMPLATE_ID_GENERAL', 'TEMPLATE_ID_GENERAL'),
+        ],
     ],
+
+    'fast2sms' => [
+        'key' => env('FAST2SMS_API_KEY'),
+    ],
+
 
 ];

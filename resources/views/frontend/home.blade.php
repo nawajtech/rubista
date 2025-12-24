@@ -2985,59 +2985,33 @@
 
 <!-- Testimonials -->
 @if($testimonialsContent && $testimonialsContent->count() > 0)
-@php
-    $testimonialSection = $testimonialsContent->first();
-    $testimonials = $testimonialSection->extra_data['testimonials'] ?? [];
-@endphp
-@if(count($testimonials) > 0)
 <section class="testimonials-section">
     <div class="container-fluid">
-        <h2 class="section-title">{{ $testimonialSection->title ?? 'What Our Customers Say' }}</h2>
-        @if($testimonialSection->subtitle)
-        <p class="text-center text-muted mb-4">{{ $testimonialSection->subtitle }}</p>
-        @endif
+        <h2 class="section-title">{{ $testimonialsContent->first()->extra_data['section_title'] ?? 'What Our Customers Say' }}</h2>
         <div class="testimonial-grid">
-            @foreach($testimonials as $testimonial)
+            @foreach($testimonialsContent->take(3) as $testimonial)
             <div class="testimonial-card">
                 <div class="testimonial-stars">
                     @php
-                        $rating = $testimonial['rating'] ?? 5;
+                        $rating = $testimonial->extra_data['rating'] ?? 5;
                     @endphp
                     @for($i = 1; $i <= 5; $i++)
-                        <i class="{{ $i <= $rating ? 'fas' : 'far' }} fa-star text-warning"></i>
+                        <i class="fas fa-star{{ $i <= $rating ? '' : '' }}"></i>
                     @endfor
                 </div>
-                <p class="testimonial-text">"{{ $testimonial['comment'] ?? 'Great service!' }}"</p>
+                <p class="testimonial-text">"{{ $testimonial->description ?? $testimonial->subtitle ?? 'Great service!' }}"</p>
                 <div class="testimonial-author">
-                    @if(isset($testimonial['avatar']))
-                        <img src="{{ $testimonial['avatar'] }}" alt="{{ $testimonial['name'] ?? 'Customer' }}" class="author-avatar-img" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
-                    @else
-                        <div class="author-avatar" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                            {{ strtoupper(substr($testimonial['name'] ?? 'C', 0, 1)) }}
-                        </div>
-                    @endif
+                    <div class="author-avatar" style="background: {{ $testimonial->extra_data['avatar_color'] ?? 'linear-gradient(135deg, #7c3aed, #a78bfa)' }};"></div>
                     <div class="author-info">
-                        <h4 style="margin: 0; font-size: 1rem;">{{ $testimonial['name'] ?? 'Customer' }}</h4>
-                        @if(isset($testimonial['location']))
-                        <p style="margin: 0; font-size: 0.85rem; color: #64748b;">{{ $testimonial['location'] }}</p>
-                        @else
-                        <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Verified Buyer</p>
-                        @endif
+                        <h4>{{ $testimonial->title ?? 'Customer' }}</h4>
+                        <p>{{ $testimonial->extra_data['designation'] ?? 'Verified Buyer' }}</p>
                     </div>
                 </div>
             </div>
             @endforeach
         </div>
-        @if($testimonialSection->button_text && $testimonialSection->button_url)
-        <div class="text-center mt-4">
-            <a href="{{ $testimonialSection->button_url }}" class="btn btn-primary">
-                {{ $testimonialSection->button_text }}
-            </a>
-        </div>
-        @endif
     </div>
 </section>
-@endif
 @endif
 
 <!-- Beautiful Banner Section -->
@@ -3407,9 +3381,8 @@
         @if($latestProductsContent && $latestProductsContent->subtitle)
         <p class="text-center text-muted mb-4">{{ $latestProductsContent->subtitle }}</p>
         @endif
-        @if(isset($latestProducts) && $latestProducts->count() > 0)
         <div class="row g-4">
-            @foreach($latestProducts as $product)
+            @foreach($trendingProducts->skip(5)->take(10) as $product)
             <div class="col-5-per-row">
                 <a href="{{ route('frontend.product.detail', $product->id) }}" class="product-card-link">
                     <div class="product-card">
@@ -3431,23 +3404,14 @@
                         <div class="product-info">
                             <h6 class="product-title">{{ $product->name }}</h6>
                             <div class="rating-stars">
-                                @php
-                                    $rating = isset($product->average_rating) ? round($product->average_rating) : 0;
-                                @endphp
-                                @for($i = 1; $i <= 5; $i++)
-                                    <i class="{{ $i <= $rating ? 'fas' : 'far' }} fa-star {{ $i <= $rating ? 'text-warning' : '' }}"></i>
-                                @endfor
-                                @if(isset($product->total_reviews) && $product->total_reviews > 0)
-                                    <span class="rating-count ms-1">({{ $product->total_reviews }})</span>
-                                @endif
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
                             </div>
                             <div class="product-price">
-                                @if($product->sale_price && $product->sale_price < $product->price)
-                                    <span class="current-price">₹{{ number_format($product->sale_price, 0) }}</span>
-                                    <span class="old-price">₹{{ number_format($product->price, 0) }}</span>
-                                @else
-                                    <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
-                                @endif
+                                <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
                             </div>
                             <div class="d-flex gap-2">
                                 <button class="btn-add-cart flex-fill" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation();">
@@ -3463,11 +3427,6 @@
             </div>
             @endforeach
         </div>
-        @else
-        <div class="text-center py-5">
-            <p class="text-muted">No products available at the moment.</p>
-        </div>
-        @endif
     </div>
 </section>
 

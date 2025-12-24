@@ -9,8 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
+use App\Services\Fast2SmsService;
 
 class AuthController extends Controller
 {
@@ -100,66 +102,99 @@ class AuthController extends Controller
     public function sendOtp(Request $request)
     {
         $request->validate([
-            'phone' => 'required|string|regex:/^[0-9]{10}$/',
-            'type' => 'required|in:login,register'
+            'phone' => ['required', 'regex:/^[0-9]{10}$/'],
+            'type'  => ['required', 'in:login,register']
         ]);
 
         $phone = $request->phone;
-        $type = $request->type;
-        
-        // Generate 4-digit OTP (as per user's example)
-        $otp = rand(1000, 9999);
-        
-        // Store OTP in session with expiry (5 minutes for login, 10 minutes for registration)
+        $type  = $request->type;
+
+        $cacheKey = "otp_{$phone}";
+        $cooldownKey = "otp_cooldown_{$phone}";
+
+        // 🚫 Prevent OTP spam (60 sec cooldown)
+        if (Cache::has($cooldownKey)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please wait before requesting another OTP.'
+            ], 429);
+        }
+
+        // 🔢 Generate OTP
+        $otp = random_int(100000, 999999);
+
+        // ⏱ Expiry time
         $expiryMinutes = $type === 'login' ? 5 : 10;
-        Session::put('otp_' . $phone, [
-            'code' => $otp,
+
+        // 🔐 Store HASHED OTP
+        Cache::put($cacheKey, [
+            'otp'        => Hash::make($otp),
+            'type'       => $type,
             'expires_at' => now()->addMinutes($expiryMinutes),
-            'type' => $type
-        ]);
+        ], now()->addMinutes($expiryMinutes));
 
-        // Send OTP via SMS service
-        $smsResult = null;
-        if ($type === 'register') {
-            $smsResult = SmsService::sendRegistrationOtp($phone, $otp);
-        } else {
-            $smsResult = SmsService::sendLoginOtp($phone, $otp);
-        }
+        // ⏳ Set cooldown
+        Cache::put($cooldownKey, true, now()->addSeconds(60));
 
-        // Check if SMS was sent successfully
+        // 📩 Send SMS - Try main SMS service first
+        $smsResult = $type === 'register'
+            ? SmsService::sendRegistrationOtp($phone, $otp)
+            : SmsService::sendLoginOtp($phone, $otp);
+
         $smsSuccess = $smsResult['success'] ?? false;
-        
-        // For development/testing: if SMS fails, still allow OTP in response (remove in production)
-        $showOtpInResponse = !$smsSuccess && config('app.debug', false);
+        $smsMessage = $smsResult['message'] ?? 'Unknown error';
+        $smsError = $smsResult['error'] ?? null;
 
-        if ($request->ajax()) {
-            $response = [
-                'success' => true,
-                'message' => $smsSuccess 
-                    ? 'OTP sent successfully to your mobile number!' 
-                    : 'OTP generated. ' . ($smsResult['message'] ?? 'SMS service unavailable.'),
-                'phone' => $phone
-            ];
-
-            // Only include OTP in response if debugging or SMS failed (remove in production)
-            if ($showOtpInResponse) {
-                $response['otp'] = $otp;
-                $response['debug'] = true;
+        // 🔄 Fallback to Fast2SMS if main SMS service fails
+        if (!$smsSuccess && !empty(config('services.fast2sms.key'))) {
+            Log::info('Main SMS service failed, trying Fast2SMS fallback', [
+                'phone' => $phone,
+                'error' => $smsError
+            ]);
+            
+            $fast2smsResult = Fast2SmsService::sendOtp($phone, $otp);
+            $fast2smsSuccess = $fast2smsResult['success'] ?? false;
+            
+            if ($fast2smsSuccess) {
+                $smsSuccess = true;
+                $smsMessage = 'OTP sent successfully via Fast2SMS';
+                $smsError = null;
+                Log::info('Fast2SMS fallback succeeded', ['phone' => $phone]);
+            } else {
+                $smsMessage = $fast2smsResult['message'] ?? $smsMessage;
+                $smsError = $fast2smsResult['error'] ?? $smsError;
+                Log::warning('Fast2SMS fallback also failed', [
+                    'phone' => $phone,
+                    'error' => $fast2smsResult['error'] ?? 'Unknown error'
+                ]);
             }
-
-            return response()->json($response);
         }
 
-        $redirect = back()->with('otp_sent', true)
-            ->with('phone', $phone)
-            ->with('sms_sent', $smsSuccess);
+        // ⚠️ Debug only (NEVER in production)
+        // Show OTP in debug mode if SMS failed OR if debug is enabled
+        $showOtp = config('app.debug');
 
-        // Only include OTP in session if debugging (remove in production)
-        if ($showOtpInResponse) {
-            $redirect = $redirect->with('otp', $otp);
+        // Log SMS failure details
+        if (!$smsSuccess) {
+            Log::warning('OTP SMS sending failed', [
+                'phone' => $phone,
+                'type' => $type,
+                'error' => $smsError,
+                'message' => $smsMessage,
+                'otp' => $otp
+            ]);
         }
 
-        return $redirect;
+        return response()->json([
+            'success' => $smsSuccess,
+            'message' => $smsSuccess
+                ? 'OTP sent successfully to your mobile'
+                : ($smsMessage ?: 'OTP generated but SMS failed. Please check your SMS configuration.'),
+            'phone'   => $phone,
+            'otp'     => $showOtp ? $otp : null,
+            'debug'   => $showOtp,
+            'sms_error' => $smsSuccess ? null : $smsError
+        ], $smsSuccess ? 200 : 500);
     }
 
     /**
@@ -178,8 +213,10 @@ class AuthController extends Controller
         $otp = $request->otp;
         $type = $request->type;
         
-        // Get stored OTP from session
-        $storedOtp = Session::get('otp_' . $phone);
+        $cacheKey = "otp_{$phone}";
+        
+        // Get stored OTP from cache
+        $storedOtp = Cache::get($cacheKey);
         
         if (!$storedOtp) {
             if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
@@ -193,7 +230,7 @@ class AuthController extends Controller
 
         // Check if OTP expired
         if (now()->greaterThan($storedOtp['expires_at'])) {
-            Session::forget('otp_' . $phone);
+            Cache::forget($cacheKey);
             if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
@@ -203,8 +240,8 @@ class AuthController extends Controller
             return back()->withErrors(['otp' => 'OTP has expired. Please request a new OTP.'])->withInput();
         }
 
-        // Verify OTP
-        if ($storedOtp['code'] !== $otp || $storedOtp['type'] !== $type) {
+        // Verify OTP (compare hashed OTP)
+        if (!Hash::check($otp, $storedOtp['otp']) || $storedOtp['type'] !== $type) {
             if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
@@ -231,7 +268,7 @@ class AuthController extends Controller
 
             // Login user
             Auth::login($user, true);
-            Session::forget('otp_' . $phone);
+            Cache::forget($cacheKey);
             
             if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
                 return response()->json([
@@ -266,7 +303,7 @@ class AuthController extends Controller
 
             // Login user
             Auth::login($user, true);
-            Session::forget('otp_' . $phone);
+            Cache::forget($cacheKey);
             
             if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
                 return response()->json([

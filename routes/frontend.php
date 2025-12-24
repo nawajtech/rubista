@@ -5,6 +5,7 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PageController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\WishlistController;
+use App\Http\Controllers\RazorpayController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,6 +19,10 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group.
 |
 */
+//razorpay routes
+Route::get('/pay', [RazorpayController::class, 'index']);
+Route::post('/create-order', [RazorpayController::class, 'createOrder']);
+Route::post('/payment-success', [RazorpayController::class, 'paymentSuccess']);
 
 // Frontend Home Routes
 Route::get('/', [HomeController::class, 'index'])->name('frontend.home');

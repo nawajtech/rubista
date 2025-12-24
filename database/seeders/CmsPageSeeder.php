@@ -12,9 +12,6 @@ class CmsPageSeeder extends Seeder
      */
     public function run(): void
     {
-        // Delete all existing CMS pages first
-        CmsPage::truncate();
-
         $pages = [
             [
                 'title' => 'Privacy Policy',

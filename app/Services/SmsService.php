@@ -19,6 +19,24 @@ class SmsService
     const TEMPLATE_ID_GENERAL = 'TEMPLATE_ID_GENERAL';
 
     /**
+     * Get template ID from config or use default constant
+     *
+     * @param string $type Template type (registration, login, booking, order, general)
+     * @return string Template ID
+     */
+    private static function getTemplateId($type)
+    {
+        $config = Config::get('services.sms.template_ids.' . $type);
+        if ($config) {
+            return $config;
+        }
+        
+        // Fallback to constants
+        $constantName = 'TEMPLATE_ID_' . strtoupper($type);
+        return constant('self::' . $constantName) ?? self::TEMPLATE_ID_GENERAL;
+    }
+
+    /**
      * Send SMS message
      *
      * @param string $mobile Mobile number (without country code)
@@ -27,18 +45,40 @@ class SmsService
      * @param array $options Additional options (country_code, etc.)
      * @return array Response array with success status and message
      */
-    public static function send($mobile, $message, $templateId = self::TEMPLATE_ID_GENERAL, $options = [])
+    public static function send($mobile, $message, $templateId = null, $options = [])
     {
         try {
             // Get SMS configuration
             $config = Config::get('services.sms');
             
-            // Validate configuration
-            if (empty($config['api_url']) || empty($config['username']) || empty($config['password'])) {
-                Log::error('SMS configuration missing', ['config' => $config]);
+            // Check if SMS is enabled
+            if (isset($config['enabled']) && !$config['enabled']) {
+                Log::warning('SMS service is disabled', ['mobile' => $mobile]);
                 return [
                     'success' => false,
-                    'message' => 'SMS service not configured properly',
+                    'message' => 'SMS service is currently disabled',
+                    'error' => 'SMS disabled'
+                ];
+            }
+            
+            // Use provided template ID or default to general
+            if ($templateId === null) {
+                $templateId = self::getTemplateId('general');
+            }
+            
+            // Validate configuration
+            if (empty($config['api_url']) || empty($config['username']) || empty($config['password'])) {
+                Log::error('SMS configuration missing', [
+                    'config' => [
+                        'api_url' => !empty($config['api_url']) ? 'set' : 'missing',
+                        'username' => !empty($config['username']) ? 'set' : 'missing',
+                        'password' => !empty($config['password']) ? 'set' : 'missing',
+                    ],
+                    'mobile' => $mobile
+                ]);
+                return [
+                    'success' => false,
+                    'message' => 'SMS service not configured properly. Please check SMS_API_URL, SMS_USER, and SMS_PASS in .env file',
                     'error' => 'Configuration missing'
                 ];
             }
@@ -47,6 +87,9 @@ class SmsService
             $countryCode = $options['country_code'] ?? $config['country_code'] ?? '91';
             $formattedMobile = self::formatMobileNumber($mobile, $countryCode);
 
+            // Check if using Vilpower API
+            $isVilpower = strpos($config['api_url'], 'vilpower') !== false;
+            
             // Prepare request data
             $requestData = [
                 'username' => $config['username'],
@@ -57,9 +100,28 @@ class SmsService
                 'message' => $message,
             ];
 
-            // Add any additional parameters
+            // For Vilpower, if OTP is provided in additional_params, add it to message or as separate field
+            if ($isVilpower && isset($options['additional_params']['otp'])) {
+                $otp = $options['additional_params']['otp'];
+                // Replace {#} placeholder with actual OTP in message
+                $message = str_replace('{#}', $otp, $message);
+                $requestData['message'] = $message;
+                // Some Vilpower APIs also accept OTP as separate parameter
+                if (isset($options['additional_params']['variable'])) {
+                    $requestData['variable'] = $otp;
+                }
+            }
+
+            // Add any additional parameters (excluding otp if already processed)
             if (isset($options['additional_params'])) {
-                $requestData = array_merge($requestData, $options['additional_params']);
+                $additionalParams = $options['additional_params'];
+                // Remove otp and variable if already processed for Vilpower
+                if ($isVilpower) {
+                    unset($additionalParams['otp'], $additionalParams['variable']);
+                }
+                if (!empty($additionalParams)) {
+                    $requestData = array_merge($requestData, $additionalParams);
+                }
             }
 
             // Send SMS via HTTP request
@@ -89,20 +151,76 @@ class SmsService
                     'response' => $responseData
                 ];
             } else {
+                // Extract error message from response
+                $errorMessage = 'Failed to send SMS';
+                if (is_array($responseData)) {
+                    if (isset($responseData['message'])) {
+                        $errorMessage = $responseData['message'];
+                    } elseif (isset($responseData['error'])) {
+                        $errorMessage = is_string($responseData['error']) ? $responseData['error'] : 'SMS API Error';
+                    } elseif (isset($responseData['status'])) {
+                        $errorMessage = 'SMS API returned: ' . $responseData['status'];
+                    }
+                } elseif (is_string($responseData)) {
+                    $errorMessage = $responseData;
+                }
+                
                 Log::warning('SMS sending failed', [
                     'mobile' => $formattedMobile,
                     'template_id' => $templateId,
-                    'response' => $responseData
+                    'response' => $responseData,
+                    'status_code' => $statusCode,
+                    'request_data' => $requestData
                 ]);
 
                 return [
                     'success' => false,
-                    'message' => 'Failed to send SMS',
+                    'message' => $errorMessage,
                     'error' => $responseData,
-                    'response' => $responseData
+                    'response' => $responseData,
+                    'status_code' => $statusCode
                 ];
             }
 
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            // Handle connection errors (DNS, timeout, etc.)
+            $errorMessage = $e->getMessage();
+            $userFriendlyMessage = 'Unable to connect to SMS service';
+            
+            // Provide more specific error messages
+            if (strpos($errorMessage, 'Could not resolve host') !== false) {
+                $userFriendlyMessage = 'SMS service hostname could not be resolved. Please check your internet connection and SMS_API_URL configuration.';
+            } elseif (strpos($errorMessage, 'Connection timed out') !== false) {
+                $userFriendlyMessage = 'Connection to SMS service timed out. Please try again later.';
+            } elseif (strpos($errorMessage, 'cURL error') !== false) {
+                $userFriendlyMessage = 'Network error occurred while sending SMS. Please check your internet connection.';
+            }
+            
+            Log::error('SMS service connection error', [
+                'mobile' => $mobile ?? 'unknown',
+                'template_id' => $templateId ?? 'unknown',
+                'error' => $errorMessage,
+                'api_url' => $config['api_url'] ?? 'unknown'
+            ]);
+
+            // Log SMS failure
+            if (isset($mobile)) {
+                self::logSms(
+                    self::formatMobileNumber($mobile, $options['country_code'] ?? '91'),
+                    $message ?? '',
+                    $templateId ?? self::TEMPLATE_ID_GENERAL,
+                    false,
+                    ['error' => $errorMessage, 'type' => 'connection_error'],
+                    []
+                );
+            }
+
+            return [
+                'success' => false,
+                'message' => $userFriendlyMessage,
+                'error' => $errorMessage,
+                'error_type' => 'connection_error'
+            ];
         } catch (\Exception $e) {
             Log::error('SMS service exception', [
                 'mobile' => $mobile ?? 'unknown',
@@ -232,28 +350,72 @@ class SmsService
      * Send OTP for registration
      *
      * @param string $mobile Mobile number
-     * @param int $otp OTP code
+     * @param string $otp OTP code
      * @return array
      */
     public static function sendRegistrationOtp($mobile, $otp)
     {
-        $message = "Thank you for registering with Rubista.\nYour registration OTP is $otp.\nDo not share this OTP with anyone.";
-
-        return self::send($mobile, $message, self::TEMPLATE_ID_REGISTRATION);
+        // For Vilpower verified templates, use template variables
+        // Format: Your OTP is {#} or {#otp#} depending on template
+        // If template uses variables, pass OTP as variable; otherwise use full message
+        $config = Config::get('services.sms');
+        $apiUrl = $config['api_url'] ?? '';
+        
+        // Check if using Vilpower API
+        $isVilpower = strpos($apiUrl, 'vilpower') !== false;
+        
+        if ($isVilpower) {
+            // For Vilpower verified templates, message should contain template variable
+            // Common formats: {#}, {#otp#}, {{otp}}, etc.
+            // Using {#} as it's the most common format for OTP in Indian SMS providers
+            $message = "Your Rubista registration OTP is {#}. Do not share this OTP with anyone.";
+            
+            // Pass OTP as additional parameter for template variable replacement
+            return self::send($mobile, $message, self::getTemplateId('registration'), [
+                'additional_params' => [
+                    'otp' => $otp,
+                    'variable' => $otp, // Some providers use 'variable' key
+                ]
+            ]);
+        } else {
+            // For other providers, use direct message with OTP
+            $message = "Thank you for registering with Rubista. Your registration OTP is $otp. Do not share this OTP with anyone.";
+            return self::send($mobile, $message, self::TEMPLATE_ID_REGISTRATION);
+        }
     }
 
     /**
      * Send OTP for login
      *
      * @param string $mobile Mobile number
-     * @param int $otp OTP code
+     * @param string $otp OTP code
      * @return array
      */
     public static function sendLoginOtp($mobile, $otp)
     {
-        $message = "Thank you for choosing Rubista.\nYour login OTP is $otp.\nThis OTP is valid for 5 minutes.";
-
-        return self::send($mobile, $message, self::TEMPLATE_ID_LOGIN);
+        // For Vilpower verified templates, use template variables
+        $config = Config::get('services.sms');
+        $apiUrl = $config['api_url'] ?? '';
+        
+        // Check if using Vilpower API
+        $isVilpower = strpos($apiUrl, 'vilpower') !== false;
+        
+        if ($isVilpower) {
+            // For Vilpower verified templates, message should contain template variable
+            $message = "Your Rubista login OTP is {#}. This OTP is valid for 5 minutes.";
+            
+            // Pass OTP as additional parameter for template variable replacement
+            return self::send($mobile, $message, self::getTemplateId('login'), [
+                'additional_params' => [
+                    'otp' => $otp,
+                    'variable' => $otp, // Some providers use 'variable' key
+                ]
+            ]);
+        } else {
+            // For other providers, use direct message with OTP
+            $message = "Thank you for choosing Rubista. Your login OTP is $otp. This OTP is valid for 5 minutes.";
+            return self::send($mobile, $message, self::getTemplateId('login'));
+        }
     }
 
     /**
@@ -288,6 +450,6 @@ class SmsService
         
         $message .= "\nWe will process your order shortly.";
 
-        return self::send($mobile, $message, self::TEMPLATE_ID_ORDER);
+        return self::send($mobile, $message, self::getTemplateId('order'));
     }
 }

@@ -33,19 +33,7 @@
             
             <div class="cms-page-content">
                 <div class="content-body">
-                    @php
-                        // Simple markdown-like rendering for headers and bold
-                        $content = $page->content;
-                        // Convert ## headers to h2
-                        $content = preg_replace('/^##\s+(.+)$/m', '<h2>$1</h2>', $content);
-                        // Convert ### headers to h3
-                        $content = preg_replace('/^###\s+(.+)$/m', '<h3>$1</h3>', $content);
-                        // Convert **bold** to <strong>
-                        $content = preg_replace('/\*\*(.+?)\*\*/', '<strong>$1</strong>', $content);
-                        // Convert line breaks
-                        $content = nl2br($content);
-                    @endphp
-                    {!! $content !!}
+                    {!! nl2br(e($page->content)) !!}
                 </div>
             </div>
             
