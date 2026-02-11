@@ -15,22 +15,34 @@ class RazorpayController extends Controller
 
     public function createOrder(Request $request)
     {
-        $api = new Api(
-            config('razorpay.key'),
-            config('razorpay.secret')
-        );
-
-        $order = $api->order->create([
-            'receipt' => 'order_' . time(),
-            'amount' => $request->amount * 100, // in paise
-            'currency' => 'INR'
+        $request->validate([
+            'amount' => 'required|numeric|min:1',
         ]);
 
-        return response()->json([
-            'order_id' => $order['id'],
-            'amount' => $order['amount'],
-            'key' => config('razorpay.key')
-        ]);
+        $key = config('razorpay.key');
+        $secret = config('razorpay.secret');
+        if (empty($key) || empty($secret)) {
+            return response()->json(['error' => 'Razorpay is not configured.'], 500);
+        }
+
+        try {
+            $api = new Api($key, $secret);
+            $amountPaise = (int) round($request->amount * 100);
+
+            $order = $api->order->create([
+                'receipt' => 'order_' . time(),
+                'amount' => $amountPaise,
+                'currency' => 'INR',
+            ]);
+
+            return response()->json([
+                'order_id' => $order['id'],
+                'amount' => $order['amount'],
+                'key' => $key,
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Could not create payment order.'], 500);
+        }
     }
 
     public function paymentSuccess(Request $request)

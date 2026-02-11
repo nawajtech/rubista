@@ -1,5 +1,7 @@
 @extends('frontend.layouts.app')
-
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
 @section('title', 'Checkout - Rubista')
 
 @section('content')
@@ -10,8 +12,11 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('frontend.checkout.store') }}">
+    <form method="POST" action="{{ route('frontend.checkout.store') }}" id="checkout-form">
         @csrf
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id" value="">
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id" value="">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature" value="">
         <div class="row">
             <!-- Checkout Form -->
             <div class="col-lg-8">
@@ -249,7 +254,7 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" 
                                            {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }}>
@@ -258,21 +263,13 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            
+                            <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="card" value="card"
-                                           {{ old('payment_method') === 'card' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="card">
-                                        <i class="fas fa-credit-card me-2"></i>Credit/Debit Card
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="upi" value="upi"
-                                           {{ old('payment_method') === 'upi' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="upi">
-                                        <i class="fas fa-mobile-alt me-2"></i>UPI Payment
+                                    <input class="form-check-input" type="radio" name="payment_method" id="razorpay" value="razorpay"
+                                           {{ old('payment_method') === 'razorpay' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="razorpay">
+                                        <i class="fas fa-credit-card me-2"></i>Online Payment (Razorpay)
                                     </label>
                                 </div>
                             </div>
@@ -351,7 +348,7 @@
                         </dl>
                         
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary btn-lg" id="place-order-btn">
                                 <i class="fas fa-lock me-2"></i>Place Order
                             </button>
                             <a href="{{ route('frontend.cart') }}" class="btn btn-outline-secondary">
@@ -397,5 +394,76 @@ function copyBillingToShipping() {
         document.getElementById('shipping_country').value = '';
     }
 }
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function () {
+    var orderTotalRupees = {{ round($total, 2) }};
+    var createOrderUrl = "{{ url('/create-order') }}";
+    var csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    var form = document.getElementById('checkout-form');
+    var placeOrderBtn = document.getElementById('place-order-btn');
+
+    form.addEventListener('submit', function (e) {
+        if (window.razorpayFormSubmitting) return;
+        var paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        if (!paymentMethod || paymentMethod.value !== 'razorpay') {
+            return;
+        }
+        e.preventDefault();
+
+        placeOrderBtn.disabled = true;
+        placeOrderBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Opening payment...';
+
+        fetch(createOrderUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ amount: orderTotalRupees })
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.error) {
+                alert(data.error || 'Could not create payment order.');
+                placeOrderBtn.disabled = false;
+                placeOrderBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Place Order';
+                return;
+            }
+            var options = {
+                key: data.key,
+                amount: data.amount,
+                currency: 'INR',
+                name: '{{ config("app.name", "Rubista") }}',
+                description: 'Order Payment',
+                order_id: data.order_id,
+                handler: function (response) {
+                    document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                    document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                    document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                    placeOrderBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Placing order...';
+                    window.razorpayFormSubmitting = true;
+                    form.submit();
+                },
+                modal: {
+                    ondismiss: function () {
+                        placeOrderBtn.disabled = false;
+                        placeOrderBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Place Order';
+                    }
+                }
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+        })
+        .catch(function (err) {
+            console.error(err);
+            alert('Payment could not be started. Please try again.');
+            placeOrderBtn.disabled = false;
+            placeOrderBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Place Order';
+        });
+    });
+})();
 </script>
 @endsection 

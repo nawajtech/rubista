@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Razorpay\Api\Api;
 
 class OrderController extends Controller
 {
@@ -119,8 +120,11 @@ class OrderController extends Controller
             'shipping_state' => 'required|string|max:255',
             'shipping_postal_code' => 'required|string|max:20',
             'shipping_country' => 'required|string|max:255',
-            'payment_method' => 'required|in:cod,card,upi',
+            'payment_method' => 'required|in:cod,card,upi,razorpay',
             'notes' => 'nullable|string',
+            'razorpay_order_id' => 'required_if:payment_method,razorpay|nullable|string',
+            'razorpay_payment_id' => 'required_if:payment_method,razorpay|nullable|string',
+            'razorpay_signature' => 'required_if:payment_method,razorpay|nullable|string',
         ]);
 
         $cart = Session::get('cart', []);
@@ -188,6 +192,24 @@ class OrderController extends Controller
             $tax = $taxRate > 0 ? ($subtotal * $taxRate / 100) : 0;
             
             $total = $subtotal + $shipping + $tax;
+
+            // Verify Razorpay payment if applicable
+            $paymentStatus = $request->payment_method === 'cod' ? 'pending' : 'paid';
+            $transactionId = null;
+            if ($request->payment_method === 'razorpay') {
+                try {
+                    $api = new Api(config('razorpay.key'), config('razorpay.secret'));
+                    $api->utility->verifyPaymentSignature([
+                        'razorpay_order_id' => $request->razorpay_order_id,
+                        'razorpay_payment_id' => $request->razorpay_payment_id,
+                        'razorpay_signature' => $request->razorpay_signature,
+                    ]);
+                    $transactionId = $request->razorpay_payment_id;
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'Payment verification failed. Please try again.');
+                }
+            }
             
             // Create order
             $order = Order::create([
@@ -197,7 +219,8 @@ class OrderController extends Controller
                 'shipping_amount' => $shipping,
                 'total_amount' => $total,
                 'payment_method' => $request->payment_method,
-                'payment_status' => $request->payment_method === 'cod' ? 'pending' : 'paid',
+                'payment_status' => $paymentStatus,
+                'transaction_id' => $transactionId,
                 'billing_first_name' => $request->billing_first_name,
                 'billing_last_name' => $request->billing_last_name,
                 'billing_email' => $request->billing_email,

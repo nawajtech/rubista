@@ -2985,6 +2985,7 @@
 
 <!-- Testimonials -->
 @if($testimonialsContent && $testimonialsContent->count() > 0)
+
 <section class="testimonials-section">
     <div class="container-fluid">
         <h2 class="section-title">{{ $testimonialsContent->first()->extra_data['section_title'] ?? 'What Our Customers Say' }}</h2>
