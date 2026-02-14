@@ -1,15 +1,87 @@
 @extends('frontend.layouts.app')
-<head>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-</head>
 @section('title', 'Checkout - Rubista')
 
+@section('extra-css')
+<style>
+    .checkout-page .checkout-hero {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: #fff;
+        padding: 36px 0;
+        margin-bottom: 2rem;
+        border-radius: 16px;
+    }
+    .checkout-page .checkout-hero h2 { color: #fff; font-weight: 700; margin: 0; }
+    .checkout-page .card {
+        border-radius: 16px;
+        border: 1px solid rgba(245,166,35,0.12);
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
+        overflow: hidden;
+    }
+    .checkout-page .card-header {
+        background: #1a1a2e;
+        color: #fff;
+        border: none;
+        padding: 16px 20px;
+        font-weight: 600;
+    }
+    .checkout-page .card-header h5 { color: #fff; margin: 0; }
+    .checkout-page .card-header .form-check-label { color: rgba(255,255,255,0.9); }
+    .checkout-page .card-body { padding: 24px; }
+    .checkout-page .form-label { color: #1a1a2e; font-weight: 500; }
+    .checkout-page .form-control:focus,
+    .checkout-page .form-select:focus {
+        border-color: #f5a623;
+        box-shadow: 0 0 0 0.2rem rgba(245,166,35,0.25);
+    }
+    .checkout-page .form-check-input:checked {
+        background-color: #f5a623;
+        border-color: #f5a623;
+    }
+    .checkout-page .form-check-input:focus {
+        border-color: rgba(245,166,35,0.5);
+        box-shadow: 0 0 0 0.2rem rgba(245,166,35,0.25);
+    }
+    .checkout-page .btn-primary {
+        background: linear-gradient(135deg, #f5a623, #e0941a) !important;
+        border: none !important;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 4px 14px rgba(245,166,35,0.35);
+    }
+    .checkout-page .btn-primary:hover {
+        background: #1a1a2e !important;
+        box-shadow: 0 6px 20px rgba(26,26,46,0.3);
+        color: #fff;
+    }
+    .checkout-page .btn-outline-secondary {
+        border-color: rgba(26,26,46,0.2);
+        color: #5a5a6e;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+    .checkout-page .btn-outline-secondary:hover {
+        background: #1a1a2e;
+        border-color: #1a1a2e;
+        color: #fff;
+    }
+    .checkout-page .text-primary { color: #f5a623 !important; }
+    .checkout-page .text-success { color: #1a1a2e !important; }
+    .checkout-page .order-items .img-thumbnail {
+        border-radius: 10px;
+        border-color: rgba(26,26,46,0.1);
+    }
+    .checkout-page .order-items h6 { color: #1a1a2e; }
+    .checkout-page .order-items .text-muted { color: #5a5a6e !important; }
+    .checkout-page small.text-muted { color: #5a5a6e !important; }
+</style>
+@endsection
+
 @section('content')
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="mb-4"><i class="fas fa-credit-card me-2"></i>Checkout</h2>
-        </div>
+<div class="checkout-page">
+<div class="container py-4">
+    <div class="checkout-hero">
+        <h2><i class="fas fa-credit-card me-2"></i>Checkout</h2>
     </div>
 
     <form method="POST" action="{{ route('frontend.checkout.store') }}" id="checkout-form">
@@ -367,6 +439,7 @@
             </div>
         </div>
     </form>
+</div>
 </div>
 
 <script>

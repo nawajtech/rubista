@@ -2,15 +2,142 @@
 
 @section('title', 'Shopping Cart')
 
+@section('extra-css')
+<style>
+    .cart-page .cart-hero {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: #fff;
+        padding: 36px 0;
+        margin-bottom: 2rem;
+        border-radius: 16px;
+    }
+    .cart-page .cart-hero h2 { color: #fff; font-weight: 700; margin: 0; }
+
+    .cart-page .table thead th {
+        background: #1a1a2e;
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        padding: 14px 12px;
+    }
+    .cart-page .table tbody td {
+        vertical-align: middle;
+        padding: 16px 12px;
+        color: #1a1a2e;
+    }
+    .cart-page .table tbody tr {
+        border-bottom: 1px solid rgba(26,26,46,0.08);
+        transition: background 0.2s ease;
+    }
+    .cart-page .table tbody tr:hover {
+        background: rgba(245,166,35,0.04);
+    }
+    .cart-page .table h6 { color: #1a1a2e; }
+    .cart-page .table .text-muted { color: #5a5a6e !important; }
+    .cart-page .table .img-thumbnail {
+        border-radius: 10px;
+        border-color: rgba(26,26,46,0.1);
+    }
+
+    .cart-page .input-group .btn-outline-secondary {
+        border-color: rgba(26,26,46,0.2);
+        color: #1a1a2e;
+        font-weight: 600;
+    }
+    .cart-page .input-group .btn-outline-secondary:hover {
+        background: #f5a623;
+        border-color: #f5a623;
+        color: #fff;
+    }
+    .cart-page .input-group .form-control {
+        border-color: rgba(26,26,46,0.15);
+    }
+    .cart-page .input-group .form-control:focus {
+        border-color: #f5a623;
+        box-shadow: 0 0 0 0.2rem rgba(245,166,35,0.25);
+    }
+    .cart-page .btn-danger {
+        background: rgba(239,68,68,0.12);
+        color: #ef4444;
+        border: none;
+        border-radius: 8px;
+    }
+    .cart-page .btn-danger:hover {
+        background: #ef4444;
+        color: #fff;
+    }
+
+    .cart-page .card {
+        border-radius: 16px;
+        border: 1px solid rgba(245,166,35,0.15);
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
+    }
+    .cart-page .card-title { color: #1a1a2e; font-weight: 600; }
+    .cart-page .card-body span { color: #5a5a6e; }
+    .cart-page .alert-info {
+        background: rgba(245,166,35,0.12);
+        border-color: rgba(245,166,35,0.3);
+        color: #1a1a2e;
+        border-radius: 10px;
+    }
+    .cart-page .btn-primary {
+        background: linear-gradient(135deg, #f5a623, #e0941a) !important;
+        border: none !important;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 4px 14px rgba(245,166,35,0.35);
+    }
+    .cart-page .btn-primary:hover {
+        background: #1a1a2e !important;
+        box-shadow: 0 6px 20px rgba(26,26,46,0.3);
+        color: #fff;
+    }
+    .cart-page .clear-cart.btn-outline-danger {
+        border-color: rgba(26,26,46,0.2);
+        color: #5a5a6e;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+    .cart-page .clear-cart.btn-outline-danger:hover {
+        background: rgba(239,68,68,0.08);
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    .cart-page .empty-cart {
+        padding: 60px 20px;
+        text-align: center;
+    }
+    .cart-page .empty-cart .fa-shopping-cart { color: #f5a623; opacity: 0.8; }
+    .cart-page .empty-cart h4 { color: #1a1a2e; }
+    .cart-page .empty-cart .text-muted { color: #5a5a6e !important; }
+    .cart-page .empty-cart .btn-primary {
+        background: linear-gradient(135deg, #f5a623, #e0941a) !important;
+        border: none !important;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 12px 24px;
+        box-shadow: 0 4px 14px rgba(245,166,35,0.35);
+    }
+    .cart-page .empty-cart .btn-primary:hover {
+        background: #1a1a2e !important;
+        color: #fff;
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="container mt-5">
+<div class="cart-page">
+<div class="container py-4">
+    <div class="cart-hero">
+        <h2><i class="fas fa-shopping-cart me-2"></i>Shopping Cart</h2>
+    </div>
     <div class="row">
-        <div class="col-md-8">
-            <h2>Shopping Cart</h2>
-            
+        <div class="col-lg-8">
             @if(count($cartItems) > 0)
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Product</th>
@@ -34,7 +161,7 @@
                                                      class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
                                             @endif
                                         @else
-                                            <div class="img-thumbnail me-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                            <div class="img-thumbnail me-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); display: flex; align-items: center; justify-content: center; color: #f5a623;">
                                                 <i class="fas fa-image"></i>
                                             </div>
                                         @endif
@@ -67,8 +194,8 @@
                     </table>
                 </div>
             @else
-                <div class="text-center py-5">
-                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <div class="text-center empty-cart py-5">
+                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
                     <h4>Your cart is empty</h4>
                     <p class="text-muted">Add some products to your cart to get started!</p>
                     <a href="{{ route('frontend.home') }}" class="btn btn-primary">Continue Shopping</a>
@@ -77,7 +204,7 @@
         </div>
         
         @if(count($cartItems) > 0)
-        <div class="col-md-4">
+        <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Order Summary</h5>
@@ -119,6 +246,7 @@
         </div>
         @endif
     </div>
+</div>
 </div>
 @endsection
 
@@ -350,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper function to show toast notifications
     function showNotification(message, type = 'success') {
         const toast = document.createElement('div');
-        const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#667eea';
+        const bgColor = type === 'success' ? '#f5a623' : type === 'error' ? '#ef4444' : '#1a1a2e';
         toast.innerHTML = `
             <div style="
                 position: fixed;

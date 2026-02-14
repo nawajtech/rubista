@@ -4,275 +4,249 @@
 
 @section('extra-css')
 <style>
-    .orders-section {
+    .orders-page .orders-section {
         padding: 50px 0;
         background: #f8f9fa;
     }
-    
-    .orders-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+    .orders-page .orders-header {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: #fff;
         padding: 60px 0;
         margin-bottom: 50px;
     }
-    
-    .order-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    .orders-page .orders-header h1,
+    .orders-page .orders-header .lead { color: #fff; }
+    .orders-page .order-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
         padding: 30px;
         margin-bottom: 30px;
-        transition: all 0.3s ease;
+        border: 1px solid rgba(245,166,35,0.12);
+        transition: all 0.25s ease;
     }
-    
-    .order-card:hover {
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    .orders-page .order-card:hover {
+        box-shadow: 0 8px 28px rgba(245,166,35,0.12);
+        border-color: rgba(245,166,35,0.2);
     }
-    
-    .order-header {
+    .orders-page .order-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
         padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid rgba(26,26,46,0.08);
     }
-    
-    .order-number {
+    .orders-page .order-number {
         font-size: 1.2rem;
         font-weight: 700;
-        color: #667eea;
+        color: #f5a623;
     }
-    
-    .order-date {
-        color: #666;
+    .orders-page .order-date {
+        color: #5a5a6e;
         font-size: 0.9rem;
     }
-    
-    .order-status {
+    .orders-page .order-status {
         padding: 8px 16px;
-        border-radius: 20px;
+        border-radius: 12px;
         font-size: 0.9rem;
         font-weight: 600;
     }
-    
-    .status-delivered {
-        background: #d4edda;
-        color: #155724;
+    .orders-page .status-delivered {
+        background: rgba(245,166,35,0.2);
+        color: #1a1a2e;
     }
-    
-    .status-processing {
-        background: #fff3cd;
-        color: #856404;
+    .orders-page .status-processing {
+        background: rgba(26,26,46,0.08);
+        color: #1a1a2e;
     }
-    
-    .status-shipped {
-        background: #d1ecf1;
-        color: #0c5460;
+    .orders-page .status-shipped {
+        background: rgba(245,166,35,0.12);
+        color: #1a1a2e;
     }
-    
-    .status-cancelled {
-        background: #f8d7da;
-        color: #721c24;
+    .orders-page .status-cancelled {
+        background: rgba(239,68,68,0.12);
+        color: #b91c1c;
     }
-    
-    .order-items {
-        margin-bottom: 20px;
-    }
-    
-    .order-item {
+    .orders-page .order-items { margin-bottom: 20px; }
+    .orders-page .order-item {
         display: flex;
         align-items: center;
         padding: 15px 0;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid rgba(26,26,46,0.06);
     }
-    
-    .order-item:last-child {
-        border-bottom: none;
-    }
-    
-    .item-image {
+    .orders-page .order-item:last-child { border-bottom: none; }
+    .orders-page .item-image {
         width: 60px;
         height: 60px;
         object-fit: cover;
-        border-radius: 8px;
+        border-radius: 10px;
         margin-right: 15px;
+        border: 1px solid rgba(26,26,46,0.08);
     }
-    
-    .item-details {
-        flex: 1;
-    }
-    
-    .item-name {
+    .orders-page .item-details { flex: 1; }
+    .orders-page .item-name {
         font-weight: 600;
-        color: #333;
+        color: #1a1a2e;
         margin-bottom: 5px;
     }
-    
-    .item-price {
-        color: #666;
+    .orders-page .item-price,
+    .orders-page .item-quantity {
+        color: #5a5a6e;
         font-size: 0.9rem;
     }
-    
-    .item-quantity {
-        color: #666;
-        font-size: 0.9rem;
-    }
-    
-    .order-total {
+    .orders-page .order-total {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding-top: 15px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid rgba(26,26,46,0.08);
         margin-top: 20px;
     }
-    
-    .total-amount {
+    .orders-page .total-amount {
         font-size: 1.3rem;
         font-weight: 700;
-        color: #333;
+        color: #1a1a2e;
     }
-    
-    .order-actions {
-        display: flex;
-        gap: 10px;
-    }
-    
-    .btn-track {
-        background: #28a745;
+    .orders-page .order-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .orders-page .btn-track {
+        background: linear-gradient(135deg, #f5a623, #e0941a);
         border: none;
-        color: white;
-        padding: 8px 20px;
-        border-radius: 20px;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 12px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         text-decoration: none;
+        box-shadow: 0 2px 10px rgba(245,166,35,0.3);
     }
-    
-    .btn-track:hover {
-        background: #218838;
-        color: white;
+    .orders-page .btn-track:hover {
+        background: #1a1a2e;
+        color: #fff;
         transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(26,26,46,0.25);
     }
-    
-    .btn-reorder {
-        background: #667eea;
+    .orders-page .btn-reorder {
+        background: linear-gradient(135deg, #f5a623, #e0941a);
         border: none;
-        color: white;
-        padding: 8px 20px;
-        border-radius: 20px;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 12px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         text-decoration: none;
+        box-shadow: 0 2px 10px rgba(245,166,35,0.3);
     }
-    
-    .btn-reorder:hover {
-        background: #5a67d8;
-        color: white;
+    .orders-page .btn-reorder:hover {
+        background: #1a1a2e;
+        color: #fff;
         transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(26,26,46,0.25);
     }
-    
-    .btn-cancel {
-        background: #dc3545;
-        border: none;
-        color: white;
-        padding: 8px 20px;
-        border-radius: 20px;
+    .orders-page .btn-cancel {
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.4);
+        color: #b91c1c;
+        padding: 10px 20px;
+        border-radius: 12px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
     }
-    
-    .btn-cancel:hover {
-        background: #c82333;
+    .orders-page .btn-cancel:hover {
+        background: #ef4444;
+        color: #fff;
+        border-color: #ef4444;
         transform: translateY(-2px);
     }
-    
-    .filter-tabs {
+    .orders-page .filter-tabs {
         display: flex;
         gap: 10px;
         margin-bottom: 30px;
         flex-wrap: wrap;
     }
-    
-    .filter-tab {
+    .orders-page .filter-tab {
         padding: 10px 20px;
-        border: 2px solid #e9ecef;
-        border-radius: 25px;
-        background: white;
-        color: #666;
+        border: 2px solid rgba(26,26,46,0.12);
+        border-radius: 12px;
+        background: #fff;
+        color: #5a5a6e;
         text-decoration: none;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
     }
-    
-    .filter-tab.active,
-    .filter-tab:hover {
-        border-color: #667eea;
-        color: #667eea;
-        background: #f8f9ff;
+    .orders-page .filter-tab.active,
+    .orders-page .filter-tab:hover {
+        border-color: #f5a623;
+        color: #f5a623;
+        background: rgba(245,166,35,0.06);
     }
-    
-    .empty-orders {
+    .orders-page .empty-orders {
         text-align: center;
         padding: 80px 20px;
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
+        border: 1px solid rgba(245,166,35,0.1);
     }
-    
-    .empty-icon {
+    .orders-page .empty-icon {
         font-size: 5rem;
-        color: #dee2e6;
+        color: #f5a623;
+        opacity: 0.6;
         margin-bottom: 30px;
     }
-    
-    .tracking-info {
-        background: #f8f9fa;
+    .orders-page .tracking-info {
+        background: rgba(26,26,46,0.04);
         padding: 15px;
-        border-radius: 10px;
+        border-radius: 12px;
         margin-top: 15px;
+        border: 1px solid rgba(245,166,35,0.08);
     }
-    
-    .tracking-step {
+    .orders-page .tracking-info h6 { color: #1a1a2e; }
+    .orders-page .tracking-step {
         display: flex;
         align-items: center;
         margin-bottom: 10px;
     }
-    
-    .tracking-step:last-child {
-        margin-bottom: 0;
-    }
-    
-    .tracking-icon {
-        width: 20px;
-        height: 20px;
+    .orders-page .tracking-step:last-child { margin-bottom: 0; }
+    .orders-page .tracking-icon {
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
-        background: #28a745;
-        color: white;
+        background: #f5a623;
+        color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-right: 15px;
         font-size: 0.7rem;
     }
-    
-    .tracking-icon.pending {
-        background: #6c757d;
+    .orders-page .tracking-icon.pending {
+        background: #94a3b8;
     }
-    
-    .tracking-text {
-        flex: 1;
-    }
-    
-    .tracking-date {
-        color: #666;
+    .orders-page .tracking-text { flex: 1; }
+    .orders-page .tracking-text .fw-bold { color: #1a1a2e; }
+    .orders-page .tracking-date {
+        color: #5a5a6e;
         font-size: 0.8rem;
+    }
+    .orders-page .btn-primary {
+        background: linear-gradient(135deg, #f5a623, #e0941a) !important;
+        border: none !important;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 14px 28px;
+        box-shadow: 0 4px 14px rgba(245,166,35,0.35);
+    }
+    .orders-page .btn-primary:hover {
+        background: #1a1a2e !important;
+        box-shadow: 0 6px 20px rgba(26,26,46,0.3);
+        color: #fff;
     }
 </style>
 @endsection
 
 @section('content')
+<div class="orders-page">
 <!-- Orders Header -->
 <section class="orders-header">
     <div class="container">
@@ -514,4 +488,5 @@
         </div>
     </div>
 </section>
+</div>
 @endsection 

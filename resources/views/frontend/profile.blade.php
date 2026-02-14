@@ -4,190 +4,201 @@
 
 @section('extra-css')
 <style>
-    .profile-section {
+    .profile-page .profile-section {
         padding: 50px 0;
         background: #f8f9fa;
     }
-    
-    .profile-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+    .profile-page .profile-header {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: #fff;
         padding: 60px 0;
         margin-bottom: 50px;
     }
-    
-    .profile-avatar {
+    .profile-page .profile-header h1,
+    .profile-page .profile-header .lead { color: #fff; }
+    .profile-page .profile-avatar {
         width: 120px;
         height: 120px;
-        background: rgba(255,255,255,0.2);
+        background: rgba(245,166,35,0.25);
+        border: 3px solid rgba(255,255,255,0.3);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 3rem;
         margin: 0 auto 30px;
+        color: #fff;
     }
-    
-    .profile-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    .profile-page .profile-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
         padding: 30px;
         margin-bottom: 30px;
-        transition: all 0.3s ease;
+        border: 1px solid rgba(245,166,35,0.12);
+        transition: all 0.25s ease;
     }
-    
-    .profile-card:hover {
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    .profile-page .profile-card:hover {
+        box-shadow: 0 8px 28px rgba(245,166,35,0.12);
     }
-    
-    .profile-card h5 {
-        color: #667eea;
+    .profile-page .profile-card h5 {
+        color: #f5a623;
         margin-bottom: 25px;
         font-weight: 700;
     }
-    
-    .info-item {
+    .profile-page .info-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 15px 0;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid rgba(26,26,46,0.08);
     }
-    
-    .info-item:last-child {
-        border-bottom: none;
-    }
-    
-    .info-label {
-        font-weight: 600;
-        color: #666;
-    }
-    
-    .info-value {
-        color: #333;
-    }
-    
-    .btn-edit {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+    .profile-page .info-item:last-child { border-bottom: none; }
+    .profile-page .info-label { font-weight: 600; color: #5a5a6e; }
+    .profile-page .info-value { color: #1a1a2e; }
+    .profile-page .btn-edit {
+        background: linear-gradient(135deg, #f5a623, #e0941a);
         border: none;
-        color: white;
+        color: #fff;
         padding: 12px 25px;
-        border-radius: 25px;
+        border-radius: 12px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 10px rgba(245,166,35,0.35);
     }
-    
-    .btn-edit:hover {
+    .profile-page .btn-edit:hover {
+        background: #1a1a2e;
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        color: white;
+        box-shadow: 0 4px 14px rgba(26,26,46,0.3);
+        color: #fff;
     }
-    
-    .stats-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    .profile-page .btn-secondary {
+        border: 1px solid rgba(26,26,46,0.2);
+        color: #5a5a6e;
+        border-radius: 12px;
+    }
+    .profile-page .btn-secondary:hover {
+        background: #1a1a2e;
+        border-color: #1a1a2e;
+        color: #fff;
+    }
+    .profile-page .stats-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
         padding: 25px;
         text-align: center;
         margin-bottom: 30px;
+        border: 1px solid rgba(245,166,35,0.1);
     }
-    
-    .stats-number {
+    .profile-page .stats-number {
         font-size: 2.5rem;
         font-weight: 700;
-        color: #667eea;
+        color: #f5a623;
         display: block;
     }
-    
-    .stats-label {
-        color: #666;
-        font-size: 0.9rem;
-        margin-top: 5px;
-    }
-    
-    .quick-actions {
+    .profile-page .stats-label { color: #5a5a6e; font-size: 0.9rem; margin-top: 5px; }
+    .profile-page .quick-actions {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
         margin-top: 30px;
     }
-    
-    .action-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    .profile-page .action-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
         padding: 30px;
         text-align: center;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         text-decoration: none;
         color: inherit;
+        border: 1px solid rgba(245,166,35,0.1);
     }
-    
-    .action-card:hover {
+    .profile-page .action-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 28px rgba(245,166,35,0.2);
         color: inherit;
+        border-color: rgba(245,166,35,0.25);
     }
-    
-    .action-icon {
+    .profile-page .action-icon {
         width: 70px;
         height: 70px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #f5a623, #e0941a);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 20px;
-        color: white;
+        color: #fff;
         font-size: 2rem;
+        box-shadow: 0 4px 14px rgba(245,166,35,0.35);
     }
-    
-    .recent-orders {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    .profile-page .action-card h6 { color: #1a1a2e; }
+    .profile-page .action-card .text-muted { color: #5a5a6e !important; }
+    .profile-page .recent-orders {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
         padding: 30px;
         margin-top: 30px;
+        border: 1px solid rgba(245,166,35,0.12);
     }
-    
-    .order-item {
+    .profile-page .recent-orders h5 { color: #f5a623; font-weight: 700; }
+    .profile-page .order-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 15px 0;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid rgba(26,26,46,0.08);
     }
-    
-    .order-item:last-child {
-        border-bottom: none;
-    }
-    
-    .order-status {
-        padding: 5px 12px;
-        border-radius: 15px;
+    .profile-page .order-item:last-child { border-bottom: none; }
+    .profile-page .order-item a { color: #f5a623; font-weight: 600; }
+    .profile-page .order-item a:hover { color: #1a1a2e; }
+    .profile-page .order-item .text-muted { color: #5a5a6e !important; }
+    .profile-page .order-status {
+        padding: 6px 12px;
+        border-radius: 10px;
         font-size: 0.8rem;
         font-weight: 600;
     }
-    
-    .status-delivered {
-        background: #d4edda;
-        color: #155724;
+    .profile-page .status-delivered { background: rgba(245,166,35,0.2); color: #1a1a2e; }
+    .profile-page .status-processing { background: rgba(26,26,46,0.08); color: #1a1a2e; }
+    .profile-page .status-shipped { background: rgba(245,166,35,0.12); color: #1a1a2e; }
+    .profile-page .recent-orders .btn-primary {
+        background: linear-gradient(135deg, #f5a623, #e0941a) !important;
+        border: none !important;
+        font-weight: 600;
+        border-radius: 12px;
     }
-    
-    .status-processing {
-        background: #fff3cd;
-        color: #856404;
+    .profile-page .recent-orders .btn-primary:hover { background: #1a1a2e !important; color: #fff; }
+    .profile-page .recent-orders .btn-outline-primary {
+        border-color: #f5a623;
+        color: #f5a623;
+        font-weight: 600;
+        border-radius: 12px;
     }
-    
-    .status-shipped {
-        background: #d1ecf1;
-        color: #0c5460;
+    .profile-page .recent-orders .btn-outline-primary:hover {
+        background: #f5a623;
+        border-color: #f5a623;
+        color: #fff;
+    }
+    .profile-page .badge.bg-success { background: rgba(245,166,35,0.25) !important; color: #1a1a2e; }
+    .profile-page .alert-success {
+        background: rgba(245,166,35,0.12);
+        border-color: rgba(245,166,35,0.3);
+        color: #1a1a2e;
+        border-radius: 12px;
+    }
+    .profile-page .form-control:focus {
+        border-color: #f5a623;
+        box-shadow: 0 0 0 0.2rem rgba(245,166,35,0.25);
     }
 </style>
 @endsection
 
 @section('content')
+<div class="profile-page">
 <!-- Success/Error Messages -->
 @if(session('success'))
     <div class="container mt-3">
@@ -482,6 +493,7 @@
         </div>
     </div>
 </section>
+</div>
 @endsection
 
 @section('extra-js')

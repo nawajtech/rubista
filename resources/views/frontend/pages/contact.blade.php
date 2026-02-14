@@ -5,102 +5,134 @@
 
 @section('extra-css')
 <style>
-    .hero-contact {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+    .contact-page .hero-contact {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: #fff;
         padding: 80px 0;
     }
-    
-    .contact-section {
+    .contact-page .hero-contact h1 { color: #fff; }
+    .contact-page .hero-contact .lead,
+    .contact-page .hero-contact p { color: rgba(255,255,255,0.9); }
+
+    .contact-page .contact-section {
         padding: 80px 0;
     }
-    
-    .contact-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    .contact-page .contact-section h2,
+    .contact-page .contact-section h3 { color: #1a1a2e; }
+    .contact-page .contact-section .text-muted { color: #5a5a6e !important; }
+
+    .contact-page .contact-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
         padding: 40px;
         height: 100%;
+        border: 1px solid rgba(245,166,35,0.12);
+        transition: box-shadow 0.3s ease;
     }
-    
-    .contact-icon {
+    .contact-page .contact-card:hover {
+        box-shadow: 0 8px 28px rgba(245,166,35,0.12);
+    }
+    .contact-page .contact-card h5 { color: #1a1a2e; }
+
+    .contact-page .contact-icon {
         width: 80px;
         height: 80px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #f5a623, #e0941a);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 30px;
-        color: white;
+        color: #fff;
         font-size: 2rem;
+        box-shadow: 0 4px 16px rgba(245,166,35,0.35);
     }
-    
-    .form-section {
+
+    .contact-page .form-section {
         background: #f8f9fa;
         padding: 80px 0;
     }
-    
-    .form-control {
-        border: 2px solid #e9ecef;
-        border-radius: 10px;
+    .contact-page .form-section .contact-card {
+        border-color: rgba(26,26,46,0.06);
+    }
+    .contact-page .form-section h2 { color: #1a1a2e; }
+    .contact-page .form-section .form-label { color: #1a1a2e; }
+
+    .contact-page .form-control {
+        border: 2px solid rgba(26,26,46,0.1);
+        border-radius: 12px;
         padding: 15px 20px;
         font-size: 1rem;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
     }
-    
-    .form-control:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    .contact-page .form-control:focus {
+        border-color: #f5a623;
+        box-shadow: 0 0 0 0.2rem rgba(245, 166, 35, 0.25);
+        outline: 0;
     }
-    
-    .btn-submit {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+
+    .contact-page .btn-submit {
+        background: linear-gradient(135deg, #f5a623, #e0941a);
         border: none;
-        color: white;
+        color: #fff;
         padding: 15px 40px;
-        border-radius: 25px;
+        border-radius: 12px;
         font-weight: 600;
         font-size: 1.1rem;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 14px rgba(245,166,35,0.35);
     }
-    
-    .btn-submit:hover {
+    .contact-page .btn-submit:hover {
+        background: #1a1a2e;
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        color: white;
+        box-shadow: 0 6px 20px rgba(26,26,46,0.3);
+        color: #fff;
     }
-    
-    .info-item {
+
+    .contact-page .info-item {
         display: flex;
         align-items: center;
         margin-bottom: 20px;
     }
-    
-    .info-icon {
-        width: 50px;
-        height: 50px;
-        background: #667eea;
-        border-radius: 50%;
+    .contact-page .info-icon {
+        width: 52px;
+        height: 52px;
+        background: linear-gradient(135deg, #f5a623, #e0941a);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: #fff;
         margin-right: 20px;
         flex-shrink: 0;
+        font-size: 1.2rem;
+        box-shadow: 0 3px 12px rgba(245,166,35,0.3);
     }
-    
-    .map-section {
+    .contact-page .info-item h6 { color: #1a1a2e; }
+
+    .contact-page .map-section {
         padding: 0;
         height: 400px;
-        background: #e9ecef;
-        border-radius: 15px;
+        background: linear-gradient(135deg, rgba(26,26,46,0.06) 0%, rgba(245,166,35,0.06) 100%);
+        border-radius: 16px;
         overflow: hidden;
+        border: 1px solid rgba(245,166,35,0.12);
+    }
+    .contact-page .map-section .fa-map-marked-alt { color: #f5a623; opacity: 0.8; }
+    .contact-page .map-section h5 { color: #1a1a2e; }
+
+    .contact-page .alert-success {
+        background: rgba(245,166,35,0.15);
+        border-color: rgba(245,166,35,0.4);
+        color: #1a1a2e;
+        border-radius: 12px;
     }
 </style>
 @endsection
 
 @section('content')
+<div class="contact-page">
 <!-- Hero Section -->
 <section class="hero-contact">
     <div class="container">
@@ -299,6 +331,5 @@
         </div>
     </div>
 </section>
-
-
+</div>
 @endsection 

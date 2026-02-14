@@ -2,16 +2,107 @@
 
 @section('title', 'Register - Rubista')
 
+@section('extra-css')
+<style>
+    .auth-register-page .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .auth-register-page .auth-icon {
+        color: #f5a623;
+    }
+    .auth-register-page .nav-tabs {
+        border-bottom: 2px solid #eee;
+    }
+    .auth-register-page .nav-tabs .nav-link {
+        border: none;
+        color: #666;
+        font-weight: 600;
+        padding: 12px 20px;
+        background: none;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+    }
+    .auth-register-page .nav-tabs .nav-link:hover {
+        color: #f5a623;
+    }
+    .auth-register-page .nav-tabs .nav-link.active {
+        color: #f5a623;
+        border-bottom-color: #f5a623;
+        background: none;
+    }
+    .auth-register-page .btn-primary {
+        background: #f5a623 !important;
+        border-color: #f5a623 !important;
+        color: #fff !important;
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 25px;
+    }
+    .auth-register-page .btn-primary:hover {
+        background: #e09600 !important;
+        border-color: #e09600 !important;
+        color: #fff !important;
+    }
+    .auth-register-page .btn-success {
+        background: #1a1a2e !important;
+        border-color: #1a1a2e !important;
+        color: #fff !important;
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 25px;
+    }
+    .auth-register-page .btn-success:hover {
+        background: #16213e !important;
+        border-color: #16213e !important;
+        color: #fff !important;
+    }
+    .auth-register-page .btn-link {
+        color: #f5a623;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .auth-register-page .btn-link:hover {
+        color: #e09600;
+    }
+    .auth-register-page a:not(.btn) {
+        color: #f5a623;
+    }
+    .auth-register-page a:not(.btn):hover {
+        color: #e09600;
+    }
+    .auth-register-page .form-control:focus {
+        border-color: #f5a623;
+        box-shadow: 0 0 0 0.2rem rgba(245, 166, 35, 0.25);
+    }
+    .auth-register-page .input-group-text {
+        background: #f8f9fa;
+        border-color: #dee2e6;
+        color: #1a1a2e;
+    }
+    .auth-register-page .form-check-input:checked {
+        background-color: #f5a623;
+        border-color: #f5a623;
+    }
+    .auth-register-page .alert-info {
+        background: rgba(245, 166, 35, 0.12);
+        border-color: rgba(245, 166, 35, 0.3);
+        color: #333;
+    }
+</style>
+@endsection
+
 @section('content')
+<div class="auth-register-page">
 <div class="container">
     <div class="row justify-content-center">
-
-    <div class="col-md-6 col-lg-5">
+        <div class="col-md-6 col-lg-5">
             <div class="card mt-5 shadow-sm">
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
-                        <h3>Join Rubista</h3>
+                        <i class="fas fa-user-plus fa-3x auth-icon mb-3"></i>
+                        <h3 style="color: #1a1a2e; font-weight: 700;">Join Rubista</h3>
                         <p class="text-muted">Create your account today</p>
                     </div>
                     
@@ -71,7 +162,7 @@
                                 <div class="mb-3 form-check">
                                     <input type="checkbox" class="form-check-input" id="terms" required>
                                     <label class="form-check-label" for="terms">
-                                        I agree to the <a href="#" class="text-decoration-none">Terms of Service</a>
+                                        I agree to the <a href="#">Terms of Service</a>
                                     </label>
                                 </div>
                                 
@@ -144,13 +235,14 @@
                     
                     <div class="text-center mt-3">
                         <p class="mb-0">Already have an account? 
-                            <a href="{{ route('frontend.login') }}" class="text-decoration-none">Sign in</a>
+                            <a href="{{ route('frontend.login') }}">Sign in</a>
                         </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <script>

@@ -2,15 +2,107 @@
 
 @section('title', 'Login - Rubista')
 
+@section('extra-css')
+<style>
+    .auth-login-page .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .auth-login-page .auth-icon {
+        color: #f5a623;
+    }
+    .auth-login-page .nav-tabs {
+        border-bottom: 2px solid #eee;
+    }
+    .auth-login-page .nav-tabs .nav-link {
+        border: none;
+        color: #666;
+        font-weight: 600;
+        padding: 12px 20px;
+        background: none;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+    }
+    .auth-login-page .nav-tabs .nav-link:hover {
+        color: #f5a623;
+    }
+    .auth-login-page .nav-tabs .nav-link.active {
+        color: #f5a623;
+        border-bottom-color: #f5a623;
+        background: none;
+    }
+    .auth-login-page .btn-primary {
+        background: #f5a623 !important;
+        border-color: #f5a623 !important;
+        color: #fff !important;
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 25px;
+    }
+    .auth-login-page .btn-primary:hover {
+        background: #e09600 !important;
+        border-color: #e09600 !important;
+        color: #fff !important;
+    }
+    .auth-login-page .btn-success {
+        background: #1a1a2e !important;
+        border-color: #1a1a2e !important;
+        color: #fff !important;
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 25px;
+    }
+    .auth-login-page .btn-success:hover {
+        background: #16213e !important;
+        border-color: #16213e !important;
+        color: #fff !important;
+    }
+    .auth-login-page .btn-link {
+        color: #f5a623;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .auth-login-page .btn-link:hover {
+        color: #e09600;
+    }
+    .auth-login-page a:not(.btn) {
+        color: #f5a623;
+    }
+    .auth-login-page a:not(.btn):hover {
+        color: #e09600;
+    }
+    .auth-login-page .form-control:focus {
+        border-color: #f5a623;
+        box-shadow: 0 0 0 0.2rem rgba(245, 166, 35, 0.25);
+    }
+    .auth-login-page .input-group-text {
+        background: #f8f9fa;
+        border-color: #dee2e6;
+        color: #1a1a2e;
+    }
+    .auth-login-page .form-check-input:checked {
+        background-color: #f5a623;
+        border-color: #f5a623;
+    }
+    .auth-login-page .alert-info {
+        background: rgba(245, 166, 35, 0.12);
+        border-color: rgba(245, 166, 35, 0.3);
+        color: #333;
+    }
+</style>
+@endsection
+
 @section('content')
+<div class="auth-login-page">
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             <div class="card mt-5 shadow-sm">
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <i class="fas fa-lock fa-3x text-primary mb-3"></i>
-                        <h3>Welcome Back</h3>
+                        <i class="fas fa-lock fa-3x auth-icon mb-3"></i>
+                        <h3 style="color: #1a1a2e; font-weight: 700;">Welcome Back</h3>
                         <p class="text-muted">Sign in to your account</p>
                     </div>
                     
@@ -121,13 +213,14 @@
                     
                     <div class="text-center mt-3">
                         <p class="mb-0">Don't have an account? 
-                            <a href="{{ route('frontend.register') }}" class="text-decoration-none">Sign up</a>
+                            <a href="{{ route('frontend.register') }}">Sign up</a>
                         </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <script>

@@ -4,98 +4,141 @@
 
 @section('extra-css')
 <style>
-    .hero-about {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+    .about-page .hero-about {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: #fff;
         padding: 80px 0;
     }
-    
-    .about-section {
+    .about-page .hero-about .lead,
+    .about-page .hero-about p { color: rgba(255,255,255,0.9); }
+    .about-page .hero-about h1 { color: #fff; }
+
+    .about-page .about-section {
         padding: 80px 0;
     }
-    
-    .feature-card {
+    .about-page .about-section h2,
+    .about-page .about-section h3 {
+        color: #1a1a2e;
+    }
+
+    .about-page .feature-card {
         text-align: center;
         padding: 40px 20px;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
         height: 100%;
         transition: all 0.3s ease;
+        background: #fff;
+        border: 1px solid rgba(245,166,35,0.15);
     }
-    
-    .feature-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    .about-page .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(245,166,35,0.2);
+        border-color: rgba(245,166,35,0.35);
     }
-    
-    .feature-icon {
+    .about-page .feature-icon {
         width: 80px;
         height: 80px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #f5a623, #e0941a);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 30px;
-        color: white;
+        color: #fff;
         font-size: 2rem;
     }
-    
-    .stats-section {
-        background: #f8f9fa;
+
+    .about-page .stats-section {
+        background: #1a1a2e;
         padding: 80px 0;
+        color: #fff;
     }
-    
-    .stat-item {
+    .about-page .stat-item {
         text-align: center;
         padding: 20px;
     }
-    
-    .stat-number {
+    .about-page .stat-number {
         font-size: 3rem;
         font-weight: 700;
-        color: #667eea;
+        color: #f5a623;
         display: block;
     }
-    
-    .stat-label {
+    .about-page .stat-label {
         font-size: 1.1rem;
-        color: #666;
+        color: rgba(255,255,255,0.8);
         margin-top: 10px;
     }
-    
-    .team-section {
+
+    .about-page .team-section {
         padding: 80px 0;
     }
-    
-    .team-card {
+    .about-page .team-card {
         text-align: center;
         padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.08);
         transition: all 0.3s ease;
+        background: #fff;
+        border: 1px solid rgba(245,166,35,0.12);
     }
-    
-    .team-card:hover {
+    .about-page .team-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(245,166,35,0.15);
     }
-    
-    .team-photo {
+    .about-page .team-photo {
         width: 120px;
         height: 120px;
         border-radius: 50%;
         margin: 0 auto 20px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #f5a623, #e0941a);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: #fff;
         font-size: 3rem;
+    }
+    .about-page .team-card h5 { color: #1a1a2e; }
+    .about-page .team-card .text-muted { color: #5a5a6e !important; }
+
+    .about-page .about-section.bg-light {
+        background: #f8f9fa;
+    }
+    .about-page .about-section.bg-light .feature-card {
+        border-color: rgba(26,26,46,0.06);
+    }
+    .about-page .about-section.bg-light h2 { color: #1a1a2e; }
+    .about-page .about-section.bg-light .text-muted { color: #5a5a6e !important; }
+
+    .about-page .cta-about {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        padding: 80px 0;
+        color: #fff;
+    }
+    .about-page .cta-about .btn-light {
+        background: #fff;
+        color: #1a1a2e;
+        border: none;
+        font-weight: 600;
+    }
+    .about-page .cta-about .btn-light:hover {
+        background: #f5a623;
+        color: #fff;
+    }
+    .about-page .cta-about .btn-outline-light {
+        border-color: rgba(255,255,255,0.8);
+        color: #fff;
+    }
+    .about-page .cta-about .btn-outline-light:hover {
+        background: #f5a623;
+        border-color: #f5a623;
+        color: #fff;
     }
 </style>
 @endsection
 
 @section('content')
+<div class="about-page">
 <!-- Hero Section -->
 <section class="hero-about">
     <div class="container">
@@ -279,17 +322,5 @@
 </section>
 @endif
 
-<!-- CTA Section -->
-<section class="about-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container text-center text-white">
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold mb-4">Ready to Experience the RUBISTA Difference?</h2>
-                <p class="lead mb-4">Join thousands of satisfied customers who trust us for their electronics needs.</p>
-                <a href="{{ route('frontend.home') }}" class="btn btn-light btn-lg px-5 me-3">Shop Now</a>
-                <a href="{{ route('frontend.contact') }}" class="btn btn-outline-light btn-lg px-5">Contact Us</a>
-            </div>
-        </div>
-    </div>
-</section>
+</div>
 @endsection 

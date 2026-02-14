@@ -16,8 +16,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $categories = Category::with('products')->get();
+        $categories = Category::with(['products' => function($q) {
+            $q->where('status', true);
+        }])->get();
         $featuredProducts = Product::where('featured', true)
+            ->with('category')
             ->withCount(['reviews as total_reviews' => function($query) {
                 $query->where('status', true);
             }])
@@ -27,6 +30,7 @@ class HomeController extends Controller
             ->take(10)
             ->get();
         $trendingProducts = Product::orderBy('created_at', 'desc')
+            ->with('category')
             ->withCount(['reviews as total_reviews' => function($query) {
                 $query->where('status', true);
             }])

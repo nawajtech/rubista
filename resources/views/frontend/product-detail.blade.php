@@ -13,6 +13,16 @@
         padding: 50px 0;
     }
     
+    /* Ensure our buttons are not overridden by Bootstrap or browser */
+    .product-detail-section button.btn-add-to-cart,
+    .product-detail-section button.btn-buy-now,
+    .product-detail-section button.btn-add-to-wishlist,
+    .product-detail-section button.quantity-btn {
+        -webkit-appearance: none;
+        appearance: none;
+        font-family: 'Poppins', sans-serif;
+    }
+    
     .product-gallery {
         position: sticky;
         top: 20px;
@@ -24,6 +34,27 @@
         object-fit: cover;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .product-gallery .main-image-placeholder {
+        width: 100%;
+        height: 450px;
+        min-height: 280px;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,255,255,0.9);
+        font-size: 4rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .product-gallery .main-image-placeholder .no-image-text {
+        font-size: 1rem;
+        margin-top: 10px;
+        opacity: 0.8;
     }
     
     .thumbnail-gallery {
@@ -45,7 +76,7 @@
     
     .thumbnail:hover,
     .thumbnail.active {
-        border-color: #667eea;
+        border-color: #f5a623;
     }
     
     .product-info {
@@ -83,7 +114,7 @@
     .current-price {
         font-size: 2.5rem;
         font-weight: 700;
-        color: #333;
+        color: #f5a623;
     }
     
     .original-price {
@@ -124,18 +155,15 @@
         overflow: hidden;
     }
     
-    .quantity-btn {
-        width: 45px;
-        height: 45px;
-        border: none;
+    .product-detail-section .quantity-btn {
         background: #f8f9fa;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        border: none;
+        color: #333;
     }
     
-    .quantity-btn:hover {
-        background: #667eea;
-        color: white;
+    .product-detail-section .quantity-btn:hover {
+        background: #f5a623 !important;
+        color: white !important;
     }
     
     .quantity-input {
@@ -147,10 +175,10 @@
         background: white;
     }
     
-    .btn-add-to-cart {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        border: none;
-        color: white;
+    .product-detail-section .btn-add-to-cart {
+        background: #f5a623 !important;
+        border: none !important;
+        color: white !important;
         padding: 15px 30px;
         border-radius: 25px;
         font-weight: 600;
@@ -162,20 +190,21 @@
         z-index: 1;
     }
     
-    .btn-add-to-cart:hover {
+    .product-detail-section .btn-add-to-cart:hover {
+        background: #e09600 !important;
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        color: white;
+        box-shadow: 0 8px 25px rgba(245, 166, 35, 0.3);
+        color: white !important;
     }
     
     .btn-add-to-cart:active {
         transform: translateY(0);
     }
     
-    .btn-add-to-wishlist {
-        background: white;
-        border: 2px solid #667eea;
-        color: #667eea;
+    .product-detail-section .btn-add-to-wishlist {
+        background: white !important;
+        border: 2px solid #f5a623 !important;
+        color: #f5a623 !important;
         padding: 15px 20px;
         border-radius: 25px;
         font-weight: 600;
@@ -185,19 +214,19 @@
         z-index: 1;
     }
     
-    .btn-add-to-wishlist:hover {
-        background: #667eea;
-        color: white;
+    .product-detail-section .btn-add-to-wishlist:hover {
+        background: #f5a623 !important;
+        color: white !important;
     }
     
     .btn-add-to-wishlist:active {
         transform: scale(0.95);
     }
     
-    .btn-buy-now {
-        background: #28a745;
-        border: none;
-        color: white;
+    .product-detail-section .btn-buy-now {
+        background: #1a1a2e !important;
+        border: none !important;
+        color: white !important;
         padding: 15px 30px;
         border-radius: 25px;
         font-weight: 600;
@@ -209,11 +238,11 @@
         z-index: 1;
     }
     
-    .btn-buy-now:hover {
-        background: #218838;
+    .product-detail-section .btn-buy-now:hover {
+        background: #16213e !important;
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-        color: white;
+        box-shadow: 0 8px 25px rgba(26, 26, 46, 0.3);
+        color: white !important;
     }
     
     .btn-buy-now:active {
@@ -250,7 +279,7 @@
     .feature-icon {
         width: 50px;
         height: 50px;
-        background: #667eea;
+        background: #f5a623;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -263,21 +292,44 @@
         margin-top: 50px;
     }
     
-    .nav-tabs {
+    .product-tabs .nav {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
         border-bottom: 2px solid #e9ecef;
     }
     
-    .nav-tabs .nav-link {
+    .product-tabs .nav-tabs {
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .product-tabs .nav-item {
+        list-style: none;
+    }
+    
+    .product-tabs .nav-link {
         border: none;
         color: #666;
         font-weight: 600;
         padding: 15px 25px;
         background: none;
+        cursor: pointer;
+        display: inline-block;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: color 0.2s, border-color 0.2s;
     }
     
-    .nav-tabs .nav-link.active {
-        color: #667eea;
-        border-bottom: 3px solid #667eea;
+    .product-tabs .nav-link:hover {
+        color: #f5a623;
+    }
+    
+    .product-tabs .nav-link.active {
+        color: #f5a623;
+        border-bottom: 3px solid #f5a623;
         background: none;
     }
     
@@ -368,7 +420,7 @@
     }
     
     .delivery-icon {
-        color: #28a745;
+        color: #f5a623;
         font-size: 1.1rem;
     }
     
@@ -425,7 +477,7 @@
     }
     
     .auto-scroll-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         padding: 60px 0;
         margin-top: 60px;
         position: relative;
@@ -522,7 +574,7 @@
     }
     
     .review-form-card:hover {
-        border-color: #667eea !important;
+        border-color: #f5a623 !important;
     }
     
     @media (max-width: 768px) {
@@ -595,8 +647,9 @@
                                  alt="{{ $product->name }}" class="main-image" id="mainImage">
                         @endif
                     @else
-                        <div class="main-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                        <div class="main-image-placeholder">
                             <i class="fas fa-image"></i>
+                            <span class="no-image-text">No image available</span>
                         </div>
                     @endif
                     
@@ -610,7 +663,7 @@
                                      alt="{{ $product->name }}" class="thumbnail active" onclick="changeImage(this)">
                             @endif
                         @else
-                            <div class="thumbnail active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                            <div class="thumbnail active" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
                                 <i class="fas fa-image"></i>
                             </div>
                         @endif
@@ -643,7 +696,10 @@
                             <span class="current-price">₹{{ number_format($product->sale_price, 2) }}</span>
                             <span class="original-price">₹{{ number_format($product->price, 2) }}</span>
                             <span class="discount-badge">
-                                {{ round((($product->price - $product->sale_price) / $product->price) * 100) }}% OFF
+                                @php
+                                    $discountPct = round((($product->price - $product->sale_price) / $product->price) * 100);
+                                    echo ($discountPct >= 100 && $product->sale_price > 0) ? 'Sale' : $discountPct . '% OFF';
+                                @endphp
                             </span>
                         @else
                             <span class="current-price">₹{{ number_format($product->price, 2) }}</span>
@@ -823,7 +879,7 @@
                                          alt="Product Features" class="img-fluid rounded" style="height: 300px; width: 100%; object-fit: cover;">
                                 @endif
                             @else
-                                <div class="img-fluid rounded" style="height: 300px; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                <div class="img-fluid rounded" style="height: 300px; width: 100%; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
                                     <i class="fas fa-image"></i>
                                 </div>
                             @endif
@@ -905,12 +961,12 @@
                             </h2>
                             @auth
                                 @if(!isset($userReview) || !$userReview)
-                                <button type="button" class="btn btn-primary" id="rate-product-btn" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; padding: 10px 20px; font-weight: 600;">
+                                <button type="button" class="btn btn-primary" id="rate-product-btn" style="background: #f5a623; border: none; padding: 10px 20px; font-weight: 600;">
                                     <i class="fas fa-edit me-2"></i>Rate Product
                                 </button>
                                 @endif
                             @else
-                                <a href="{{ route('frontend.login') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; padding: 10px 20px; font-weight: 600;">
+                                <a href="{{ route('frontend.login') }}" class="btn btn-primary" style="background: #f5a623; border: none; padding: 10px 20px; font-weight: 600;">
                                     <i class="fas fa-edit me-2"></i>Rate Product
                                 </a>
                             @endauth
@@ -922,7 +978,7 @@
                         <div class="row">
                             <div class="col-lg-4 mb-4">
                                 <div class="rating-summary-card p-4" style="background: #f8f9fa; border-radius: 15px; text-align: center;">
-                                    <h3 class="mb-3" style="font-size: 3rem; font-weight: 700; color: #667eea;">
+                                    <h3 class="mb-3" style="font-size: 3rem; font-weight: 700; color: #f5a623;">
                                         <span id="average-rating-display">{{ number_format($averageRating ?? 0, 1) }}</span>
                                     </h3>
                                     <div class="rating-stars-display mb-3" id="average-rating-stars">
@@ -992,17 +1048,17 @@
                                                 <div id="video-preview" class="mt-2"></div>
                                             </div>
                                             
-                                            <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; padding: 12px; font-weight: 600;">
+                                            <button type="submit" class="btn btn-primary w-100" style="background: #f5a623; border: none; padding: 12px; font-weight: 600;">
                                                 <i class="fas fa-paper-plane me-2"></i>Submit Review
                                             </button>
                                         </form>
                                     </div>
                                 @else
-                                    <div class="review-login-prompt mt-4 p-4" style="background: white; border: 2px dashed #667eea; border-radius: 15px; text-align: center;">
-                                        <i class="fas fa-lock fa-2x mb-3" style="color: #667eea;"></i>
+                                    <div class="review-login-prompt mt-4 p-4" style="background: white; border: 2px dashed #f5a623; border-radius: 15px; text-align: center;">
+                                        <i class="fas fa-lock fa-2x mb-3" style="color: #f5a623;"></i>
                                         <h6 class="fw-bold mb-2">Login to Write a Review</h6>
                                         <p class="text-muted small mb-3">Please login to share your experience with this product.</p>
-                                        <a href="{{ route('frontend.login') }}" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none;">
+                                        <a href="{{ route('frontend.login') }}" class="btn btn-primary btn-sm" style="background: #f5a623; border: none;">
                                             <i class="fas fa-sign-in-alt me-2"></i>Login Now
                                         </a>
                                     </div>
@@ -1105,7 +1161,7 @@
                                                      alt="{{ $relatedProduct->name }}" style="height: 280px; object-fit: cover; width: 100%;">
                                             @endif
                                         @else
-                                            <div style="height: 280px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                            <div style="height: 280px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
                                                 <i class="fas fa-image"></i>
                                             </div>
                                         @endif
@@ -1113,7 +1169,7 @@
                                             <span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 0.8rem; padding: 6px 12px; font-weight: 600;">SALE</span>
                                         @endif
                                         @if($relatedProduct->featured)
-                                            <span class="badge bg-warning position-absolute top-0 end-0 m-2" style="font-size: 0.8rem; padding: 6px 12px; font-weight: 600;">FEATURED</span>
+                                            <span class="badge position-absolute top-0 end-0 m-2" style="font-size: 0.8rem; padding: 6px 12px; font-weight: 600; background: #f5a623; color: #fff;">FEATURED</span>
                                         @endif
                                     </div>
                                     <div class="card-body p-4">
@@ -1124,12 +1180,12 @@
                                         <div class="mb-3">
                                             @if($relatedProduct->sale_price && $relatedProduct->sale_price < $relatedProduct->price)
                                                 <span class="text-muted text-decoration-line-through" style="font-size: 0.9rem;">₹{{ number_format($relatedProduct->price, 2) }}</span>
-                                                <span class="fw-bold ms-2" style="color: #e74c3c; font-size: 1.3rem;">₹{{ number_format($relatedProduct->sale_price, 2) }}</span>
+                                                <span class="fw-bold ms-2" style="color: #f5a623; font-size: 1.3rem;">₹{{ number_format($relatedProduct->sale_price, 2) }}</span>
                                             @else
-                                                <span class="fw-bold" style="color: #333; font-size: 1.3rem;">₹{{ number_format($relatedProduct->price, 2) }}</span>
+                                                <span class="fw-bold" style="color: #f5a623; font-size: 1.3rem;">₹{{ number_format($relatedProduct->price, 2) }}</span>
                                             @endif
                                         </div>
-                                        <button type="button" class="btn btn-primary w-100" onclick="event.preventDefault(); window.location.href='{{ route('frontend.product.detail', $relatedProduct->id) }}'" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; padding: 12px; font-weight: 600;">
+                                        <button type="button" class="btn btn-primary w-100" onclick="event.preventDefault(); window.location.href='{{ route('frontend.product.detail', $relatedProduct->id) }}'" style="background: #f5a623; border: none; border-radius: 8px; padding: 12px; font-weight: 600;">
                                             <i class="fas fa-eye me-2"></i>View Details
                                         </button>
                                     </div>
@@ -1152,7 +1208,7 @@
                                                      alt="{{ $relatedProduct->name }}" style="height: 280px; object-fit: cover; width: 100%;">
                                             @endif
                                         @else
-                                            <div style="height: 280px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                            <div style="height: 280px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
                                                 <i class="fas fa-image"></i>
                                             </div>
                                         @endif
@@ -1160,7 +1216,7 @@
                                             <span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 0.8rem; padding: 6px 12px; font-weight: 600;">SALE</span>
                                         @endif
                                         @if($relatedProduct->featured)
-                                            <span class="badge bg-warning position-absolute top-0 end-0 m-2" style="font-size: 0.8rem; padding: 6px 12px; font-weight: 600;">FEATURED</span>
+                                            <span class="badge position-absolute top-0 end-0 m-2" style="font-size: 0.8rem; padding: 6px 12px; font-weight: 600; background: #f5a623; color: #fff;">FEATURED</span>
                                         @endif
                                     </div>
                                     <div class="card-body p-4">
@@ -1171,12 +1227,12 @@
                                         <div class="mb-3">
                                             @if($relatedProduct->sale_price && $relatedProduct->sale_price < $relatedProduct->price)
                                                 <span class="text-muted text-decoration-line-through" style="font-size: 0.9rem;">₹{{ number_format($relatedProduct->price, 2) }}</span>
-                                                <span class="fw-bold ms-2" style="color: #e74c3c; font-size: 1.3rem;">₹{{ number_format($relatedProduct->sale_price, 2) }}</span>
+                                                <span class="fw-bold ms-2" style="color: #f5a623; font-size: 1.3rem;">₹{{ number_format($relatedProduct->sale_price, 2) }}</span>
                                             @else
-                                                <span class="fw-bold" style="color: #333; font-size: 1.3rem;">₹{{ number_format($relatedProduct->price, 2) }}</span>
+                                                <span class="fw-bold" style="color: #f5a623; font-size: 1.3rem;">₹{{ number_format($relatedProduct->price, 2) }}</span>
                                             @endif
                                         </div>
-                                        <button type="button" class="btn btn-primary w-100" onclick="event.preventDefault(); window.location.href='{{ route('frontend.product.detail', $relatedProduct->id) }}'" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; padding: 12px; font-weight: 600;">
+                                        <button type="button" class="btn btn-primary w-100" onclick="event.preventDefault(); window.location.href='{{ route('frontend.product.detail', $relatedProduct->id) }}'" style="background: #f5a623; border: none; border-radius: 8px; padding: 12px; font-weight: 600;">
                                             <i class="fas fa-eye me-2"></i>View Details
                                         </button>
                                     </div>
@@ -1197,14 +1253,10 @@ function changeImage(thumbnail) {
     const mainImage = document.getElementById('mainImage');
     const thumbnails = document.querySelectorAll('.thumbnail');
     
-    // Remove active class from all thumbnails
     thumbnails.forEach(thumb => thumb.classList.remove('active'));
-    
-    // Add active class to clicked thumbnail
     thumbnail.classList.add('active');
     
-    // Change main image - use the thumbnail src directly
-    if (thumbnail.tagName === 'IMG') {
+    if (mainImage && thumbnail.tagName === 'IMG') {
         mainImage.src = thumbnail.src;
     }
 }
@@ -1351,8 +1403,8 @@ window.addToWishlist = function(productId) {
                 }
             } else {
                 wishlistBtn.style.background = 'white';
-                wishlistBtn.style.borderColor = '#667eea';
-                wishlistBtn.style.color = '#667eea';
+                wishlistBtn.style.borderColor = '#f5a623';
+                wishlistBtn.style.color = '#f5a623';
                 const icon = wishlistBtn.querySelector('i');
                 if (icon) {
                     icon.classList.remove('fas');
@@ -1429,7 +1481,7 @@ window.buyNow = function(productId) {
 // Helper function to show toast notifications
 window.showToast = function(message, type = 'success') {
     const toast = document.createElement('div');
-    const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#667eea';
+    const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#f5a623';
     toast.innerHTML = `
         <div style="
             position: fixed;
