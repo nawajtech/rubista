@@ -129,8 +129,17 @@
 
     .categories-page .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(5, 1fr);
         gap: 20px;
+    }
+    @media (max-width: 1200px) {
+        .categories-page .products-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 992px) {
+        .categories-page .products-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    }
+    @media (max-width: 576px) {
+        .categories-page .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     }
     .categories-page .product-item {
         background: #fff;
@@ -150,6 +159,34 @@
         height: 160px;
         overflow: hidden;
     }
+    .categories-page .product-favourite-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255,255,255,0.95);
+        color: #f5a623;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+    .categories-page .product-favourite-btn:hover {
+        background: #f5a623;
+        color: #fff;
+        transform: scale(1.08);
+    }
+    .categories-page .product-favourite-btn.active {
+        background: #ef4444;
+        color: #fff;
+    }
     .categories-page .product-image {
         width: 100%;
         height: 100%;
@@ -168,6 +205,24 @@
     }
     .categories-page .product-details {
         padding: 15px;
+        text-align: center;
+    }
+    .categories-page .product-rating {
+        justify-content: center;
+    }
+    .categories-page .product-price {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+    }
+    .categories-page .product-actions-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 10px;
     }
     .categories-page .product-name {
         font-size: 0.9rem;
@@ -210,20 +265,21 @@
         margin-left: 6px;
     }
     .categories-page .add-to-cart-btn {
-        width: 100%;
+        width: auto;
+        min-width: 0;
         background: linear-gradient(135deg, #f5a623, #e0941a);
         color: #fff;
         border: none;
-        padding: 10px 12px;
-        border-radius: 10px;
+        padding: 6px 10px;
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         cursor: pointer;
         transition: all 0.25s ease;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 4px;
         box-shadow: 0 2px 10px rgba(245,166,35,0.3);
     }
     .categories-page .add-to-cart-btn:hover {
@@ -285,7 +341,7 @@
             font-size: 1.1rem;
         }
         .categories-page .products-grid {
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
         }
         .categories-page .product-image-wrapper {
@@ -340,14 +396,17 @@
                         <p>{{ $category->products->count() }} products</p>
                     </div>
                 </div>
-                <a href="#" class="view-all-btn">View All</a>
+                <a href="{{ route('frontend.category.products', $category->id) }}" class="view-all-btn">View All</a>
             </div>
 
             @if($category->products->count() > 0)
             <div class="products-grid">
-                @foreach($category->products->take(4) as $product)
+                @foreach($category->products->take(5) as $product)
                 <div class="product-item">
                     <div class="product-image-wrapper">
+                        <button type="button" class="product-favourite-btn" id="cat-wishlist-btn-{{ $product->id }}" onclick="event.stopPropagation(); categoriesWishlistToggle({{ $product->id }})" title="Add to wishlist" aria-label="Add to wishlist">
+                            <i class="far fa-heart"></i>
+                        </button>
                         @if($product->image)
                             @if(Str::startsWith($product->image, 'http'))
                                 <img src="{{ $product->image }}" 
@@ -360,9 +419,6 @@
                             <div class="product-image" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); display: flex; align-items: center; justify-content: center; color: #f5a623; font-size: 2rem;">
                                 <i class="fas fa-image"></i>
                             </div>
-                        @endif
-                        @if($product->price > 5000)
-                        <div class="product-badge">Sale</div>
                         @endif
                     </div>
                     <div class="product-details">
@@ -385,10 +441,12 @@
                                 <span class="current-price">₹{{ number_format($product->price, 0) }}</span>
                             @endif
                         </div>
-                        <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            Add to Cart
-                        </button>
+                        <div class="product-actions-wrap">
+                            <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                 </div>
                 @endforeach
@@ -409,80 +467,101 @@
 
 @section('extra-js')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Category Filter Functionality
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const categoryCards = document.querySelectorAll('.category-card');
+(function() {
+    var csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) csrfToken = csrfToken.getAttribute('content');
 
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const category = this.dataset.category;
-            
-            // Update active button
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Filter category cards
-            categoryCards.forEach(card => {
-                if (category === 'all' || card.dataset.category === category) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+    function showToast(message, type) {
+        type = type || 'success';
+        var el = document.createElement('div');
+        el.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;padding:12px 20px;border-radius:10px;font-weight:600;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,0.2);';
+        el.style.background = type === 'success' ? '#f5a623' : '#ef4444';
+        el.style.color = '#fff';
+        el.innerHTML = (type === 'success' ? '<i class="fas fa-check me-2"></i>' : '') + message;
+        document.body.appendChild(el);
+        setTimeout(function() { el.remove(); }, 3000);
+    }
+
+    window.categoriesWishlistToggle = function(productId) {
+        var btn = document.getElementById('cat-wishlist-btn-' + productId);
+        if (!csrfToken || !btn) return;
+        var btns = [btn];
+        var icon = btns[0].querySelector('i');
+        var wasActive = btns[0].classList.contains('active');
+        btns.forEach(function(b) {
+            var i = b.querySelector('i');
+            if (i) i.className = 'fas fa-spinner fa-spin';
+        });
+        fetch('{{ url("/wishlist/toggle") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+            body: JSON.stringify({ product_id: parseInt(productId) })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var inWishlist = data.in_wishlist;
+            btns.forEach(function(b) {
+                b.classList.toggle('active', inWishlist);
+                var i = b.querySelector('i');
+                if (i) i.className = inWishlist ? 'fas fa-heart' : 'far fa-heart';
+            });
+            showToast(data.message || (inWishlist ? 'Added to wishlist' : 'Removed from wishlist'), 'success');
+            var badge = document.getElementById('header-wishlist-count');
+            if (badge) { badge.textContent = data.wishlist_count || 0; badge.style.display = (data.wishlist_count > 0) ? 'inline-block' : 'none'; }
+        })
+        .catch(function() {
+            showToast('Error updating wishlist', 'error');
+            btns.forEach(function(b) {
+                var i = b.querySelector('i');
+                if (i) i.className = wasActive ? 'fas fa-heart' : 'far fa-heart';
+            });
+        });
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category Filter
+        var filterButtons = document.querySelectorAll('.filter-btn');
+        var categoryCards = document.querySelectorAll('.category-card');
+        filterButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var category = this.dataset.category;
+                filterButtons.forEach(function(btn) { btn.classList.remove('active'); });
+                this.classList.add('active');
+                categoryCards.forEach(function(card) {
+                    card.style.display = (category === 'all' || card.dataset.category === category) ? 'block' : 'none';
+                });
+            });
+        });
+
+        // Add to Cart (real API)
+        var addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        addToCartButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var productId = this.dataset.productId;
+                var originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                this.disabled = true;
+                fetch('{{ url("/cart/add") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                    body: JSON.stringify({ product_id: parseInt(productId), quantity: 1 })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        showToast('Added to cart!', 'success');
+                        var badge = document.getElementById('header-cart-count');
+                        if (badge) { badge.textContent = data.cart_count || 0; badge.style.display = data.cart_count > 0 ? 'inline-block' : 'none'; }
+                    } else {
+                        showToast(data.message || 'Could not add to cart', 'error');
+                    }
+                })
+                .catch(function() { showToast('Error adding to cart', 'error'); })
+                .finally(function() { this.innerHTML = originalText; this.disabled = false; }.bind(this));
             });
         });
     });
-
-    // Add to Cart Functionality
-    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            
-            // Add loading state
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
-            this.disabled = true;
-            
-            // Simulate API call
-            setTimeout(() => {
-                this.innerHTML = '<i class="fas fa-check"></i> Added!';
-                this.style.background = '#1a1a2e';
-                
-                // Show success message
-                const toast = document.createElement('div');
-                toast.innerHTML = `
-                    <div style="
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: #f5a623;
-                        color: white;
-                        padding: 12px 20px;
-                        border-radius: 10px;
-                        z-index: 9999;
-                        font-weight: 600;
-                        font-size: 0.9rem;
-                        box-shadow: 0 4px 14px rgba(245, 166, 35, 0.4);
-                    ">
-                        <i class="fas fa-check me-2"></i>Product added to cart!
-                    </div>
-                `;
-                document.body.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.remove();
-                }, 3000);
-                
-                setTimeout(() => {
-                    this.innerHTML = originalText;
-                    this.style.background = '';
-                    this.disabled = false;
-                }, 2000);
-            }, 600);
-        });
-    });
-});
+})();
 </script>
 @endsection
 

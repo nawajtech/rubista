@@ -28,23 +28,100 @@
     .home-product-wishlist-btn.active { background: #ef4444; color: #fff; }
     .product-card-actions {
         display: flex;
-        gap: 8px;
-        margin-top: 10px;
+        gap: 6px;
+        margin-top: 8px;
         flex-wrap: wrap;
+        justify-content: center;
     }
     .home-add-to-cart-btn {
-        width: 100%;
-        background: #1a1a2e;
+        width: auto;
+        min-width: 0;
+        background: linear-gradient(135deg, #f5a623 0%, #e0941a 100%);
         color: #fff;
         border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 11px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 10px;
         font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 4px rgba(245,166,35,0.35);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
     }
-    .home-add-to-cart-btn:hover { background: #333; }
+    .home-add-to-cart-btn:hover {
+        background: #1a1a2e;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(26,26,46,0.25);
+        color: #fff;
+    }
+    .home-add-to-cart-btn:active { transform: translateY(0); }
+    .home-add-to-cart-btn i { font-size: 9px; opacity: 0.95; }
+
+    .hero-banner-slider {
+        position: relative;
+        width: 100%;
+        height: 320px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    .hero-banner-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.6s ease-in-out;
+        z-index: 0;
+    }
+    .hero-banner-slide.active {
+        opacity: 1;
+        z-index: 1;
+    }
+    .hero-banner-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .hero-banner-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        text-align: center;
+        color: #fff;
+        padding: 20px;
+    }
+    .hero-banner-content h1 { font-size: 36px; margin-bottom: 10px; text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .hero-banner-content p { font-size: 16px; opacity: 0.95; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+    .hero-banner-dots {
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        gap: 8px;
+    }
+    .hero-banner-dots span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    .hero-banner-dots span.active { background: #f5a623; }
 </style>
 @endsection
 
@@ -54,7 +131,39 @@
 @endphp
 
 @section('content')
-    <!-- Hero Section -->
+    <!-- Hero / Banner Slider Section -->
+    @if(isset($banners) && $banners->count() > 0)
+    <section class="hero-banner-slider" id="hero-banner-slider">
+        @foreach($banners as $index => $banner)
+        <div class="hero-banner-slide {{ $index === 0 ? 'active' : '' }}" data-slide="{{ $index }}">
+            <img src="{{ asset('storage/' . $banner->image) }}" alt="Banner {{ $index + 1 }}">
+        </div>
+        @endforeach
+        <div class="hero-banner-content">
+            @if(isset($heroContent) && $heroContent)
+                <div>
+                    <h1>{!! $heroContent->title ?? 'Welcome to RUBISTA' !!}</h1>
+                    <p>{!! $heroContent->subtitle ?? 'Your one-stop shop for electronics & accessories' !!}</p>
+                    @if($heroContent->button_text && $heroContent->button_url)
+                        <a href="{{ $heroContent->button_url }}" class="buy-btn" style="margin-top: 15px; display: inline-block;">{{ $heroContent->button_text }}</a>
+                    @endif
+                </div>
+            @else
+                <div>
+                    <h1>Welcome to RUBISTA</h1>
+                    <p>Your one-stop shop for electronics & accessories</p>
+                </div>
+            @endif
+        </div>
+        @if($banners->count() > 1)
+        <div class="hero-banner-dots" id="hero-banner-dots">
+            @foreach($banners as $index => $banner)
+            <span class="{{ $index === 0 ? 'active' : '' }}" data-slide="{{ $index }}" aria-label="Go to slide {{ $index + 1 }}"></span>
+            @endforeach
+        </div>
+        @endif
+    </section>
+    @else
     <section class="hero">
         <div class="hero-content">
             @if(isset($heroContent) && $heroContent)
@@ -69,6 +178,7 @@
             @endif
         </div>
     </section>
+    @endif
 
     <!-- Features Bar -->
     <div class="features-bar">
@@ -129,7 +239,7 @@
     <!-- Categories -->
     <section class="categories">
         <div class="container">
-            <p class="category-title">CATEGORIES</p>
+            <p class="category-title">{{ optional($categoriesContent)->title ?? 'CATEGORIES' }}</p>
             <div class="category-grid">
                 @php
                     $categoryIcons = ['fa-cable-car', 'fa-plug', 'fa-battery-full', 'fa-mobile-screen', 'fa-sd-card', 'fa-clock', 'fa-mobile-alt', 'fa-mobile'];
@@ -175,7 +285,7 @@
     <section class="products-section">
         <div class="container">
             <div class="section-title left">
-                <h2>{{ $featuredProductsContent->title ?? 'TRENDING PRODUCTS' }}</h2>
+                <h2>{{ optional($featuredProductsContent)->title ?? 'TRENDING PRODUCTS' }}</h2>
             </div>
             @php $trending = ($trendingProducts ?? collect())->take(8); @endphp
             <div class="products-grid">
@@ -220,7 +330,7 @@
                             @endif
                         </div>
                         <div class="product-card-actions">
-                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})">Add to Cart</button>
+                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </a>
                 @empty
@@ -236,7 +346,7 @@
         <section class="products-section">
             <div class="container">
                 <div class="section-title left">
-                    <h2>{{ (isset($offerContent) && $offerContent->count() > 0) ? $offerContent->first()->title : 'DISCOUNTS FOR YOU' }}</h2>
+                    <h2>{{ optional($discountsHeadingContent)->title ?? (isset($offerContent) && $offerContent->count() > 0 ? $offerContent->first()->title : 'DISCOUNTS FOR YOU') }}</h2>
                 </div>
                 <div class="products-grid">
                     @foreach($discountProducts->take(5) as $index => $product)
@@ -258,7 +368,7 @@
                                 @endif
                             </div>
                             <div class="product-card-actions">
-                                <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})">Add to Cart</button>
+                                <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                             </div>
                         </a>
                     @endforeach
@@ -276,7 +386,7 @@
         <section class="watches-section">
             <div class="container">
                 <div class="section-header">
-                    <h2>SMART WATCHES</h2>
+                    <h2>{{ optional($smartWatchesContent)->title ?? 'SMART WATCHES' }}</h2>
                     @if($watchCategory)
                         <a href="{{ route('frontend.category.products', $watchCategory->id) }}" class="view-all">VIEW ALL &gt;</a>
                     @else
@@ -299,15 +409,15 @@
                                     @endif
                                 </div>
                                 <div class="product-card-actions">
-                                    <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})">Add to Cart</button>
+                                    <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                                 </div>
                             </a>
                         @endforeach
                     </div>
                     <div class="watch-banner">
                         <div>
-                            <h3>Resistance</h3>
-                            <p>Zinc Alloy body</p>
+                            <h3>{{ optional($watchBannerContent)->title ?? 'Resistance' }}</h3>
+                            <p>{{ optional($watchBannerContent)->subtitle ?? 'Zinc Alloy body' }}</p>
                         </div>
                         <img src="{{ $watchProducts->first() ? $productImageUrl($watchProducts->first()) : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop' }}" alt="Smart Watch">
                     </div>
@@ -328,13 +438,13 @@
                     <div class="powerbank-banner">
                         <img src="{{ $powerProducts->first() ? $productImageUrl($powerProducts->first()) : 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=200&h=200&fit=crop' }}" alt="Power Bank">
                         <div class="powerbank-info">
-                            <h3>20000mAh</h3>
-                            <p>Lithium Polymer Battery</p>
+                            <h3>{{ data_get($powerbankContent, 'extra_data.banner_title', '20000mAh') }}</h3>
+                            <p>{{ data_get($powerbankContent, 'extra_data.banner_subtitle', 'Lithium Polymer Battery') }}</p>
                         </div>
                     </div>
                     <div class="powerbank-products">
                         <div class="section-header">
-                            <h2>POWER BANKS</h2>
+                            <h2>{{ optional($powerbankContent)->title ?? 'POWER BANKS' }}</h2>
                             @if($powerCategory)
                                 <a href="{{ route('frontend.category.products', $powerCategory->id) }}" class="view-all">VIEW ALL &gt;</a>
                             @else
@@ -368,7 +478,7 @@
         <section class="products-section">
             <div class="container">
                 <div class="section-title left">
-                    <h2>{{ $bestSellersContent->title ?? 'TOP RATED PRODUCTS' }}</h2>
+                    <h2>{{ optional($bestSellersContent)->title ?? 'TOP RATED PRODUCTS' }}</h2>
                 </div>
                 <div class="products-grid">
                     @foreach($featuredProducts->take(5) as $index => $product)
@@ -386,7 +496,7 @@
                                 @endif
                             </div>
                             <div class="product-card-actions">
-                                <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})">Add to Cart</button>
+                                <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                             </div>
                         </a>
                     @endforeach
@@ -417,7 +527,7 @@
                             @endif
                         </div>
                         <div class="product-card-actions">
-                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})">Add to Cart</button>
+                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </a>
                 @endforeach
@@ -469,7 +579,7 @@
                             @endif
                         </div>
                         <div class="product-card-actions">
-                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})">Add to Cart</button>
+                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </a>
                 @endforeach
@@ -477,18 +587,21 @@
         </div>
     </section>
 
-    <!-- Shop By Discounts -->
+    <!-- Shop By Discounts (dynamic) -->
+    @if(optional($discountsSectionContent))
     <section class="discounts-section">
         <div class="container">
             <div class="section-title">
-                <h2>Shop By <span>Discounts</span>!</h2>
-                <p style="font-size: 12px; color: #666;">HURRY UP! SALE ENDS IN</p>
+                <h2>{!! $discountsSectionContent->title !!}</h2>
+                @if($discountsSectionContent->subtitle)
+                <p style="font-size: 12px; color: #666;">{{ $discountsSectionContent->subtitle }}</p>
+                @endif
             </div>
+            @php $countdown = $discountsSectionContent->extra_data['countdown'] ?? [21, 50, 12, 2]; @endphp
             <div class="countdown">
-                <div class="countdown-item">21</div>
-                <div class="countdown-item">50</div>
-                <div class="countdown-item">12</div>
-                <div class="countdown-item">02</div>
+                @foreach($countdown as $num)
+                <div class="countdown-item">{{ $num }}</div>
+                @endforeach
             </div>
             <div class="products-grid" style="margin-top: 30px;">
                 @foreach(($trendingProducts ?? collect())->take(5) as $index => $product)
@@ -510,15 +623,16 @@
                             @endif
                         </div>
                         <div class="product-card-actions">
-                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})">Add to Cart</button>
+                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </a>
                 @endforeach
             </div>
         </div>
     </section>
+    @endif
 
-    <!-- Promotional Banners -->
+    <!-- Promotional Banners (dynamic) -->
     <section class="promo-section">
         <div class="container">
             <div class="promo-grid">
@@ -573,7 +687,7 @@
     <section class="products-section">
         <div class="container">
             <div class="section-title left">
-                <h2>{{ $latestProductsContent->title ?? 'RECOMMENDED ITEMS FOR YOU' }}</h2>
+                <h2>{{ optional($latestProductsContent)->title ?? 'RECOMMENDED ITEMS FOR YOU' }}</h2>
             </div>
             <div class="products-grid">
                 @forelse(($featuredProducts ?? $trendingProducts ?? collect())->take(5) as $index => $product)
@@ -591,7 +705,8 @@
                             @endif
                         </div>
                         <div class="product-card-actions">
-                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})">Add to Cart</button>
+                            <button type="button" class="home-add-to-cart-btn" data-product-id="{{ $product->id }}" onclick="event.preventDefault(); event.stopPropagation(); homeAddToCart({{ $product->id }})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+
                         </div>
                     </a>
                 @empty
@@ -606,6 +721,26 @@
 @section('extra-js')
 <script>
 (function() {
+    var heroSlider = document.getElementById('hero-banner-slider');
+    if (heroSlider) {
+        var slides = heroSlider.querySelectorAll('.hero-banner-slide');
+        var dots = document.getElementById('hero-banner-dots');
+        var dotEls = dots ? dots.querySelectorAll('span') : [];
+        var current = 0;
+        var total = slides.length;
+        function goToSlide(index) {
+            current = (index + total) % total;
+            slides.forEach(function(s, i) { s.classList.toggle('active', i === current); });
+            dotEls.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+        }
+        if (total > 1) {
+            setInterval(function() { goToSlide(current + 1); }, 5000);
+            dotEls.forEach(function(dot, i) {
+                dot.addEventListener('click', function() { goToSlide(i); });
+            });
+        }
+    }
+
     var csrfToken = document.querySelector('meta[name="csrf-token"]');
     if (!csrfToken) return;
     csrfToken = csrfToken.getAttribute('content');

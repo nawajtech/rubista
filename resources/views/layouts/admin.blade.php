@@ -355,6 +355,13 @@
                     </a>
                 </div>
                 <div class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}" 
+                       href="{{ route('admin.banners.index') }}">
+                        <i class="bi bi-image"></i>
+                        <span>Banners</span>
+                    </a>
+                </div>
+                <div class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.about-us.*') ? 'active' : '' }}" 
                        href="{{ route('admin.about-us.index') }}">
                         <i class="bi bi-info-circle"></i>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\HomepageContent;
@@ -57,6 +58,9 @@ class HomeController extends Controller
             $product->is_in_wishlist = isset($wishlist[$product->id]);
         }
         
+        // Active banners for hero slider
+        $banners = Banner::active()->whereNotNull('image')->where('image', '!=', '')->orderBy('id', 'desc')->get();
+
         // Get dynamic homepage content
         $heroContent = HomepageContent::getBySection('hero')->first();
         $serviceContent = HomepageContent::getBySection('service');
@@ -70,7 +74,13 @@ class HomeController extends Controller
         $brandsContent = HomepageContent::getBySection('brands')->first();
         $testimonialsContent = HomepageContent::getBySection('testimonial');
         $latestProductsContent = HomepageContent::getBySection('latest_products')->first();
-        
+        $categoriesContent = HomepageContent::getBySection('categories')->first();
+        $smartWatchesContent = HomepageContent::getBySection('smart_watches')->first();
+        $watchBannerContent = HomepageContent::getBySection('watch_banner')->first();
+        $powerbankContent = HomepageContent::getBySection('powerbank')->first();
+        $discountsHeadingContent = HomepageContent::getBySection('discounts_heading')->first();
+        $discountsSectionContent = HomepageContent::getBySection('discounts_section')->first();
+
         // Get settings for contact and shipping info
         $settings = Cache::remember('site_settings', 3600, function () {
             $settingsFile = storage_path('app/settings.json');
@@ -92,6 +102,7 @@ class HomeController extends Controller
             'categories', 
             'featuredProducts', 
             'trendingProducts',
+            'banners',
             'heroContent',
             'serviceContent',
             'offerContent',
@@ -104,6 +115,12 @@ class HomeController extends Controller
             'brandsContent',
             'testimonialsContent',
             'latestProductsContent',
+            'categoriesContent',
+            'smartWatchesContent',
+            'watchBannerContent',
+            'powerbankContent',
+            'discountsHeadingContent',
+            'discountsSectionContent',
             'settings'
         ));
     }

@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'RUBISTA - Electronics Store')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', ($settings['site_name'] ?? 'RUBISTA') . ' - Electronics Store')</title>
+    @if(!empty($settings['favicon']))
+    <link rel="icon" href="{{ asset('storage/' . $settings['favicon']) }}" type="image/x-icon">
+    @endif
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -218,6 +222,75 @@
 
         .header-action.wishlist-icon i {
             font-size: 21px;
+        }
+
+        .header-profile-wrap {
+            position: relative;
+        }
+        .header-profile-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #eee;
+            background: #fff;
+            color: #333;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .header-profile-btn:hover {
+            border-color: #f5a623;
+            color: #f5a623;
+            background: rgba(245, 166, 35, 0.08);
+        }
+        .header-profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            min-width: 180px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border: 1px solid #eee;
+            padding: 8px 0;
+            z-index: 1000;
+            display: none;
+        }
+        .header-profile-wrap.open .header-profile-dropdown {
+            display: block;
+        }
+        .header-profile-dropdown a,
+        .header-profile-dropdown button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 18px;
+            border: none;
+            background: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            text-decoration: none;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+        .header-profile-dropdown a:hover,
+        .header-profile-dropdown button:hover {
+            background: rgba(245, 166, 35, 0.1);
+            color: #1a1a2e;
+        }
+        .header-profile-dropdown .dropdown-divider {
+            height: 1px;
+            background: #eee;
+            margin: 6px 0;
         }
 
         .cart-badge,
@@ -923,7 +996,6 @@
         }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('extra-css')
 </head>
 <body>
@@ -942,6 +1014,14 @@
                 RUBI<span>STA</span>
                 <small>Shop Smarter, Live Better</small>
             </div>
+            <!-- @if(!empty($settings['logo']))
+                <img src="{{ asset('storage/' . $settings['logo']) }}" alt="{{ $settings['site_name'] ?? 'Rubista' }}" class="logo-img" style="max-height: 45px; width: auto; display: block;">
+            @else
+                <div class="logo">
+                    {{ strtoupper(substr($settings['site_name'] ?? 'Rubista', 0, 4)) }}<span>{{ strtoupper(substr($settings['site_name'] ?? 'Rubista', 4)) ?: 'STA' }}</span>
+                    <small>{{ Str::limit($settings['site_description'] ?? 'Shop Smarter, Live Better', 25) }}</small>
+                </div>
+            @endif -->
         </a>
 
         <nav>
@@ -960,6 +1040,25 @@
         </form>
 
         <div class="header-right">
+            @auth
+            <div class="header-profile-wrap" id="header-profile-wrap">
+                <a href="#" class="header-profile-btn" title="Profile" onclick="event.preventDefault(); document.getElementById('header-profile-wrap').classList.toggle('open');">
+                    <i class="fas fa-user"></i>
+                </a>
+                <div class="header-profile-dropdown">
+                    <a href="{{ route('frontend.profile') }}"><i class="fas fa-user"></i> Profile</a>
+                    <div class="dropdown-divider"></div>
+                    <form method="POST" action="{{ route('frontend.logout') }}" style="margin: 0;">
+                        @csrf
+                        <button type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </form>
+                </div>
+            </div>
+            @else
+            <a href="{{ route('frontend.login') }}" class="header-profile-btn" title="Login">
+                <i class="fas fa-user"></i>
+            </a>
+            @endauth
             <a href="{{ route('frontend.wishlist') }}" class="header-action wishlist-icon" title="Favourites">
                 <i class="far fa-heart"></i>
                 @php $wishlistCount = count(session('wishlist', [])); @endphp
@@ -984,62 +1083,76 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-about">
-                    <div class="footer-logo">RUBI<span>STA</span></div>
-                    <p>Rubista gives your stylish lifestyle with premium quality electronics, mobiles accessories Gadgets at an affordable range.</p>
-                    <p style="margin-top: 15px;">All of good value, fast delivery, and counting on us for shopping daily by</p>
+                    @if(!empty($settings['logo']))
+                        <div class="footer-logo-img mb-2">
+                            <img src="{{ asset('storage/' . $settings['logo']) }}" alt="{{ $settings['site_name'] ?? 'Rubista' }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div class="footer-logo">{{ strtoupper(substr($settings['site_name'] ?? 'Rubista', 0, 4)) }}<span>{{ strtoupper(substr($settings['site_name'] ?? 'Rubista', 4)) ?: 'STA' }}</span></div>
+                    @endif
+                    <p>{{ $settings['site_description'] ?? 'Your Premier E-commerce Destination' }}</p>
                     <p class="thanks-note" style="margin-top: 10px;">Thanks for Visit !</p>
                 </div>
 
                 <div>
                     <h4>Contact Us</h4>
                     <ul class="footer-links">
-                        <li><i class="fas fa-phone-alt"></i> +91 98765 43210</li>
-                        <li><i class="fas fa-phone-alt"></i> +91 98765 43211</li>
+                        @if(!empty($settings['site_phone']))
+                        <li><i class="fas fa-phone-alt"></i> {{ $settings['site_phone'] }}</li>
+                        @endif
                         <li style="margin-top: 15px;"><strong>Mail Us</strong></li>
-                        <li><i class="fas fa-envelope"></i> rubistaecommerce@gmail.com</li>
+                        <li><i class="fas fa-envelope"></i> <a href="mailto:{{ $settings['site_email'] ?? '#' }}" style="color: inherit;">{{ $settings['site_email'] ?? '—' }}</a></li>
+                        @if(!empty($settings['site_address']))
                         <li style="margin-top: 15px;"><strong>Address</strong></li>
-                        <li>FASHOLA FRESH MARKET</li>
-                        <li>Mumbai, 400087</li>
+                        <li>{!! nl2br(e($settings['site_address'])) !!}</li>
+                        @endif
                     </ul>
                 </div>
 
                 <div>
                     <h4>Sitemap</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Shop</a></li>
-                        <li><a href="#">Categories</a></li>
-                        <li><a href="#">Offers</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="{{ route('frontend.home') }}">Home</a></li>
+                        <li><a href="{{ route('frontend.categories') }}">Categories</a></li>
+                        <li><a href="{{ route('frontend.about') }}">About Us</a></li>
+                        <li><a href="{{ route('frontend.contact') }}">Contact Us</a></li>
+                        <li><a href="{{ route('frontend.faq') }}">FAQs</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4>AWESOME NEWSLETTER</h4>
+                    <h4>Newsletter</h4>
                     <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Get daily update of offers & discounts</p>
                     <div class="newsletter">
                         <input type="email" placeholder="Enter your email">
                         <button>Subscribe</button>
                     </div>
+                    @if(!empty($settings['facebook_url']) || !empty($settings['twitter_url']) || !empty($settings['instagram_url']) || !empty($settings['youtube_url']))
                     <p style="font-size: 13px; color: #aaa; margin-top: 20px;"><strong>Follow Us</strong></p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        @if(!empty($settings['facebook_url']))<a href="{{ $settings['facebook_url'] }}" target="_blank" rel="noopener noreferrer" title="Facebook"><i class="fab fa-facebook-f"></i></a>@endif
+                        @if(!empty($settings['instagram_url']))<a href="{{ $settings['instagram_url'] }}" target="_blank" rel="noopener noreferrer" title="Instagram"><i class="fab fa-instagram"></i></a>@endif
+                        @if(!empty($settings['twitter_url']))<a href="{{ $settings['twitter_url'] }}" target="_blank" rel="noopener noreferrer" title="Twitter"><i class="fab fa-twitter"></i></a>@endif
+                        @if(!empty($settings['youtube_url']))<a href="{{ $settings['youtube_url'] }}" target="_blank" rel="noopener noreferrer" title="YouTube"><i class="fab fa-youtube"></i></a>@endif
                     </div>
+                    @endif
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p>© RubistaEcommerce 2025. All Rights Reserved</p>
-                <p>All Rights Reserved.</p>
+                <p>© {{ $settings['site_name'] ?? 'Rubista' }} {{ date('Y') }}. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     @yield('extra-js')
+    <script>
+        document.addEventListener('click', function(e) {
+            var wrap = document.getElementById('header-profile-wrap');
+            if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
+        });
+    </script>
     <script>
         // Simple countdown timer
         function updateCountdown() {

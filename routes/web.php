@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AboutUsController;
 use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\ContactMessageController;
+use App\Http\Controllers\Admin\BannerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,6 +51,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('cms', CmsController::class);
         Route::resource('homepage-content', HomepageContentController::class);
         Route::patch('homepage-content/{homepageContent}/toggle-status', [HomepageContentController::class, 'toggleStatus'])->name('homepage-content.toggle-status');
+        Route::resource('banners', BannerController::class)->except(['show']);
+        Route::post('banners/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
+        Route::delete('banners/{id}/force', [BannerController::class, 'forceDestroy'])->name('banners.force-destroy');
         // About Us, Contact Us, FAQ
         Route::get('about-us', [AboutUsController::class, 'index'])->name('about-us.index');
         Route::get('about-us/{id}/edit', [AboutUsController::class, 'edit'])->name('about-us.edit');

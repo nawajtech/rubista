@@ -27,6 +27,39 @@
         position: sticky;
         top: 20px;
     }
+    .product-gallery-image-wrap {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    .product-gallery .wishlist-on-image {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 2;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255,255,255,0.95);
+        color: #f5a623;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: all 0.2s ease;
+    }
+    .product-gallery .wishlist-on-image:hover {
+        background: #f5a623;
+        color: #fff;
+        transform: scale(1.05);
+    }
+    .product-gallery .wishlist-on-image.active {
+        background: #ef4444;
+        color: #fff;
+    }
     
     .main-image {
         width: 100%;
@@ -108,7 +141,7 @@
     }
     
     .product-price {
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }
     
     .current-price {
@@ -136,22 +169,40 @@
     
     .product-actions {
         display: flex;
-        gap: 15px;
-        margin-bottom: 30px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 12px;
+        margin-bottom: 20px;
+        align-items: stretch;
+    }
+    .product-actions .btn-add-to-cart,
+    .product-actions .btn-buy-now {
+        flex: 1 1 0%;
+        min-width: 0;
+        height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .quantity-selector {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         margin-bottom: 20px;
+    }
+    
+    .quantity-selector label {
+        margin: 0;
+        font-size: 1rem;
+        color: #333;
     }
     
     .quantity-controls {
         display: flex;
         align-items: center;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
         overflow: hidden;
     }
     
@@ -159,6 +210,11 @@
         background: #f8f9fa;
         border: none;
         color: #333;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .product-detail-section .quantity-btn:hover {
@@ -167,24 +223,26 @@
     }
     
     .quantity-input {
-        width: 60px;
-        height: 45px;
+        width: 50px;
+        height: 40px;
         border: none;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
         text-align: center;
         font-weight: 600;
-        background: white;
+        font-size: 1rem;
+        background: #fff;
     }
     
     .product-detail-section .btn-add-to-cart {
-        background: #f5a623 !important;
+        background: linear-gradient(135deg, #f5a623, #e0941a) !important;
         border: none !important;
         color: white !important;
-        padding: 15px 30px;
-        border-radius: 25px;
+        padding: 0 24px;
+        border-radius: 12px;
         font-weight: 600;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        flex: 1;
+        font-size: 1rem;
+        transition: all 0.25s ease;
         cursor: pointer;
         position: relative;
         z-index: 1;
@@ -202,37 +260,18 @@
     }
     
     .product-detail-section .btn-add-to-wishlist {
-        background: white !important;
-        border: 2px solid #f5a623 !important;
-        color: #f5a623 !important;
-        padding: 15px 20px;
-        border-radius: 25px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .product-detail-section .btn-add-to-wishlist:hover {
-        background: #f5a623 !important;
-        color: white !important;
-    }
-    
-    .btn-add-to-wishlist:active {
-        transform: scale(0.95);
+        display: none !important; /* moved to top of image */
     }
     
     .product-detail-section .btn-buy-now {
         background: #1a1a2e !important;
         border: none !important;
         color: white !important;
-        padding: 15px 30px;
-        border-radius: 25px;
+        padding: 0 24px;
+        border-radius: 12px;
         font-weight: 600;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        flex: 1;
+        font-size: 1rem;
+        transition: all 0.25s ease;
         cursor: pointer;
         position: relative;
         z-index: 1;
@@ -263,17 +302,14 @@
     }
     
     .product-features {
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }
     
     .feature-item {
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 10px;
+        gap: 12px;
+        margin-bottom: 12px;
     }
     
     .feature-icon {
@@ -383,8 +419,6 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 16px;
-        border-radius: 20px;
         font-size: 0.9rem;
         font-weight: 600;
         margin-bottom: 20px;
@@ -406,22 +440,29 @@
     }
     
     .delivery-info {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
         margin-bottom: 20px;
+    }
+    
+    .delivery-info h6 {
+        margin-bottom: 12px;
+        font-size: 1rem;
+        color: #333;
     }
     
     .delivery-item {
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .delivery-item:last-child {
+        margin-bottom: 0;
     }
     
     .delivery-icon {
         color: #f5a623;
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
     
     .related-products-section {
@@ -638,20 +679,25 @@
         <div class="row">
             <div class="col-lg-6">
                 <div class="product-gallery">
-                    @if($product->image)
-                        @if(Str::startsWith($product->image, 'http'))
-                            <img src="{{ $product->image }}" 
-                                 alt="{{ $product->name }}" class="main-image" id="mainImage">
+                    <div class="product-gallery-image-wrap">
+                        <button type="button" class="wishlist-on-image {{ (isset($isInWishlist) && $isInWishlist) ? 'active' : '' }}" id="wishlist-btn-{{ $product->id }}" onclick="window.addToWishlist({{ $product->id }})" title="Add to wishlist" aria-label="Add to wishlist">
+                            <i class="{{ (isset($isInWishlist) && $isInWishlist) ? 'fas' : 'far' }} fa-heart"></i>
+                        </button>
+                        @if($product->image)
+                            @if(Str::startsWith($product->image, 'http'))
+                                <img src="{{ $product->image }}" 
+                                     alt="{{ $product->name }}" class="main-image" id="mainImage">
+                            @else
+                                <img src="{{ asset('storage/' . $product->image) }}" 
+                                     alt="{{ $product->name }}" class="main-image" id="mainImage">
+                            @endif
                         @else
-                            <img src="{{ asset('storage/' . $product->image) }}" 
-                                 alt="{{ $product->name }}" class="main-image" id="mainImage">
+                            <div class="main-image-placeholder">
+                                <i class="fas fa-image"></i>
+                                <span class="no-image-text">No image available</span>
+                            </div>
                         @endif
-                    @else
-                        <div class="main-image-placeholder">
-                            <i class="fas fa-image"></i>
-                            <span class="no-image-text">No image available</span>
-                        </div>
-                    @endif
+                    </div>
                     
                     <div class="thumbnail-gallery">
                         @if($product->image)
@@ -772,18 +818,12 @@
                         <button type="button" class="btn-add-to-cart" onclick="window.addToCart({{ $product->id }})" style="cursor: pointer;" {{ $stockQuantity == 0 ? 'disabled' : '' }}>
                             <i class="fas fa-shopping-cart me-2"></i>{{ $stockQuantity > 0 ? 'Add to Cart' : 'Out of Stock' }}
                         </button>
-                        <button type="button" class="btn-add-to-wishlist" id="wishlist-btn-{{ $product->id }}" onclick="window.addToWishlist({{ $product->id }})" style="cursor: pointer; @if(isset($isInWishlist) && $isInWishlist) background: #dc3545; border-color: #dc3545; color: white; @endif">
-                            <i class="{{ (isset($isInWishlist) && $isInWishlist) ? 'fas' : 'far' }} fa-heart"></i>
-                        </button>
-                    </div>
-                    
-                    @if($stockQuantity > 0)
-                    <div class="product-actions">
+                        @if($stockQuantity > 0)
                         <button type="button" class="btn-buy-now" onclick="window.buyNow({{ $product->id }})" style="cursor: pointer;">
                             <i class="fas fa-bolt me-2"></i>Buy Now
                         </button>
+                        @endif
                     </div>
-                    @endif
                     
                     @if($product->warranty_period || $product->brand || $product->model)
                     <div class="product-features">
@@ -966,7 +1006,8 @@
                                 </button>
                                 @endif
                             @else
-                                <a href="{{ route('frontend.login') }}" class="btn btn-primary" style="background: #f5a623; border: none; padding: 10px 20px; font-weight: 600;">
+
+                            <a href="{{ route('frontend.login') }}" class="btn btn-primary" style="background: #f5a623; border: none; padding: 10px 20px; font-weight: 600;">
                                     <i class="fas fa-edit me-2"></i>Rate Product
                                 </a>
                             @endauth
@@ -977,7 +1018,7 @@
                 <div class="reviews-section">
                         <div class="row">
                             <div class="col-lg-4 mb-4">
-                                <div class="rating-summary-card p-4" style="background: #f8f9fa; border-radius: 15px; text-align: center;">
+                                <div class="rating-summary-card p-4" style="text-align: left;">
                                     <h3 class="mb-3" style="font-size: 3rem; font-weight: 700; color: #f5a623;">
                                         <span id="average-rating-display">{{ number_format($averageRating ?? 0, 1) }}</span>
                                     </h3>
@@ -1054,7 +1095,7 @@
                                         </form>
                                     </div>
                                 @else
-                                    <div class="review-login-prompt mt-4 p-4" style="background: white; border: 2px dashed #f5a623; border-radius: 15px; text-align: center;">
+                                    <div class="review-login-prompt mt-4 p-4" style="text-align: left;">
                                         <i class="fas fa-lock fa-2x mb-3" style="color: #f5a623;"></i>
                                         <h6 class="fw-bold mb-2">Login to Write a Review</h6>
                                         <p class="text-muted small mb-3">Please login to share your experience with this product.</p>
