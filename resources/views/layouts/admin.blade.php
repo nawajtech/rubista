@@ -388,6 +388,7 @@
                         @endif
                     </a>
                 </div>
+                
                 <div class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.faq.*') ? 'active' : '' }}" 
                        href="{{ route('admin.faq.index') }}">
