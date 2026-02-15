@@ -51,7 +51,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('cms', CmsController::class);
         Route::resource('homepage-content', HomepageContentController::class);
         Route::patch('homepage-content/{homepageContent}/toggle-status', [HomepageContentController::class, 'toggleStatus'])->name('homepage-content.toggle-status');
-        Route::resource('banners', BannerController::class)->except(['show']);
+        Route::get('banners', [BannerController::class, 'index'])->name('banners.index');
+        Route::get('banners/create', [BannerController::class, 'create'])->name('banners.create');
+        Route::post('banners', [BannerController::class, 'store'])->name('banners.store');
+        Route::get('banners/{banner}/edit', [BannerController::class, 'edit'])->name('banners.edit');
+        Route::put('banners/{banner}', [BannerController::class, 'update'])->name('banners.update');
+        Route::delete('banners/{banner}', [BannerController::class, 'destroy'])->name('banners.destroy');
         Route::post('banners/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
         Route::delete('banners/{id}/force', [BannerController::class, 'forceDestroy'])->name('banners.force-destroy');
         // About Us, Contact Us, FAQ
