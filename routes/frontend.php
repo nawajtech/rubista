@@ -9,6 +9,7 @@ use App\Http\Controllers\RazorpayController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+
 /*
 |--------------------------------------------------------------------------
 | Frontend Routes

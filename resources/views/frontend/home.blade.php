@@ -588,13 +588,13 @@
     </section>
 
     <!-- Shop By Discounts (dynamic) -->
-    @if(optional($discountsSectionContent))
+    @if($discountsSectionContent)
     <section class="discounts-section">
         <div class="container">
             <div class="section-title">
-                <h2>{!! $discountsSectionContent->title !!}</h2>
-                @if($discountsSectionContent->subtitle)
-                <p style="font-size: 12px; color: #666;">{{ $discountsSectionContent->subtitle }}</p>
+                <h2>{!! optional($discountsSectionContent)->title !!}</h2>
+                @if(optional($discountsSectionContent)->subtitle)
+                <p style="font-size: 12px; color: #666;">{{ optional($discountsSectionContent)->subtitle }}</p>
                 @endif
             </div>
             @php $countdown = $discountsSectionContent->extra_data['countdown'] ?? [21, 50, 12, 2]; @endphp
