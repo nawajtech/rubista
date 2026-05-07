@@ -68,6 +68,26 @@
             flex-wrap: wrap;
         }
 
+        .nav-toggle {
+            display: none;
+            border: 1px solid rgba(26, 26, 46, 0.12);
+            background: rgba(26, 26, 46, 0.04);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            color: #1a1a2e;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+        }
+        .nav-toggle:hover {
+            background: rgba(245, 166, 35, 0.12);
+            border-color: rgba(245, 166, 35, 0.35);
+            transform: translateY(-1px);
+        }
+        .nav-toggle i { font-size: 18px; }
+
         .header .logo-wrap {
             flex-shrink: 0;
             text-decoration: none;
@@ -942,18 +962,66 @@
         }
 
         @media (max-width: 768px) {
+            .header {
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+            .header .container {
+                gap: 12px;
+            }
+            .nav-toggle {
+                display: inline-flex;
+                order: 2;
+            }
+            .header-right {
+                order: 3;
+                margin-left: auto;
+            }
+            .logo-wrap {
+                order: 1;
+            }
+            .header nav {
+                order: 5;
+                flex: 0 0 100%;
+                justify-content: flex-start;
+                min-width: unset;
+                display: block;
+            }
             .nav-menu {
                 display: none;
+                flex-direction: column;
+                gap: 0;
+                width: 100%;
+                background: #fff;
+                border: 1px solid rgba(26, 26, 46, 0.08);
+                border-radius: 16px;
+                padding: 8px;
+                box-shadow: 0 10px 30px rgba(26, 26, 46, 0.10);
+            }
+            .header.is-nav-open .nav-menu {
+                display: flex;
+            }
+            .nav-menu li a {
+                display: flex;
+                width: 100%;
+                padding: 12px 12px;
+                border-radius: 12px;
+            }
+            .nav-menu a::after {
+                display: none;
+            }
+            .nav-menu li a:hover {
+                background: rgba(245, 166, 35, 0.10);
             }
             .header .logo small {
                 display: none;
             }
-            .header .container {
-                gap: 16px;
-            }
             .search-box {
-                width: 180px;
-                padding: 8px 12px 8px 16px;
+                order: 4;
+                width: 100%;
+                flex: 0 0 100%;
+                padding: 10px 12px 10px 16px;
             }
             .header-action {
                 width: 40px;
@@ -1010,22 +1078,27 @@
 <header class="header">
     <div class="container">
         <a href="{{ route('frontend.home') }}" class="logo-wrap">
-            <div class="logo">
-                RUBI<span>STA</span>
-                <small>Shop Smarter, Live Better</small>
-            </div>
-            <!-- @if(!empty($settings['logo']))
-                <img src="{{ asset('storage/' . $settings['logo']) }}" alt="{{ $settings['site_name'] ?? 'Rubista' }}" class="logo-img" style="max-height: 45px; width: auto; display: block;">
+            @if(!empty($settings['logo']))
+                <img
+                    src="{{ asset('storage/' . $settings['logo']) }}"
+                    alt="{{ $settings['site_name'] ?? 'Rubista' }}"
+                    class="logo-img"
+                    style="max-height: 45px; width: auto; display: block;"
+                >
             @else
                 <div class="logo">
                     {{ strtoupper(substr($settings['site_name'] ?? 'Rubista', 0, 4)) }}<span>{{ strtoupper(substr($settings['site_name'] ?? 'Rubista', 4)) ?: 'STA' }}</span>
-                    <small>{{ Str::limit($settings['site_description'] ?? 'Shop Smarter, Live Better', 25) }}</small>
+                    <small>{{ \Illuminate\Support\Str::limit($settings['site_description'] ?? 'Shop Smarter, Live Better', 25) }}</small>
                 </div>
-            @endif -->
+            @endif
         </a>
 
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="primary-nav" aria-expanded="false">
+            <i class="fas fa-bars"></i>
+        </button>
+
         <nav>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="primary-nav">
                 <li><a href="{{ route('frontend.home') }}">HOME</a></li>
                 <li><a href="{{ route('frontend.about') }}">ABOUT US</a></li>
                 <li><a href="{{ route('frontend.categories') }}">CATEGORIES</a></li>
@@ -1152,6 +1225,34 @@
             var wrap = document.getElementById('header-profile-wrap');
             if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
         });
+    </script>
+    <script>
+        (function () {
+            var header = document.querySelector('.header');
+            var toggle = document.querySelector('.nav-toggle');
+            var nav = document.getElementById('primary-nav');
+            if (!header || !toggle || !nav) return;
+
+            function setExpanded(isOpen) {
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                header.classList.toggle('is-nav-open', isOpen);
+            }
+
+            toggle.addEventListener('click', function () {
+                var isOpen = header.classList.contains('is-nav-open');
+                setExpanded(!isOpen);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!header.classList.contains('is-nav-open')) return;
+                if (header.contains(e.target)) return;
+                setExpanded(false);
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 768) setExpanded(false);
+            });
+        })();
     </script>
     <script>
         // Simple countdown timer

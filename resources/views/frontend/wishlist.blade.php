@@ -120,7 +120,12 @@
     .wishlist-page .product-rating { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
     .wishlist-page .stars { color: #f5a623; }
     .wishlist-page .rating-count { font-size: 0.85rem; color: #5a5a6e; }
-    .wishlist-page .wishlist-actions { display: flex; gap: 10px; align-items: center; }
+    .wishlist-page .wishlist-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
     .wishlist-page .save-for-later {
         background: rgba(26,26,46,0.05);
         border: 1px solid rgba(26,26,46,0.12);
@@ -131,11 +136,35 @@
         font-size: 0.9rem;
         font-weight: 500;
         transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
     .wishlist-page .save-for-later:hover {
         background: #f5a623;
         border-color: #f5a623;
         color: #fff;
+    }
+    .wishlist-page .wishlist-actions .btn-move-to-cart,
+    .wishlist-page .wishlist-actions .save-for-later {
+        width: 100%;
+    }
+
+    @media (max-width: 767.98px) {
+        .wishlist-page .wishlist-item {
+            padding: 18px;
+        }
+        .wishlist-page .product-image {
+            width: 100%;
+            height: 180px;
+            margin-bottom: 12px;
+        }
+        .wishlist-page .btn-remove {
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: rgba(239,68,68,0.08);
+            color: #ef4444;
+        }
     }
     .wishlist-page .btn-outline-primary {
         border-color: #f5a623;
@@ -205,7 +234,8 @@
                     @foreach($wishlistItems as $item)
                     <div class="wishlist-item">
                         <div class="row align-items-center">
-                            <div class="col-md-2">
+
+                        <div class="col-md-2">
                                 <img src="{{ $item->product->image ?? 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200&h=200&fit=crop' }}" 
                                      alt="{{ $item->product->name ?? '' }}" class="product-image">
                             </div>
@@ -235,14 +265,12 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="wishlist-actions">
-                                    <form method="POST" action="{{ route('frontend.wishlist.move-to-cart', $item['id']) }}" class="d-inline">
+                                    <form method="POST" action="{{ route('frontend.wishlist.move-to-cart', $item['id']) }}" style="margin: 0;">
                                         @csrf
                                         <button type="submit" class="btn-move-to-cart">
                                             <i class="fas fa-shopping-cart me-2"></i>Move to Cart
                                         </button>
                                     </form>
-                                </div>
-                                <div class="mt-2">
                                     <a href="{{ route('frontend.product.detail', $item['product']->id) }}" class="save-for-later">
                                         <i class="fas fa-eye me-1"></i>View Details
                                     </a>

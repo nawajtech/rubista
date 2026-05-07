@@ -124,6 +124,51 @@
         background: #1a1a2e !important;
         color: #fff;
     }
+
+    .cart-page .cart-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 140px;
+    }
+
+    .cart-page .btn-outline-primary {
+        border-color: rgba(26,26,46,0.25);
+        color: #1a1a2e;
+        font-weight: 600;
+        border-radius: 10px;
+    }
+    .cart-page .btn-outline-primary:hover {
+        background: #1a1a2e;
+        border-color: #1a1a2e;
+        color: #fff;
+    }
+
+    .cart-page .btn-outline-warning {
+        border-color: rgba(245,166,35,0.5);
+        color: #b87400;
+        font-weight: 600;
+        border-radius: 10px;
+        background: rgba(245,166,35,0.10);
+    }
+    .cart-page .btn-outline-warning:hover {
+        background: #f5a623;
+        border-color: #f5a623;
+        color: #fff;
+    }
+
+    @media (max-width: 576px) {
+        .cart-page .table tbody td {
+            padding: 14px 10px;
+        }
+        .cart-page .cart-actions {
+            min-width: unset;
+        }
+        .cart-page .cart-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
 </style>
 @endsection
 
@@ -184,9 +229,24 @@
                                 </td>
                                 <td class="item-total">₹{{ number_format($item['total'], 2) }}</td>
                                 <td>
-                                    <button class="btn btn-danger btn-sm remove-item" data-product-id="{{ $item['id'] }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <div class="cart-actions">
+                                        <a
+                                            href="{{ route('frontend.product.detail', $item['product']->id) }}"
+                                            class="btn btn-outline-primary btn-sm"
+                                        >
+                                            <i class="fas fa-eye me-1"></i>View Details
+                                        </a>
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-warning btn-sm move-to-wishlist"
+                                            data-product-id="{{ $item['id'] }}"
+                                        >
+                                            <i class="far fa-heart me-1"></i>Move to Wishlist
+                                        </button>
+                                        <button class="btn btn-danger btn-sm remove-item" data-product-id="{{ $item['id'] }}">
+                                            <i class="fas fa-trash me-1"></i>Remove
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
@@ -297,6 +357,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (confirm('Are you sure you want to clear your cart?')) {
             clearCart();
         }
+    });
+
+    // Handle move to wishlist
+    document.querySelectorAll('.move-to-wishlist').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            moveToWishlist(productId);
+        });
     });
     
     function updateCartQuantity(productId, quantity) {
@@ -426,6 +494,38 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification(typeof errorMessage === 'string' ? errorMessage : 'Error removing product from cart', 'error');
         });
     }
+
+    function moveToWishlist(productId) {
+        fetch('/wishlist/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({ product_id: parseInt(productId) })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                updateWishlistCount(data.wishlist_count ?? null);
+                showNotification(data.message || 'Moved to wishlist!', 'success');
+                removeFromCart(productId);
+            } else {
+                showNotification(data.message || 'Unable to move to wishlist', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const errorMessage = error.message || error.errors || 'Error moving to wishlist';
+            showNotification(typeof errorMessage === 'string' ? errorMessage : 'Error moving to wishlist', 'error');
+        });
+    }
     
     function clearCart() {
         fetch('/cart/clear', {
@@ -514,6 +614,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 badge.style.display = 'none';
             }
         });
+    }
+
+    function updateWishlistCount(count) {
+        if (count === null || typeof count === 'undefined') return;
+        const wishlistBadge = document.getElementById('header-wishlist-count');
+        if (!wishlistBadge) return;
+        wishlistBadge.textContent = count;
+        wishlistBadge.style.display = count > 0 ? 'inline-block' : 'none';
     }
 });
 </script>

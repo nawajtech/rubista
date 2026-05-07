@@ -105,6 +105,9 @@
                         <h3 style="color: #1a1a2e; font-weight: 700;">Welcome Back</h3>
                         <p class="text-muted">Sign in to your account</p>
                     </div>
+                    <a href="{{ url('/auth/google') }}" class="btn btn-danger">
+                        Login with Google
+                    </a>
                     
                     <!-- Tabs for Login Methods -->
                     <ul class="nav nav-tabs mb-4" id="loginTabs" role="tablist">

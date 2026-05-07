@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\BannerController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GoogleLoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +35,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [AuthController::class, 'login']);
     });
-
+    Route::get('/auth/google', [GoogleLoginController::class, 'redirectToGoogle']);
+    Route::get('/auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
     // Admin Dashboard and Management - Only accessible by admin users
