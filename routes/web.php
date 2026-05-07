@@ -30,13 +30,14 @@ require __DIR__.'/frontend.php';
 */
 
 // Admin Authentication routes
+    Route::get('/auth/google', [GoogleLoginController::class, 'redirectToGoogle']);
+    Route::get('/auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [AuthController::class, 'login']);
     });
-    Route::get('/auth/google', [GoogleLoginController::class, 'redirectToGoogle']);
-    Route::get('/auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
+    
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
     // Admin Dashboard and Management - Only accessible by admin users
