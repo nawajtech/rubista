@@ -28,6 +28,7 @@ class GoogleLoginController extends Controller
 
         Auth::login($user);
 
+        
         return redirect('/');
     }
 }
