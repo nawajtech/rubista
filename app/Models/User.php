@@ -58,6 +58,54 @@ class User extends Authenticatable
     }
 
     /**
+     * Whether this account already has a mobile number (column or OTP placeholder email).
+     */
+    public function accountHasUsablePhone(): bool
+    {
+        $this->syncPhoneFromPlaceholderEmailIfMissing();
+
+        return $this->normalizedPhoneDigitCount() >= 10;
+    }
+
+    /**
+     * OTP sign-ups use {10-digit}@rubista.com — sync that into phone when the column is empty.
+     */
+    public function syncPhoneFromPlaceholderEmailIfMissing(): void
+    {
+        if ($this->normalizedPhoneDigitCount() >= 10) {
+            return;
+        }
+
+        $fromEmail = $this->extractTenDigitPhoneFromRubistaEmail();
+        if ($fromEmail !== null) {
+            $this->forceFill(['phone' => $fromEmail])->saveQuietly();
+        }
+    }
+
+    public function normalizedPhoneDigitCount(): int
+    {
+        return strlen(preg_replace('/\D/', '', (string) ($this->phone ?? '')));
+    }
+
+    /**
+     * @return non-empty-string|null
+     */
+    public function extractTenDigitPhoneFromRubistaEmail(): ?string
+    {
+        $email = strtolower(trim((string) ($this->email ?? '')));
+        if ($email === '' || ! str_ends_with($email, '@rubista.com')) {
+            return null;
+        }
+
+        $local = strstr($email, '@', true);
+        if ($local === false || strlen($local) !== 10 || ! ctype_digit($local)) {
+            return null;
+        }
+
+        return $local;
+    }
+
+    /**
      * Relationship with orders
      */
     public function orders()

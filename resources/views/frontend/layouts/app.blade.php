@@ -923,7 +923,30 @@
             display: flex;
             justify-content: space-between;
             font-size: 12px;
-            color: #666;
+            color: #9e9e9e;
+        }
+
+        .footer-bottom p {
+            margin: 0;
+        }
+
+        .footer-credit-author {
+            font-weight: 800;
+            color: #ff8f00;
+            letter-spacing: 0.02em;
+        }
+
+        .footer-credit-author a {
+            color: #ffa726;
+            font-weight: 800;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 167, 38, 0.65);
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .footer-credit-author a:hover {
+            color: #ffb74d;
+            border-bottom-color: #ffb74d;
         }
 
         .thanks-note {
@@ -1213,7 +1236,7 @@
             </div>
 
             <div class="footer-bottom">
-                <p>© {{ $settings['site_name'] ?? 'Rubista' }} {{ date('Y') }}. All Rights Reserved.</p>
+                <p>© {{ $settings['site_name'] ?? 'Rubista' }} {{ date('Y') }}. All Rights Reserved. Proudly crafted by <span class="footer-credit-author"><a href="https://nawaj.xyz" target="_blank" rel="noopener noreferrer">NAWAJ SHARIF</a></span></p>
             </div>
         </div>
     </footer>

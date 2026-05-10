@@ -55,6 +55,11 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/complete-mobile', [AuthController::class, 'showPhoneRequiredForm'])->name('frontend.phone.required');
+    Route::post('/complete-mobile', [AuthController::class, 'storePhone'])->name('frontend.phone.store');
+});
+
 // Cart Routes (available to all users)
 Route::get('/cart', [CartController::class, 'index'])->name('frontend.cart');
 Route::post('/cart/add', [CartController::class, 'add'])->name('frontend.cart.add');

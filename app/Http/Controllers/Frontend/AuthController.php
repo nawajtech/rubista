@@ -84,6 +84,42 @@ class AuthController extends Controller
     }
 
     /**
+     * Require mobile number (email / Google sign-in users without phone).
+     */
+    public function showPhoneRequiredForm(Request $request)
+    {
+        $user = $request->user();
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user->accountHasUsablePhone()) {
+            return redirect()->intended(route('frontend.home'));
+        }
+
+        return view('frontend.auth.complete-mobile');
+    }
+
+    /**
+     * Store mandatory mobile number.
+     */
+    public function storePhone(Request $request)
+    {
+        $user = $request->user();
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        $validated = $request->validate([
+            'phone' => ['required', 'regex:/^[0-9]{10}$/', 'unique:users,phone,'.$user->id],
+        ]);
+
+        $user->forceFill(['phone' => $validated['phone']])->save();
+
+        return redirect()->intended(route('frontend.home'))->with('success', 'Mobile number saved. Thank you!');
+    }
+
+    /**
      * Handle logout request
      */
     public function logout(Request $request)

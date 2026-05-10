@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\EnsureFrontendCustomerPhone;
 use App\Http\Middleware\FrontendUserMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            EnsureFrontendCustomerPhone::class,
+        ]);
+
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'frontend.user' => FrontendUserMiddleware::class,
