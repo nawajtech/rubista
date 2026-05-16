@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Add New Product - Admin Panel')
 
@@ -9,19 +9,6 @@
         <i class="bi bi-arrow-left"></i> Back to Products
     </a>
 </div>
-
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
 
 <div class="row">
     <div class="col-md-8">
@@ -255,53 +242,6 @@
                     <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Track inventory levels</li>
                     <li class="mb-2"><i class="bi bi-info-circle text-info"></i> SKU will be auto-generated</li>
                 </ul>
-            </div>
-        </div>
-
-        <div class="card mt-3 border-success">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="bi bi-upload"></i> Import Products</h5>
-            </div>
-            <div class="card-body">
-                <p class="small text-muted mb-3">
-                    Bulk import products from a spreadsheet. Download the sample file, fill in your data, then upload it here.
-                </p>
-                <a href="{{ route('admin.products.import.template') }}" class="btn btn-outline-success btn-sm w-100 mb-3">
-                    <i class="bi bi-file-earmark-spreadsheet"></i> Download Sample Excel (CSV)
-                </a>
-                <form method="POST" action="{{ route('admin.products.import') }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="import_file" class="form-label small fw-bold">Upload file</label>
-                        <input type="file" class="form-control form-control-sm @error('import_file') is-invalid @enderror"
-                               id="import_file" name="import_file" accept=".csv,.txt" required>
-                        @error('import_file')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <div class="form-text">CSV format (save Excel as CSV). Max 5MB. Images are not imported.</div>
-                    </div>
-                    <button type="submit" class="btn btn-success btn-sm w-100">
-                        <i class="bi bi-cloud-upload"></i> Import Products
-                    </button>
-                </form>
-                <hr class="my-3">
-                <p class="small mb-1"><strong>Required columns:</strong></p>
-                <p class="small text-muted mb-0">name, category, price, stock_quantity</p>
-                <p class="small text-muted mb-0 mt-1"><strong>Category:</strong> use exact category name from your store.</p>
-            </div>
-        </div>
-
-        <div class="card mt-3 border-primary">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="bi bi-download"></i> Export Products</h5>
-            </div>
-            <div class="card-body">
-                <p class="small text-muted mb-3">
-                    Download all products as a spreadsheet file. Open in Excel to view or edit.
-                </p>
-                <a href="{{ route('admin.products.export') }}" class="btn btn-primary btn-sm w-100">
-                    <i class="bi bi-file-earmark-arrow-down"></i> Export All Products (CSV)
-                </a>
             </div>
         </div>
 

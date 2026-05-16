@@ -384,7 +384,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('admin.products.create')->with('success', $message);
+        return redirect()->route('admin.products.index')->with('success', $message);
     }
 
     private function streamCsv(string $filename, array $headers, array $rows): StreamedResponse
