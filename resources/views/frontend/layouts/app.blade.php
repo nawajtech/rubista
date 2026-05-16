@@ -1236,7 +1236,7 @@
             </div>
 
             <div class="footer-bottom">
-                <p>© {{ $settings['site_name'] ?? 'Rubista' }} {{ date('Y') }}. All Rights Reserved. Proudly crafted by <span class="footer-credit-author"><a href="https://nawaj.xyz" target="_blank" rel="noopener noreferrer">NAWAJ SHARIF</a></span></p>
+                <p>© {{ $settings['site_name'] ?? 'Rubista' }} {{ date('Y') }}. All Rights Reserved. Proudly designed and developed by <span class="footer-credit-author"><a href="https://nawaj.xyz" target="_blank" rel="noopener noreferrer">NAWAJ SHARIF</a></span></p>
             </div>
         </div>
     </footer>

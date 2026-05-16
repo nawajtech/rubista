@@ -46,8 +46,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
         // Core Management
         Route::resource('categories', CategoryController::class);
-        Route::resource('products', ProductController::class);
+        Route::get('products/import/template', [ProductController::class, 'downloadImportTemplate'])->name('products.import.template');
+        Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
+        Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
         Route::post('products/update-sort-order', [ProductController::class, 'updateSortOrder'])->name('products.update-sort-order');
+        Route::resource('products', ProductController::class);
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
         Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
         Route::patch('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
