@@ -12,15 +12,27 @@ class FacebookLoginController extends Controller
 {
     public function redirectToFacebook()
     {
-        return Socialite::driver('facebook')
+        if (! $this->facebookCredentialsConfigured()) {
+            return redirect()
+                ->route('frontend.login')
+                ->with('error', 'Facebook login is not configured. Add FACEBOOK_CLIENT_ID and FACEBOOK_CLIENT_SECRET to .env, then run: php artisan config:clear');
+        }
+
+        return $this->facebookDriver()
             ->scopes(['email', 'public_profile'])
             ->redirect();
     }
 
     public function handleFacebookCallback()
     {
+        if (! $this->facebookCredentialsConfigured()) {
+            return redirect()
+                ->route('frontend.login')
+                ->with('error', 'Facebook login is not configured on the server.');
+        }
+
         try {
-            $facebookUser = Socialite::driver('facebook')->user();
+            $facebookUser = $this->facebookDriver()->user();
         } catch (Throwable $e) {
             report($e);
 
@@ -63,5 +75,22 @@ class FacebookLoginController extends Controller
         Auth::login($user, true);
 
         return redirect()->intended('/');
+    }
+
+    private function facebookDriver()
+    {
+        return Socialite::driver('facebook')
+            ->redirectUrl($this->facebookRedirectUrl());
+    }
+
+    private function facebookRedirectUrl(): string
+    {
+        return route('auth.facebook.callback', [], true);
+    }
+
+    private function facebookCredentialsConfigured(): bool
+    {
+        return config('services.facebook.client_id') !== ''
+            && config('services.facebook.client_secret') !== '';
     }
 }
