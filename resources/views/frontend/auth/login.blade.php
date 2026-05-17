@@ -42,7 +42,7 @@
     font-size:15px;
 }
 
-.google-login-btn{
+.social-login-btn{
     width:100%;
     height:56px;
     border:1px solid #e5e7eb;
@@ -56,18 +56,32 @@
     color:#111827;
     font-weight:600;
     transition:0.3s ease;
-    margin-bottom:20px;
+    margin-bottom:12px;
 }
 
-.google-login-btn:hover{
+.social-login-btn:hover{
     background:#f9fafb;
     color:#111827;
     transform:translateY(-2px);
 }
 
-.google-login-btn img{
+.social-login-btn img{
     width:22px;
     height:22px;
+}
+
+.social-login-btn .social-icon{
+    width:22px;
+    text-align:center;
+    font-size:20px;
+}
+
+.facebook-login-btn .social-icon{
+    color:#1877f2;
+}
+
+.social-login-divider{
+    margin-bottom:20px;
 }
 
 .divider{
@@ -185,17 +199,25 @@
 
                         </div>
 
-                        <!-- Google Login -->
-                        <a href="{{ url('/auth/google') }}" class="google-login-btn">
+                        @if(session('error'))
+                            <div class="alert alert-danger py-2 small mb-3">
+                                {{ session('error') }}
+                            </div>
+                        @endif
 
+                        <!-- Social Login -->
+                        <a href="{{ route('auth.google') }}" class="social-login-btn">
                             <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
-
                             <span>Continue with Google</span>
+                        </a>
 
+                        <a href="{{ route('auth.facebook') }}" class="social-login-btn facebook-login-btn">
+                            <span class="social-icon"><i class="fab fa-facebook-f"></i></span>
+                            <span>Continue with Facebook</span>
                         </a>
 
                         <!-- Divider -->
-                        <div class="divider">
+                        <div class="divider social-login-divider">
                             <span>OR LOGIN WITH EMAIL</span>
                         </div>
 

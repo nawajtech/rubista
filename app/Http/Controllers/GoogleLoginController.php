@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Throwable;
 
 class GoogleLoginController extends Controller
 {
@@ -15,20 +17,27 @@ class GoogleLoginController extends Controller
 
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->route('frontend.login')
+                ->with('error', 'Google login failed. Please try again or use email login.');
+        }
 
         $user = User::updateOrCreate(
             ['email' => $googleUser->getEmail()],
             [
                 'name' => $googleUser->getName(),
                 'google_id' => $googleUser->getId(),
-                'password' => bcrypt(rand(100000, 999999)),
+                'password' => bcrypt(Str::random(24)),
             ]
         );
 
-        Auth::login($user);
+        Auth::login($user, true);
 
-        
-        return redirect('/');
+        return redirect()->intended('/');
     }
 }

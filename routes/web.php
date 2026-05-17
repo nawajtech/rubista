@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\BannerController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FacebookLoginController;
 use App\Http\Controllers\GoogleLoginController;
 
 /*
@@ -30,8 +31,10 @@ require __DIR__.'/frontend.php';
 */
 
 // Admin Authentication routes
-    Route::get('/auth/google', [GoogleLoginController::class, 'redirectToGoogle']);
-    Route::get('/auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
+    Route::get('/auth/google', [GoogleLoginController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+    Route::get('/auth/facebook', [FacebookLoginController::class, 'redirectToFacebook'])->name('auth.facebook');
+    Route::get('/auth/facebook/callback', [FacebookLoginController::class, 'handleFacebookCallback'])->name('auth.facebook.callback');
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

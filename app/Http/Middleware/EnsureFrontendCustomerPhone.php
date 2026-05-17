@@ -54,7 +54,7 @@ class EnsureFrontendCustomerPhone
             return true;
         }
 
-        if ($request->is('auth/google') || $request->is('auth/google/callback')) {
+        if ($request->is('auth/google', 'auth/google/callback', 'auth/facebook', 'auth/facebook/callback')) {
             return true;
         }
 

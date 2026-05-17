@@ -43,7 +43,7 @@
     font-size:15px;
 }
 
-.google-register-btn{
+.social-register-btn{
     width:100%;
     height:56px;
     border:1px solid #e5e7eb;
@@ -57,18 +57,32 @@
     color:#111827;
     font-weight:600;
     transition:0.3s ease;
-    margin-bottom:20px;
+    margin-bottom:12px;
 }
 
-.google-register-btn:hover{
+.social-register-btn:hover{
     background:#f9fafb;
     color:#111827;
     transform:translateY(-2px);
 }
 
-.google-register-btn img{
+.social-register-btn img{
     width:22px;
     height:22px;
+}
+
+.social-register-btn .social-icon{
+    width:22px;
+    text-align:center;
+    font-size:20px;
+}
+
+.facebook-register-btn .social-icon{
+    color:#1877f2;
+}
+
+.social-register-divider{
+    margin-bottom:20px;
 }
 
 .divider{
@@ -178,17 +192,19 @@
 
                         </div>
 
-                        <!-- Google Register -->
-                        <a href="{{ url('/auth/google') }}" class="google-register-btn">
-
+                        <!-- Social Register -->
+                        <a href="{{ route('auth.google') }}" class="social-register-btn">
                             <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
-
                             <span>Continue with Google</span>
+                        </a>
 
+                        <a href="{{ route('auth.facebook') }}" class="social-register-btn facebook-register-btn">
+                            <span class="social-icon"><i class="fab fa-facebook-f"></i></span>
+                            <span>Continue with Facebook</span>
                         </a>
 
                         <!-- Divider -->
-                        <div class="divider">
+                        <div class="divider social-register-divider">
                             <span>OR REGISTER WITH EMAIL</span>
                         </div>
 
