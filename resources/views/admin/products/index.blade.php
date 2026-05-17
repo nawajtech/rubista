@@ -34,8 +34,23 @@
                     Bulk import products from a spreadsheet. Download the sample file, fill in your data, then upload it here.
                 </p>
                 <a href="{{ route('admin.products.import.template') }}" class="btn btn-outline-success btn-sm mb-3">
-                    <i class="bi bi-file-earmark-spreadsheet"></i> Download Sample Excel (CSV)
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Download Sample Template (CSV)
                 </a>
+
+                @if(isset($categories) && $categories->count() > 0)
+                <div class="mb-3">
+                    <label class="form-label small fw-bold mb-1">Choose category (use this ID in your file)</label>
+                    <select class="form-select form-select-sm" id="import-category-reference">
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->id }} — {{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                    <div class="form-text">Template download includes all categories. Put the selected <strong>category_id</strong> in each product row.</div>
+                </div>
+                @else
+                <div class="alert alert-warning small py-2 mb-3">No categories found. <a href="{{ route('admin.categories.create') }}">Create a category</a> before importing products.</div>
+                @endif
+
                 <form method="POST" action="{{ route('admin.products.import') }}" enctype="multipart/form-data" class="row g-2 align-items-end">
                     @csrf
                     <div class="col-md-8">
@@ -54,8 +69,9 @@
                     </div>
                 </form>
                 <p class="small text-muted mb-0 mt-2">
-                    <strong>Required:</strong> name, category, price, stock_quantity.
-                    <strong>Category:</strong> use exact category name from your store.
+                    <strong>Required:</strong> name, category_id, price, stock_quantity.
+                    <strong>DB columns (last):</strong> status (1/0), featured (1/0).
+                    <strong>Also:</strong> brand, color, dimension, model, warranty_period, return_policy.
                 </p>
             </div>
         </div>

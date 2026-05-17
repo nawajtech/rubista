@@ -16,14 +16,14 @@ class ProductController extends Controller
         'name',
         'short_description',
         'description',
-        'category',
+        'category_id',
         'price',
         'sale_price',
         'stock_quantity',
         'brand',
-        'model',
         'color',
         'dimension',
+        'model',
         'warranty_period',
         'return_policy',
         'status',
@@ -36,7 +36,8 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with('category')->orderBy('sort_order')->orderBy('id')->paginate(10);
-        return view('admin.products.index', compact('products'));
+        $categories = Category::orderBy('name')->get(['id', 'name']);
+        return view('admin.products.index', compact('products', 'categories'));
     }
 
     /**
@@ -205,21 +206,22 @@ class ProductController extends Controller
      */
     public function downloadImportTemplate()
     {
-        $sampleCategory = Category::active()->value('name') ?? 'Electronics';
+        $categories = Category::orderBy('name')->get(['id', 'name']);
+        $sampleCategoryId = $categories->first()?->id ?? 1;
 
         $sampleRows = [
             [
                 'Wireless Bluetooth Headphones',
                 'Premium over-ear headphones with noise cancellation',
                 'High-quality wireless headphones with 30-hour battery life and comfortable padding.',
-                $sampleCategory,
+                $sampleCategoryId,
                 '79.99',
                 '59.99',
                 '50',
                 'Sony',
-                'WH-1000XM5',
                 'Black',
                 '7.3 x 3.0 x 9.9 inches',
+                'WH-1000XM5',
                 '1 Year',
                 '30-day return policy with original packaging',
                 '1',
@@ -229,14 +231,14 @@ class ProductController extends Controller
                 'Smart Watch Pro',
                 'Fitness tracking smartwatch with heart rate monitor',
                 'Water-resistant smartwatch with GPS, sleep tracking, and 7-day battery.',
-                $sampleCategory,
+                $sampleCategoryId,
                 '199.00',
                 '',
                 '25',
                 'Apple',
-                'Watch Series 9',
                 'Silver',
                 '1.7 x 0.4 inches',
+                'Watch Series 9',
                 '2 Years',
                 '14-day return for unopened items',
                 '1',
@@ -244,7 +246,26 @@ class ProductController extends Controller
             ],
         ];
 
-        return $this->streamCsv('products_import_template.csv', self::IMPORT_COLUMNS, $sampleRows);
+        return response()->streamDownload(function () use ($categories, $sampleRows) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($handle, ['AVAILABLE CATEGORIES - use category_id from this list']);
+            fputcsv($handle, ['category_id', 'category_name']);
+            foreach ($categories as $category) {
+                fputcsv($handle, [$category->id, $category->name]);
+            }
+            fputcsv($handle, []);
+            fputcsv($handle, ['PRODUCT DATA - fill rows below (do not change the header row)']);
+            fputcsv($handle, self::IMPORT_COLUMNS);
+            foreach ($sampleRows as $row) {
+                fputcsv($handle, $row);
+            }
+
+            fclose($handle);
+        }, 'products_import_template.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 
     /**
@@ -259,14 +280,14 @@ class ProductController extends Controller
                 $product->name,
                 $product->short_description,
                 $product->description,
-                $product->category?->name,
+                $product->category_id,
                 $product->price,
                 $product->sale_price,
                 $product->stock_quantity,
                 $product->brand,
-                $product->model,
                 $product->color,
                 $product->dimension,
+                $product->model,
                 $product->warranty_period,
                 $product->return_policy,
                 $product->status ? '1' : '0',
@@ -291,23 +312,39 @@ class ProductController extends Controller
             return back()->with('error', 'Could not read the uploaded file.');
         }
 
-        $header = fgetcsv($handle);
-        if ($header === false) {
-            fclose($handle);
-            return back()->with('error', 'The file is empty.');
+        $header = null;
+        $columnIndex = null;
+        $rowNumber = 0;
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $rowNumber++;
+            if ($this->isEmptyCsvRow($row)) {
+                continue;
+            }
+
+            $normalized = $this->normalizeCsvHeader($row);
+            if (in_array('name', $normalized, true)) {
+                $header = $normalized;
+                if (!in_array('category_id', $header, true) && in_array('category', $header, true)) {
+                    $header[array_search('category', $header, true)] = 'category_id';
+                }
+                $missing = array_diff(self::IMPORT_COLUMNS, $header);
+                if (!empty($missing)) {
+                    fclose($handle);
+                    return back()->with('error', 'Invalid file format. Missing columns: ' . implode(', ', $missing) . '. Please download the sample template.');
+                }
+                $columnIndex = array_flip($header);
+                break;
+            }
         }
 
-        $header = array_map(fn ($col) => strtolower(trim($col)), $header);
-        $missing = array_diff(self::IMPORT_COLUMNS, $header);
-        if (!empty($missing)) {
+        if ($header === null || $columnIndex === null) {
             fclose($handle);
-            return back()->with('error', 'Invalid file format. Missing columns: ' . implode(', ', $missing) . '. Please download the sample template.');
+            return back()->with('error', 'Could not find product header row. Please download the sample template and keep the header row unchanged.');
         }
 
-        $columnIndex = array_flip($header);
         $imported = 0;
         $errors = [];
-        $rowNumber = 1;
 
         while (($row = fgetcsv($handle)) !== false) {
             $rowNumber++;
@@ -320,9 +357,18 @@ class ProductController extends Controller
                 $data[$column] = trim($row[$columnIndex[$column]] ?? '');
             }
 
-            $category = Category::where('name', $data['category'])->first();
+            if ($this->isCategoryReferenceRow($data)) {
+                continue;
+            }
+
+            $category = null;
+            if ($data['category_id'] !== '' && is_numeric($data['category_id'])) {
+                $category = Category::find((int) $data['category_id']);
+            } elseif ($data['category_id'] !== '') {
+                $category = Category::where('name', $data['category_id'])->first();
+            }
             if (!$category) {
-                $errors[] = "Row {$rowNumber}: Category \"{$data['category']}\" not found.";
+                $errors[] = "Row {$rowNumber}: Invalid category_id \"{$data['category_id']}\". Choose an ID from the categories list in the template.";
                 continue;
             }
 
@@ -420,5 +466,23 @@ class ProductController extends Controller
         }
 
         return in_array(strtolower($value), ['1', 'yes', 'true', 'active'], true);
+    }
+
+    private function normalizeCsvHeader(array $header): array
+    {
+        return array_map(function ($column) {
+            $column = (string) $column;
+            $column = preg_replace('/^\xEF\xBB\xBF/', '', $column);
+            $column = preg_replace('/^\x{FEFF}/u', '', $column);
+
+            return strtolower(trim($column));
+        }, $header);
+    }
+
+    private function isCategoryReferenceRow(array $data): bool
+    {
+        return $data['name'] === 'category_id'
+            || str_starts_with(strtolower($data['name']), 'available categories')
+            || str_starts_with(strtolower($data['name']), 'product data');
     }
 }

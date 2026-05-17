@@ -1,3 +1,9 @@
-name,short_description,description,category,price,sale_price,stock_quantity,brand,model,color,dimension,warranty_period,return_policy,status,featured
-Wireless Bluetooth Headphones,Premium over-ear headphones with noise cancellation,High-quality wireless headphones with 30-hour battery life and comfortable padding.,Electronics,79.99,59.99,50,Sony,WH-1000XM5,Black,7.3 x 3.0 x 9.9 inches,1 Year,30-day return policy with original packaging,1,0
-Smart Watch Pro,Fitness tracking smartwatch with heart rate monitor,Water-resistant smartwatch with GPS sleep tracking and 7-day battery.,Electronics,199.00,,25,Apple,Watch Series 9,Silver,1.7 x 0.4 inches,2 Years,14-day return for unopened items,1,1
+AVAILABLE CATEGORIES - use category_id from this list
+category_id,category_name
+1,Electronics
+2,Clothing
+
+PRODUCT DATA - fill rows below (do not change the header row)
+name,short_description,description,category_id,price,sale_price,stock_quantity,brand,color,dimension,model,warranty_period,return_policy,status,featured
+Wireless Bluetooth Headphones,Premium over-ear headphones with noise cancellation,High-quality wireless headphones with 30-hour battery life.,1,79.99,59.99,50,Sony,Black,7.3 x 3.0 x 9.9 inches,WH-1000XM5,1 Year,30-day return policy,1,0
+Smart Watch Pro,Fitness tracking smartwatch,Water-resistant smartwatch with GPS and sleep tracking.,1,199.00,,25,Apple,Silver,1.7 x 0.4 inches,Watch Series 9,2 Years,14-day return,1,1
